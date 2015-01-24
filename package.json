@@ -6,8 +6,7 @@
   "bin": {
     "diaporama": "./cmd.js"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git@github.com:gre/diaporama-maker.git"
@@ -21,5 +20,9 @@
   "keywords": [
     "diaporama",
     "slideshow"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "q": "^1.1.2"
+  }
 }
