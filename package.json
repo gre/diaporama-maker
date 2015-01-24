@@ -1,0 +1,25 @@
+{
+  "name": "diaporama-maker",
+  "version": "0.0.0",
+  "description": "A CLI tool to make a web diaporama from a directory of images.",
+  "main": "index.js",
+  "bin": {
+    "diaporama": "./cmd.js"
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:gre/diaporama-maker.git"
+  },
+  "author": "Gaëtan Renaudeau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gre/diaporama-maker/issues"
+  },
+  "homepage": "https://github.com/gre/diaporama-maker",
+  "keywords": [
+    "diaporama",
+    "slideshow"
+  ]
+}
