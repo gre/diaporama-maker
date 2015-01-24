@@ -2,9 +2,10 @@
   "name": "diaporama-maker",
   "version": "0.0.0",
   "description": "A CLI tool to make a web diaporama from a directory of images.",
-  "main": "index.js",
+  "browser": "app/index.js",
+  "main": "server/index.js",
   "bin": {
-    "diaporama": "./cmd.js"
+    "diaporama": "./cmd/index.js"
   },
   "scripts": {},
   "repository": {
@@ -22,7 +23,17 @@
     "slideshow"
   ],
   "dependencies": {
+    "browserify": "^8.1.1",
+    "diaporama": "^0.2.3",
+    "express": "^4.11.1",
+    "glsl-transitions": "^2015.1.24",
+    "inquirer": "^0.8.0",
     "lodash": "^2.4.1",
-    "q": "^1.1.2"
+    "mithril": "^0.1.28",
+    "open": "0.0.5",
+    "q": "^1.1.2",
+    "qajax": "^1.0.2",
+    "serve-static": "^1.8.1",
+    "uglify-stream": "^1.1.0"
   }
 }
