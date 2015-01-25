@@ -1,9 +1,10 @@
 var path = require("path");
 var Q = require("q");
-var _ = require("lodash");
 var inquirer = require("inquirer");
 var browserify = require("browserify");
 var uglify = require("uglify-stream");
+
+var findAllFiles = require("./findAllFiles");
 
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
@@ -15,38 +16,6 @@ var prompt = function (questions) {
 };
 
 var imageExtensions = "jpg|jpeg|png".split("|");
-
-function isImageFilename (name) {
-  var i = name.lastIndexOf(".");
-  if (i === -1) return false;
-  return _.contains(imageExtensions, name.slice(i+1));
-}
-
-function findAllImages (fulldir, dir) {
-  if (!dir) dir = "";
-  return fs.readdir(fulldir).then(function (files) {
-    return Q.all(files.map(function (file) {
-      return fs.stat(path.join(dir, file));
-    }))
-    .then(function (stats) {
-      var all = stats.map(function (stat, i) {
-        var name = files[i];
-        if (stat.isDirectory()) {
-          return findAllImages(path.join(fulldir, name), path.join(dir, name));
-        }
-        else if (stat.isFile() && isImageFilename(name)) {
-          return Q([ path.join(dir, name) ]);
-        }
-        else {
-          return Q([]);
-        }
-      });
-      return Q.all(all).then(function (all) {
-        return _.flatten(all);
-      });
-    });
-  });
-}
 
 function getInitialJson () {
   return {
@@ -100,7 +69,7 @@ Diaporama.bootstrapDirectory = function (dir) {
       var json = Q.fcall(getInitialJson);
 
       if (answers.bootstrap === "images") {
-        json = Q.all([ json, findAllImages(dir) ])
+        json = Q.all([ json, findAllFiles(dir, imageExtensions) ])
         .spread(function (json, images) {
           json.timeline = images.map(function (image) {
             return {

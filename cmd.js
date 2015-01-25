@@ -4,9 +4,9 @@ var Q = require("q");
 var _ = require("lodash");
 var open = require("open");
 
-var fs = require("./fs");
-var Diaporama = require("./Diaporama");
-var server = require("../server");
+var fs = require("./server/fs");
+var Diaporama = require("./server/Diaporama");
+var server = require("./server");
 
 function edit (diaporama) {
   return Q.fcall(server, diaporama).then(open);

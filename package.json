@@ -5,7 +5,7 @@
   "browser": "app/index.js",
   "main": "server/index.js",
   "bin": {
-    "diaporama": "./cmd/index.js"
+    "diaporama": "./cmd.js"
   },
   "scripts": {},
   "repository": {

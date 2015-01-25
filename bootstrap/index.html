@@ -17,5 +17,16 @@
   <div id="diaporama" style="width: 100%; height: 100%; position: absolute"></div>
 
   <script src="./build.js"></script>
+  <script>
+Qajax.getJSON("./diaporama.json").then(function (json) {
+
+  return new Diaporama({
+    container: document.getElementById("diaporama"),
+    GlslTransitions: GlslTransitions,
+    data: json
+  }).start();
+
+}).done();
+  </script>
 </body>
 </html>

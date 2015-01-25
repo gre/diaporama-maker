@@ -4,6 +4,7 @@ var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Q = require('q');
+var findAllFiles = require("./findAllFiles");
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -16,6 +17,17 @@ module.exports = function server (diaporama, port) {
     var b = browserify();
     b.add(path.join(__dirname, '../app/index.js'));
     b.bundle().pipe(res);
+  });
+
+  var interestingFilesExtensions = "jpg|jpeg|png".split("|");
+  app.get('/listfiles', function (req, res) {
+    findAllFiles(diaporama.dir, interestingFilesExtensions)
+      .then(JSON.stringify)
+      .then(function (json) {
+        res.status(200).send(json);
+      }, function (e) {
+        res.status(400).send(e.message);
+      });
   });
 
   app.get('/diaporama.json', function(req, res) {

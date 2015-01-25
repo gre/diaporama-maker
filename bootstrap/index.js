@@ -1,13 +1,4 @@
-var Diaporama = require("diaporama");
-var GlslTransitions = require("glsl-transitions");
-var Qajax = require("qajax");
+window.Diaporama = require("diaporama");
+window.GlslTransitions = require("glsl-transitions");
+window.Qajax = require("qajax");
 
-Qajax.getJSON("./diaporama.json").then(function (json) {
-
-  return new Diaporama({
-    container: document.getElementById("diaporama"),
-    GlslTransitions: GlslTransitions,
-    data: json
-  }).start();
-
-}).done();
