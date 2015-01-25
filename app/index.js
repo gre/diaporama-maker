@@ -1,6 +1,9 @@
 var m = require("mithril");
+var App = require("./App");
 
-document.body.innerHTML = "<h1>Diaporama Maker Editor</h1><h2>TODO</h2>";
-
-
-
+m.module(document.body, {
+  controller: App,
+  view: function (app) {
+    return app.render();
+  }
+});
