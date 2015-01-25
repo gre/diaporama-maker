@@ -1,9 +1,13 @@
+var prefix = require("vendor-prefix");
+
+var transformAttr = prefix("transform");
+
 module.exports = function boundToStyle (bound) {
-  return bound ? {
-    position: "absolute",
-    left: bound.x+"px",
-    top: bound.y+"px",
-    width: bound.width+"px",
-    height: bound.height+"px"
-  } : {};
+  var o = { position: "absolute" };
+  if (bound) {
+    o[transformAttr] = "translate("+bound.x+"px,"+bound.y+"px)";
+    o.width = bound.width+"px";
+    o.height = bound.height+"px";
+  }
+  return o;
 };

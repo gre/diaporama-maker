@@ -1,28 +1,11 @@
 var m = require("mithril");
 var Q = require("q");
 var Qajax = require("qajax");
-var Qimage = require("qimage");
-var rectCrop = require("rect-crop");
+var computeThumbnail = require("../core/computeThumbnail");
 var boundToStyle = require("../core/boundToStyle");
 var isImage = require("../../common/isImage");
 
 var thumbnailQuality = 2 * (window.devicePixelRatio || 1);
-
-function toProjectUrl (url) {
-  return "/project/"+url;
-}
-
-function computeThumbnail (url, width, height) {
-  return Qimage(toProjectUrl(url)).then(function (image) {
-    var canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    var ctx = canvas.getContext("2d");
-    var rect = rectCrop.largest(canvas, image);
-    ctx.drawImage.apply(ctx, [ image ].concat(rect).concat([ 0, 0, canvas.width, canvas.height ]));
-    return canvas.toDataURL();
-  });
-}
 
 function Library () {
   this.thumbnailWidth = 120;

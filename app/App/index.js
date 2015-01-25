@@ -7,18 +7,6 @@ var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 
 function App () {
-  var self = this;
-  Qajax({
-    method: "GET",
-    url: "/diaporama.json"
-  })
-  .then(Qajax.filterSuccess)
-  .then(Qajax.toJSON)
-  .then(function (diaporama) {
-    self.diaporama = diaporama;
-  })
-  .done(m.redraw);
-
   this.header = new Header();
   this.library = new Library();
   this.viewer = new Viewer();
@@ -26,18 +14,40 @@ function App () {
 
   window.addEventListener("resize", this._resize.bind(this));
   this._resize();
+  this.sync();
 }
 
 App.prototype = {
+  sync: function () {
+    var self = this;
+    Qajax({
+      method: "GET",
+      url: "/diaporama.json"
+    })
+    .then(Qajax.filterSuccess)
+    .then(Qajax.toJSON)
+    .then(function (diaporama) {
+      self.diaporama = diaporama;
+      self.timeline.setTimeline(diaporama.timeline);
+    })
+    .done(m.redraw);
+  },
   _resize: function () {
     this.resize(
-      Math.max(600, window.innerWidth),
-      Math.max(400, window.innerHeight));
+      Math.max(800, window.innerWidth),
+      Math.max(500, window.innerHeight));
   },
   resize: function (W, H) {
-    var headerH = 30;
-    var viewerW = 400;
-    var viewerH = 300;
+    var headerH = 38;
+    var viewerW, viewerH;
+    if ((H-headerH) * 2 / 3 < W / 2) {
+      viewerH = Math.round((H-headerH) / 2);
+      viewerW = Math.round(viewerH * 4 / 3);
+    }
+    else {
+      viewerW = Math.round(W / 2);
+      viewerH = Math.round(viewerW * 3 / 4);
+    }
     this.header.bound = {
       x: 0,
       y: 0,
