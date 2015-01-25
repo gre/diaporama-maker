@@ -3,10 +3,8 @@ var boundToStyle = require("../core/boundToStyle");
 
 function Viewer () {
 }
-Viewer.prototype = {
-  render: function () {
-    return m("div.viewer", { style: boundToStyle(this.bound) }, "Viewer");
-  }
+Viewer.render = function (model) {
+  return m("div.viewer", { style: boundToStyle(model.bound) }, "Viewer");
 };
 
 module.exports = Viewer;

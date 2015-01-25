@@ -4,10 +4,8 @@ var boundToStyle = require("../core/boundToStyle");
 function Header () {
 
 }
-Header.prototype = {
-  render: function () {
-    return m("header", { style: boundToStyle(this.bound) }, "Header");
-  }
+Header.render = function (model) {
+  return m("header", { style: boundToStyle(model.bound) }, "Header");
 };
 
 module.exports = Header;

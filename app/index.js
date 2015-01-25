@@ -3,7 +3,5 @@ var App = require("./App");
 
 m.module(document.body, {
   controller: App,
-  view: function (app) {
-    return app.render();
-  }
+  view: App.render
 });

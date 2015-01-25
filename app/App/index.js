@@ -61,16 +61,17 @@ App.prototype = {
       height: H-headerH-viewerH
     };
     m.redraw();
-  },
-  render: function () {
-    if (!this.diaporama) return [];
-    return [
-      this.header.render(),
-      this.library.render(),
-      this.viewer.render(),
-      this.timeline.render()
-    ];
   }
+};
+
+App.render = function (app) {
+  if (!app.diaporama) return [];
+  return [
+    Header.render(app.header),
+    Library.render(app.library),
+    Viewer.render(app.viewer),
+    Timeline.render(app.timeline)
+  ];
 };
 
 module.exports = App;

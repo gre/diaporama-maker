@@ -4,10 +4,8 @@ var boundToStyle = require("../core/boundToStyle");
 function Timeline () {
 
 }
-Timeline.prototype = {
-  render: function () {
-    return m("div.timeline", { style: boundToStyle(this.bound) }, "Timeline");
-  }
+Timeline.render = function (model) {
+  return m("div.timeline", { style: boundToStyle(model.bound) }, "Timeline");
 };
 
 module.exports = Timeline;
