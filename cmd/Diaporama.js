@@ -37,6 +37,9 @@ function findAllImages (fulldir, dir) {
         else if (stat.isFile() && isImageFilename(name)) {
           return Q([ path.join(dir, name) ]);
         }
+        else {
+          return Q([]);
+        }
       });
       return Q.all(all).then(function (all) {
         return _.flatten(all);
@@ -44,6 +47,13 @@ function findAllImages (fulldir, dir) {
     });
   });
 }
+
+function getInitialJson () {
+  return {
+    generator: { version: package.version, url: package.homepage }
+  };
+}
+
 function Diaporama (dir, json) {
   if (!(this instanceof Diaporama)) return new Diaporama(dir, json);
   this.dir = dir;
@@ -55,9 +65,18 @@ Diaporama.jsonfile = "diaporama.json";
 Diaporama.fromDirectory = function (dir) {
   return fs.readFile(path.join(dir, Diaporama.jsonfile))
     .then(JSON.parse)
+    .then(Diaporama.validate)
     .then(function (json) {
       return Diaporama(dir, json);
     });
+};
+
+Diaporama.validate = function (json) {
+  return Q.fcall(function () {
+    if (typeof json !== "object") throw new Error("diaporama.json: must be a json object");
+    if (Object.keys(json).length === 0) throw new Error("diaporama.json: must be non empty");
+    return json;
+  });
 };
 
 Diaporama.bootstrapDirectory = function (dir) {
@@ -78,9 +97,7 @@ Diaporama.bootstrapDirectory = function (dir) {
     }
   ])
     .then(function (answers) {
-      var json = Q({
-        generator: package.version
-      });
+      var json = Q.fcall(getInitialJson);
 
       if (answers.bootstrap === "images") {
         json = Q.all([ json, findAllImages(dir) ])
@@ -133,8 +150,16 @@ Diaporama.prototype = {
   save: function () {
     return fs.writeFile(
       path.join(this.dir, Diaporama.jsonfile),
-      JSON.stringify(this.json, null, '  ')
+      JSON.stringify(this.json, null, 2)
     ).thenResolve(this);
+  },
+  trySet: function (json) {
+    var self = this;
+    Diaporama.validate(json)
+      .then(function () {
+        self.json = json;
+        return self;
+      });
   }
 };
 

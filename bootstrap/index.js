@@ -4,20 +4,10 @@ var Qajax = require("qajax");
 
 Qajax.getJSON("./diaporama.json").then(function (json) {
 
-  document.body.style.background = "#000";
-  document.body.style.margin = "0";
-  document.body.style.overflow = "hidden";
-
-  var div = document.createElement("div");
-  div.style.width = window.innerWidth + "px";
-  div.style.height = window.innerHeight + "px";
-  document.body.appendChild(div);
-
-  var diaporama = new Diaporama({
-    container: div,
+  return new Diaporama({
+    container: document.getElementById("diaporama"),
     GlslTransitions: GlslTransitions,
     data: json
-  });
+  }).start();
 
-  return diaporama.start();
 }).done();

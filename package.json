@@ -23,6 +23,7 @@
     "slideshow"
   ],
   "dependencies": {
+    "body-parser": "^1.10.2",
     "browserify": "^8.1.1",
     "diaporama": "^0.2.3",
     "express": "^4.11.1",
