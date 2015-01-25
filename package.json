@@ -33,8 +33,12 @@
     "mithril": "^0.1.28",
     "open": "0.0.5",
     "q": "^1.1.2",
+    "q-io": "^1.11.6",
     "qajax": "^1.0.2",
+    "qimage": "^1.2.0",
+    "rect-crop": "0.0.0",
     "serve-static": "^1.8.1",
+    "stylus": "^0.49.3",
     "uglify-stream": "^1.1.0"
   }
 }

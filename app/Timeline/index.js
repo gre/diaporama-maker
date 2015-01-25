@@ -5,7 +5,10 @@ function Timeline () {
 
 }
 Timeline.render = function (model) {
-  return m("div.timeline", { style: boundToStyle(model.bound) }, "Timeline");
+  var title =
+    m("h2", "Timeline");
+
+  return m("div.timeline", { style: boundToStyle(model.bound) }, [ title ]);
 };
 
 module.exports = Timeline;

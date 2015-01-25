@@ -12,6 +12,8 @@ function App () {
     method: "GET",
     url: "/diaporama.json"
   })
+  .then(Qajax.filterSuccess)
+  .then(Qajax.toJSON)
   .then(function (diaporama) {
     self.diaporama = diaporama;
   })

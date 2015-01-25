@@ -5,6 +5,7 @@ var browserify = require("browserify");
 var uglify = require("uglify-stream");
 
 var findAllFiles = require("./findAllFiles");
+var isImage = require("../common/isImage");
 
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
@@ -14,8 +15,6 @@ var prompt = function (questions) {
   inquirer.prompt(questions, d.resolve);
   return d.promise;
 };
-
-var imageExtensions = "jpg|jpeg|png".split("|");
 
 function getInitialJson () {
   return {
@@ -69,7 +68,7 @@ Diaporama.bootstrapDirectory = function (dir) {
       var json = Q.fcall(getInitialJson);
 
       if (answers.bootstrap === "images") {
-        json = Q.all([ json, findAllFiles(dir, imageExtensions) ])
+        json = Q.all([ json, findAllFiles(dir, isImage) ])
         .spread(function (json, images) {
           json.timeline = images.map(function (image) {
             return {

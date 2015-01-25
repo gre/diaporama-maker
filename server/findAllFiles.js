@@ -3,13 +3,8 @@ var _ = require("lodash");
 var path = require("path");
 var fs = require("./fs"); // FIXME use q-io
 
-function fileInExtensions (name, extensions) {
-  var i = name.lastIndexOf(".");
-  if (i === -1) return false;
-  return _.contains(extensions, name.slice(i+1));
-}
-
-function findAllFiles (fulldir, extensions, dir) {
+function findAllFiles (fulldir, fileFilter, dir) {
+  if (!fileFilter) fileFilter = _.identity;
   if (!dir) dir = "";
   return fs.readdir(fulldir).then(function (files) {
     return Q.all(files.map(function (file) {
@@ -19,9 +14,9 @@ function findAllFiles (fulldir, extensions, dir) {
       var all = stats.map(function (stat, i) {
         var name = files[i];
         if (stat.isDirectory()) {
-          return findAllFiles(path.join(fulldir, name), extensions, path.join(dir, name));
+          return findAllFiles(path.join(fulldir, name), fileFilter, path.join(dir, name));
         }
-        else if (stat.isFile() && fileInExtensions(name, extensions)) {
+        else if (stat.isFile() && fileFilter(name)) {
           return Q([ path.join(dir, name) ]);
         }
         else {

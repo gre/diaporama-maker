@@ -1,10 +1,14 @@
 var browserify = require('browserify');
-var express = require('express');
+var stylus = require("stylus");
+var express = require("express");
+var nib = require("nib");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Q = require('q');
+var fs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
+var isImage = require("../common/isImage");
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -16,30 +20,47 @@ module.exports = function server (diaporama, port) {
   app.get('/index.js', function (req, res) {
     var b = browserify();
     b.add(path.join(__dirname, '../app/index.js'));
-    b.bundle().pipe(res);
+    b.bundle().pipe(res.type("js"));
   });
 
-  var interestingFilesExtensions = "jpg|jpeg|png".split("|");
+  app.get('/index.css', function (req, res) {
+    fs.read(path.join(__dirname, '../app/index.styl'))
+      .then(function (styl) {
+        return stylus(styl)
+          .set('paths', [ path.join(__dirname, '../app') ])
+          .use(nib()).import('nib');
+      })
+      .ninvoke("render")
+      .then(function (css) {
+        res.type("css").send(css);
+      }, function (e) {
+        console.error(e);
+        res.status(400).send(e.message);
+      });
+  });
+
   app.get('/listfiles', function (req, res) {
-    findAllFiles(diaporama.dir, interestingFilesExtensions)
+    findAllFiles(diaporama.dir, isImage)
       .then(JSON.stringify)
       .then(function (json) {
-        res.status(200).send(json);
+        res.type("json").send(json);
       }, function (e) {
+        console.error(e);
         res.status(400).send(e.message);
       });
   });
 
   app.get('/diaporama.json', function(req, res) {
-    res.send(JSON.stringify(diaporama.json));
+    res.type("json").send(JSON.stringify(diaporama.json));
   });
 
   app.post('/diaporama.json', function(req, res) {
     diaporama.trySet(req.body)
       .post("save")
       .then(function () {
-        res.status(200).send();
+        res.type("json").send();
       }, function (e) {
+        console.error(e);
         res.status(400).send(e.message);
       })
       .done();
