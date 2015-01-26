@@ -4,6 +4,7 @@ var Qajax = require("qajax");
 var computeThumbnail = require("../core/computeThumbnail");
 var boundToStyle = require("../core/boundToStyle");
 var isImage = require("../../common/isImage");
+var toProjectUrl = require("../core/toProjectUrl");
 
 var thumbnailQuality = 2 * (window.devicePixelRatio || 1);
 
@@ -27,7 +28,7 @@ Library.prototype = {
     .then(function (files) {
       return files.map(function (file) {
         if (isImage(file)) {
-          return computeThumbnail(file, thumbw, thumbh).then(function (thumb) {
+          return computeThumbnail(toProjectUrl(file), thumbw, thumbh).then(function (thumb) {
             return {
               file: file,
               thumb: thumb,

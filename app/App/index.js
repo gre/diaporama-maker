@@ -1,5 +1,6 @@
 var m = require("mithril");
 var Qajax = require("qajax");
+var _ = require("lodash");
 
 var Header = require("../Header");
 var Library = require("../Library");
@@ -12,7 +13,7 @@ function App () {
   this.viewer = new Viewer();
   this.timeline = new Timeline();
 
-  window.addEventListener("resize", this._resize.bind(this));
+  window.addEventListener("resize", _.throttle(this._resize.bind(this), 100));
   this._resize();
   this.sync();
 }
