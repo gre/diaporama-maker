@@ -5,3 +5,4 @@ m.module(document.body, {
   controller: App,
   view: App.render
 });
+

@@ -19,6 +19,7 @@ module.exports = function server (diaporama, port) {
 
   app.get('/index.js', function (req, res) {
     var b = browserify();
+    b.transform(require("reactify"));
     b.add(path.join(__dirname, '../app/index.js'));
     b.bundle().pipe(res.type("js"));
   });
