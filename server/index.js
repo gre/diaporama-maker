@@ -59,7 +59,7 @@ module.exports = function server (diaporama, port) {
     diaporama.trySet(req.body)
       .post("save")
       .then(function () {
-        res.type("json").send();
+        res.type("json").send({});
       }, function (e) {
         console.error(e);
         res.status(400).send(e.message);
@@ -67,7 +67,7 @@ module.exports = function server (diaporama, port) {
       .done();
   });
 
-  app.use("/project", serverStatic('.'));
+  app.use("/preview", serverStatic('.'));
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 

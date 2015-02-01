@@ -123,7 +123,7 @@ Diaporama.prototype = {
   },
   trySet: function (json) {
     var self = this;
-    Diaporama.validate(json)
+    return Diaporama.validate(json)
       .then(function () {
         self.json = json;
         return self;

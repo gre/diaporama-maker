@@ -1,0 +1,19 @@
+.library-image {
+  position: relative;
+  &:hover {
+    .actions {
+      transition: opacity 0.4s;
+      opacity: 1;
+    }
+  }
+  .actions {
+    opacity: 0.1;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 30%;
+    font-size: 2em;
+    text-shadow: 0px 0.5px 1px #000;
+  }
+}
+

@@ -1,8 +1,3 @@
-var m = require("mithril");
-var App = require("./App");
-
-m.module(document.body, {
-  controller: App,
-  view: App.render
-});
-
+var React = require("react");
+var App = require("./ui/App");
+React.render(App(), document.body);

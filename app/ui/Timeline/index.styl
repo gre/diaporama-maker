@@ -5,7 +5,7 @@
   .line {
     position: relative;
     overflow: auto;
-    .thumbnail {
+    .timeline-element {
       position: absolute;
       top: 0;
       left: 0;
@@ -15,9 +15,14 @@
       position: absolute;
       top: 0;
       left: 0;
-      background: #333;
+      background: rgba(40, 40, 40, 0.8);
+      border-left: 1px solid #000;
+      border-right: 1px solid #000;
       z-index: 2;
-      opacity: 0.6;
+      text-align: center;
+      .name {
+        color: #fff;
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 
 function toProjectUrl (url) {
-  return "/project/"+url;
+  return "/preview/"+url;
 }
 
 module.exports = toProjectUrl;
