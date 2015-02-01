@@ -62,11 +62,12 @@ var Library = React.createClass({
   },
 
   render: function () {
-    var bound = this.props.bound;
+    var width = this.props.width;
+    var height = this.props.height;
     var usedImages = this.props.usedImages;
 
     var headerHeight = 40;
-    var contentHeight = (bound.height - headerHeight);
+    var contentHeight = (height - headerHeight);
 
     var self = this;
     var items =
@@ -81,7 +82,7 @@ var Library = React.createClass({
           return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO
       });
 
-    return <div className="library" style={boundToStyle(bound)}>
+    return <div className="library" style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>
       <div className="body" style={{ height: contentHeight+"px" }}>
         {items}

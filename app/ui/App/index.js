@@ -4,7 +4,7 @@ var _ = require("lodash");
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
 var Header = require("../Header");
-var Library = require("../Library");
+var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 
@@ -107,7 +107,7 @@ var App = React.createClass({
       width: viewerW,
       height: viewerH
     };
-    var libraryBound = {
+    var mainPanelBound = {
       x: 0,
       y: headerH,
       width: W-viewerW,
@@ -124,7 +124,7 @@ var App = React.createClass({
 
     return m("div", null, [
       Header({ bound: headerBound }),
-      Library({ bound: libraryBound, usedImages: _.pluck(diaporama.timeline, "image"), onAddToTimeline: this.addToTimeline }),
+      MainPanel({ bound: mainPanelBound, diaporama: diaporama, onAddToTimeline: this.addToTimeline }),
       Viewer({ bound: viewerBound, diaporama: Diaporama.localize(diaporama) }),
       Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction }),
       draggingElement
