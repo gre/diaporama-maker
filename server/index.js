@@ -28,7 +28,10 @@ module.exports = function server (diaporama, port) {
     fs.read(path.join(__dirname, '../app/index.styl'))
       .then(function (styl) {
         return stylus(styl)
-          .set('paths', [ path.join(__dirname, '../app') ])
+          .set('paths', [
+            path.join(__dirname, '../node_modules'),
+            path.join(__dirname, '../app')
+            ])
           .use(nib()).import('nib');
       })
       .ninvoke("render")

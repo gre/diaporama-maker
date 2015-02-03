@@ -11,6 +11,7 @@ var TimelineElement = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var item = this.props.item;
+    //  <Icon name="crop" color="#FFF" onClick={this.props.onCrop} />
     return <div className="timeline-element" style={translateStyle(x, 0)}>
       <Thumbnail src={toProjectUrl(item.image)} width={width} height={height} />
       <div className="actions">

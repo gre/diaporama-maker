@@ -5,9 +5,9 @@ var m = React.createElement;
 
 var Header = React.createClass({
   render: function () {
-    return m("header", { style: boundToStyle(this.props.bound) }, [
-      m("h1", null, "Diaporama Maker")
-    ]);
+    return <header className="header" style={boundToStyle(this.props.bound)}>
+      <h1>Diaporama Maker</h1>
+    </header>;
   }
 });
 

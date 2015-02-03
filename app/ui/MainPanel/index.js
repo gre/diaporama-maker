@@ -3,10 +3,12 @@ var Q = require("q");
 var _ = require("lodash");
 var boundToStyle = require("../../core/boundToStyle");
 var Library = require("../Library");
+var Transitions = require("../Transitions");
 var Icon = require("../Icon");
 
 var NAV = [
-  { mode: "library", icon: "folder-open" }
+  { mode: "library", icon: "folder-open" },
+  { mode: "transitions", icon: "magic" }
 ];
 
 var MainPanel = React.createClass({
@@ -34,6 +36,9 @@ var MainPanel = React.createClass({
     var panel = null;
     if (mode === "library") {
       panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.addToTimeline} />;
+    }
+    else if (mode === "transitions") {
+      panel = <Transitions width={innerWidth} height={innerHeight} />;
     }
 
     var self = this;
