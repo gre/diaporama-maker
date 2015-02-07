@@ -36,8 +36,8 @@ canvas = null;
 
 var d1 = Q.defer();
 var d2 = Q.defer();
-var fromImage = new Image();
-var toImage = new Image();
+var fromImage = new window.Image();
+var toImage = new window.Image();
 fromImage.onload = d1.resolve; fromImage.onerror = d1.reject;
 toImage.onload = d2.resolve; toImage.onerror = d2.reject;
 fromImage.src = "/static/images/1.jpg";

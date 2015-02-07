@@ -47,23 +47,41 @@ Diaporama.fetch = function () {
   });
 };
 
+Diaporama.timelineIndexOfId = function (diaporama, id) {
+  // TODO: this should be made more efficient
+  return _.findIndex(diaporama.timeline, function (item) { return item.id === id; });
+};
+
+Diaporama.timelineForId = function (diaporama, id) {
+  return diaporama.timeline[Diaporama.timelineIndexOfId(diaporama, id)];
+};
+
+Diaporama.setKenBurns = function (diaporama, id, kenburns) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  if (el) {
+    el.kenburns = kenburns;
+  }
+  return clone;
+};
+
 Diaporama.timelineAction = function (diaporama, action, id) {
-  var index = _.findIndex(diaporama.timeline, function (item) { return item.id === id; });
+  var clone, index = Diaporama.timelineIndexOfId(diaporama, id);
   if (index === -1) return;
   if (action === "remove") {
-    var clone = _.cloneDeep(diaporama);
+    clone = _.cloneDeep(diaporama);
     clone.timeline.splice(index, 1);
     return clone;
   }
   if (action === "moveLeft") {
     if (index === 0) return;
-    var clone = _.cloneDeep(diaporama);
+    clone = _.cloneDeep(diaporama);
     arraymove(clone.timeline, index, index - 1);
     return clone;
   }
   if (action === "moveRight") {
     if (index === diaporama.timeline.length-1) return;
-    var clone = _.cloneDeep(diaporama);
+    clone = _.cloneDeep(diaporama);
     arraymove(clone.timeline, index, index + 1);
     return clone;
   }

@@ -1,16 +1,16 @@
 var React = require("react");
-var prefix = require("vendor-prefix");
 var rectCrop = require("rect-crop");
-
-var transformAttr = prefix("transform");
-var transformOriginAttr = prefix("transform-origin");
+var scaleTranslateStyle = require("../../core/scaleTranslateStyle");
+var ImageHolderMixin = require("../../mixins/ImageHolderMixin");
 
 var Thumbnail = React.createClass({
+
+  mixins: [ ImageHolderMixin ],
 
   propTypes: {
     zoom: React.PropTypes.number,
     center: React.PropTypes.array,
-    src: React.PropTypes.string,
+    image: React.PropTypes.string,
     width: React.PropTypes.number,
     height: React.PropTypes.number
   },
@@ -20,26 +20,6 @@ var Thumbnail = React.createClass({
       zoom: 1,
       center: [ 0.5, 0.5]
     };
-  },
-
-  fetchImage: function (props) {
-    this.img = new Image();
-    if (!props.src) return;
-    this.img.src = props.src;
-    var self = this;
-    this.img.onload = function () {
-      self.forceUpdate();
-    };
-  },
-
-  componentWillMount: function () {
-    this.fetchImage(this.props);
-  },
-
-  componentWillReceiveProps: function (props) {
-    if (!this.img || this.img.src !== props.src) {
-      this.fetchImage(props);
-    }
   },
 
   render: function () {
@@ -56,18 +36,12 @@ var Thumbnail = React.createClass({
     }
 
     var rect = rectCrop(props.zoom, props.center)(props, this.img);
-    var scale = [ props.width / rect[2], props.height / rect[3] ];
-    var translate = [ Math.round(-rect[0])+"px", Math.round(-rect[1])+"px" ];
-    var imgStyle = {
-      position: "absolute",
-      top: 0,
-      left: 0
-    };
-    imgStyle[transformOriginAttr] = "0% 0%";
-    imgStyle[transformAttr] = "scale("+scale+") translate("+translate+")";
+    var imgStyle = scaleTranslateStyle(
+      [ props.width / rect[2], props.height / rect[3] ],
+      [ -rect[0], -rect[1] ]);
 
     return <div className="thumbnail" style={style}>
-      <img src={ props.src } style={imgStyle} />
+      <img src={ props.image } style={imgStyle} />
     </div>;
   }
 });

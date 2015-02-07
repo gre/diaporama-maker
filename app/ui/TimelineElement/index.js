@@ -13,13 +13,16 @@ var TimelineElement = React.createClass({
     var item = this.props.item;
     //  <Icon name="crop" color="#FFF" onClick={this.props.onCrop} />
     return <div className="timeline-element" style={translateStyle(x, 0)}>
-      <Thumbnail src={toProjectUrl(item.image)} width={width} height={height} />
+      <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
       <div className="actions">
         <Icon name="arrow-circle-o-left" color="#fff" onClick={this.props.onMoveLeft} />
         &nbsp;
         <Icon name="remove" color="#F00" onClick={this.props.onRemove} />
         &nbsp;
         <Icon name="arrow-circle-o-right" color="#fff" onClick={this.props.onMoveRight} />
+      </div>
+      <div className="sub-actions">
+        <Icon name="crop" color="#fff" onClick={this.props.onCrop} />
       </div>
     </div>;
   }

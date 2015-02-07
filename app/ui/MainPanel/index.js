@@ -1,22 +1,23 @@
 var React = require("react");
-var Q = require("q");
 var _ = require("lodash");
+var Diaporama = require("../../models/Diaporama");
 var boundToStyle = require("../../core/boundToStyle");
+var toProjectUrl = require("../../core/toProjectUrl");
 var Library = require("../Library");
 var Transitions = require("../Transitions");
+var KenBurnsEditor = require("../KenBurnsEditor");
 var Icon = require("../Icon");
 
 var NAV = [
   { mode: "library", icon: "folder-open" },
-  { mode: "transitions", icon: "magic" }
+  { mode: "transitions", icon: "magic" },
+  { mode: "crop", icon: "crop" }
 ];
 
 var MainPanel = React.createClass({
 
-  getInitialState: function () {
-    return {
-      mode: "library"
-    };
+  setMode: function (mode, o) {
+    this.props.setMode(mode, o);
   },
 
   onAddToTimeline: function (item) {
@@ -26,26 +27,42 @@ var MainPanel = React.createClass({
   render: function () {
     var bound = this.props.bound;
     var diaporama = this.props.diaporama;
-    var mode = this.state.mode;
+    var mode = this.props.mode;
+    var modeArg = this.props.modeArg;
+    var setKenBurns = this.props.setKenBurns;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
     var innerHeight = bound.height;
 
-
     var panel = null;
+    // TODO: this should be given by children...
+    // Should I try react-router ?
     if (mode === "library") {
       panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.addToTimeline} />;
     }
     else if (mode === "transitions") {
       panel = <Transitions width={innerWidth} height={innerHeight} />;
     }
+    else if (mode === "crop") {
+      var el = Diaporama.timelineForId(diaporama, modeArg);
+      var onChange = function (value) {
+        setKenBurns(modeArg, value);
+      };
+      panel = <KenBurnsEditor
+        width={innerWidth}
+        height={innerHeight}
+        image={toProjectUrl(el.image)}
+        onChange={onChange}
+        value={el.kenburns}
+      />;
+    }
 
     var self = this;
     var navs = NAV.map(function (n) {
       var current = n.mode===mode;
       function switchMode () {
-        self.setState({ mode: n.mode });
+        self.setMode(n.mode);
       }
       return <Icon key={n.mode} name={n.icon} color={current ? "#999" : "#000"} onClick={switchMode} />;
     });

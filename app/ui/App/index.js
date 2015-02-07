@@ -1,5 +1,4 @@
 var React = require("react");
-var _ = require("lodash");
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
@@ -34,7 +33,9 @@ var App = React.createClass({
     return {
       width: getWidth(),
       height: getHeight(),
-      diaporama: null
+      diaporama: null,
+      mode: "library",
+      modeArg: null
     };
   },
 
@@ -60,7 +61,9 @@ var App = React.createClass({
 
   saveDiaporama: function (newDiaporama) {
     this.setState({ diaporama: newDiaporama });
-    Diaporama.save(newDiaporama).done(); // TODO better feedback on failure cases
+    // TODO debounce it a bit
+    // TODO better feedback on failure cases
+    Diaporama.save(newDiaporama).done();
   },
 
   addToTimeline: function (file) {
@@ -68,6 +71,25 @@ var App = React.createClass({
     if (newDiaporama) {
       this.saveDiaporama(newDiaporama);
     }
+  },
+
+  onCrop: function (id) {
+    var el = Diaporama.timelineForId(this.state.diaporama, id);
+    if (el) {
+      this.setMode("crop", id);
+    }
+  },
+
+  setMode: function (mode, modeArg) {
+    this.setState({
+      mode: mode,
+      modeArg: modeArg
+    });
+  },
+
+  setKenBurns: function (id, kenburns) {
+    var newDiaporama = Diaporama.setKenBurns(this.state.diaporama, id, kenburns);
+    this.saveDiaporama(newDiaporama);
   },
 
   onTimelineAction: function (action, id) {
@@ -81,6 +103,8 @@ var App = React.createClass({
     var W = this.state.width;
     var H = this.state.height;
     var diaporama = this.state.diaporama;
+    var mode = this.state.mode;
+    var modeArg = this.state.modeArg;
 
     if (!diaporama) return m("div", null, []);
 
@@ -124,9 +148,9 @@ var App = React.createClass({
 
     return m("div", null, [
       Header({ bound: headerBound }),
-      MainPanel({ bound: mainPanelBound, diaporama: diaporama, onAddToTimeline: this.addToTimeline }),
+      MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns }),
       Viewer({ bound: viewerBound, diaporama: Diaporama.localize(diaporama) }),
-      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction }),
+      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop }),
       draggingElement
     ]);
   }

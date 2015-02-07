@@ -1,14 +1,9 @@
 var React = require("react");
-var Q = require("q");
 var _ = require("lodash");
 var Qajax = require("qajax");
-var boundToStyle = require("../../core/boundToStyle");
 var isImage = require("../../../common/isImage");
 var toProjectUrl = require("../../core/toProjectUrl");
-var Thumbnail = require("../Thumbnail");
 var LibraryImage = require("../LibraryImage");
-
-var m = React.createElement;
 
 var thumbnailWidth = 120;
 var thumbnailHeight = 80;
@@ -76,7 +71,7 @@ var Library = React.createClass({
           self.onAddToTimeline(item.file);
         }
         if (item.type === "image") {
-          return <LibraryImage key={item.file} item={item} used={_.contains(usedImages, item.file)} width={thumbnailWidth} height={thumbnailHeight} onAddToTimeline={onAddToTimeline} />
+          return <LibraryImage key={item.file} item={item} used={_.contains(usedImages, item.file)} width={thumbnailWidth} height={thumbnailHeight} onAddToTimeline={onAddToTimeline} />;
         }
         else
           return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO
