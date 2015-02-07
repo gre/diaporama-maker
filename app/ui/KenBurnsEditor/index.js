@@ -167,7 +167,7 @@ var KenBurnsEditor = React.createClass({
   getDefaultProps: function () {
     return {
       value: {
-        from: [0.8, [0.5, 0.5]],
+        from: [1, [0.5, 0.5]],
         to: [1, [0.5, 0.5]]
       }
     };
@@ -177,8 +177,10 @@ var KenBurnsEditor = React.createClass({
     return {
       editFrom: true,
       edit: null,
+      downEditFrom: null,
       downAt: null,
-      downValue: null
+      downValue: null,
+      downTime: null
     };
   },
 
@@ -197,8 +199,11 @@ var KenBurnsEditor = React.createClass({
 
   onMouseDown: function (e) {
     var pos = this.pos(e);
+    var editFrom = this.state.editFrom;
     var newState = {
-      downAt: pos
+      downAt: pos,
+      downTime: Date.now(),
+      downEditFrom: editFrom
     };
     var w = this.innerRect[2];
     var h = this.innerRect[3];
@@ -212,9 +217,10 @@ var KenBurnsEditor = React.createClass({
       ),
       [5, 5]
     );
+
     if (!rectContains(rect, pos)) {
-      newState.editFrom = !this.state.editFrom;
-      selected = newState.editFrom ? this.props.value.from : this.props.value.to;
+      editFrom = !editFrom;
+      selected = editFrom ? this.props.value.from : this.props.value.to;
       rect = rectGrow(
         rectClamp(
           rectCrop.apply(null, selected)(r,r),
@@ -225,6 +231,7 @@ var KenBurnsEditor = React.createClass({
     }
 
     if (rectContains(rect, pos)) {
+      newState.editFrom = editFrom;
       var mix = [
         (pos[0]-rect[0])/rect[2],
         (pos[1]-rect[1])/rect[3]
@@ -246,9 +253,6 @@ var KenBurnsEditor = React.createClass({
         newState.edit = EDIT_MOVE;
       }
       newState.downValue = _.cloneDeep(this.props.value);
-    }
-    else {
-      newState.downAt = null;
     }
     this.setState(newState);
   },
@@ -297,12 +301,22 @@ var KenBurnsEditor = React.createClass({
     this.setState({
       downAt: null,
       edit: null,
-      downValue: null
+      downValue: null,
+      downTime: null,
+      downEditFrom: null
     });
   },
 
-  onMouseUp: function () {
-    if (!this.state.downAt) return;
+  onMouseUp: function (e) {
+    if(!this.state.downAt) return;
+    var pos = this.pos(e);
+    if( this.state.downEditFrom === this.state.editFrom &&
+        Date.now() - this.state.downTime < 300 &&
+        distance(this.state.downAt, pos) < 10 ) {
+      this.setState({
+        editFrom: !this.state.editFrom
+      });
+    }
     this.resetMouse();
   },
 
