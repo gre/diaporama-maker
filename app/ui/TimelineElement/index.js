@@ -23,6 +23,7 @@ var TimelineElement = React.createClass({
       </div>
       <div className="sub-actions">
         <Icon name="crop" color="#fff" onClick={this.props.onCrop} />
+        <Icon name="line-chart" color="#fff" onClick={this.props.onEasing} />
       </div>
     </div>;
   }

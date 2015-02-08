@@ -65,6 +65,22 @@ Diaporama.setKenBurns = function (diaporama, id, kenburns) {
   return clone;
 };
 
+Diaporama.setEasing = function (diaporama, id, forTransition, easing) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  if (el) {
+    if (forTransition) {
+      if (!el.transitionNext) el.transitionNext = {};
+      el.transitionNext.easing = easing;
+    }
+    else {
+      if (!el.kenburns) el.kenburns = {};
+      el.kenburns.easing = easing;
+    }
+  }
+  return clone;
+};
+
 Diaporama.timelineAction = function (diaporama, action, id) {
   var clone, index = Diaporama.timelineIndexOfId(diaporama, id);
   if (index === -1) return;

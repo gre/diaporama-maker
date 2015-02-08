@@ -58,7 +58,8 @@ var Timeline = React.createClass({
           onMoveLeft: this.props.onAction.bind(null, "moveLeft", item.id),
           onMoveRight: this.props.onAction.bind(null, "moveRight", item.id),
           onRemove: this.props.onAction.bind(null, "remove", item.id),
-          onCrop: this.props.onCrop.bind(null, item.id)
+          onCrop: this.props.onCrop.bind(null, item.id),
+          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: false })
         })
       );
 

@@ -73,6 +73,13 @@ var App = React.createClass({
     }
   },
 
+  onEasing: function (args) {
+    var el = Diaporama.timelineForId(this.state.diaporama, args.id);
+    if (el) {
+      this.setMode("easing", args);
+    }
+  },
+
   onCrop: function (id) {
     var el = Diaporama.timelineForId(this.state.diaporama, id);
     if (el) {
@@ -92,7 +99,13 @@ var App = React.createClass({
     this.saveDiaporama(newDiaporama);
   },
 
+  setEasing: function (args, easing) {
+    var newDiaporama = Diaporama.setEasing(this.state.diaporama, args.id, args.forTransition, easing);
+    this.saveDiaporama(newDiaporama);
+  },
+
   onTimelineAction: function (action, id) {
+    // TODO: we might change the mode on some actions ?
     var newDiaporama = Diaporama.timelineAction(this.state.diaporama, action, id);
     if (newDiaporama) {
       this.saveDiaporama(newDiaporama);
@@ -148,9 +161,9 @@ var App = React.createClass({
 
     return m("div", null, [
       Header({ bound: headerBound }),
-      MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns }),
+      MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns, setEasing: this.setEasing }),
       Viewer({ bound: viewerBound, diaporama: Diaporama.localize(diaporama) }),
-      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop }),
+      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop, onEasing: this.onEasing }),
       draggingElement
     ]);
   }

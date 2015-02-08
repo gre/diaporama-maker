@@ -1,5 +1,6 @@
 var React = require("react");
 var _ = require("lodash");
+var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
 var Diaporama = require("../../models/Diaporama");
 var boundToStyle = require("../../core/boundToStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
@@ -11,7 +12,8 @@ var Icon = require("../Icon");
 var NAV = [
   { mode: "library", icon: "folder-open" },
   { mode: "transitions", icon: "magic" },
-  { mode: "crop", icon: "crop" }
+  { mode: "crop", icon: "crop" },
+  { mode: "easing", icon: "line-chart" }
 ];
 
 var MainPanel = React.createClass({
@@ -30,23 +32,24 @@ var MainPanel = React.createClass({
     var mode = this.props.mode;
     var modeArg = this.props.modeArg;
     var setKenBurns = this.props.setKenBurns;
+    var setEasing = this.props.setEasing;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
     var innerHeight = bound.height;
 
-    var panel = null;
+    var panel = null, el, onChange;
     // TODO: this should be given by children...
     // Should I try react-router ?
     if (mode === "library") {
-      panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.addToTimeline} />;
+      panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.onAddToTimeline} />;
     }
     else if (mode === "transitions") {
       panel = <Transitions width={innerWidth} height={innerHeight} />;
     }
     else if (mode === "crop") {
-      var el = Diaporama.timelineForId(diaporama, modeArg);
-      var onChange = function (value) {
+      el = Diaporama.timelineForId(diaporama, modeArg);
+      onChange = function (value) {
         setKenBurns(modeArg, value);
       };
       panel = <KenBurnsEditor
@@ -55,6 +58,24 @@ var MainPanel = React.createClass({
         image={toProjectUrl(el.image)}
         onChange={onChange}
         value={el.kenburns}
+      />;
+    }
+    else if (mode === "easing") {
+      el = Diaporama.timelineForId(diaporama, modeArg.id);
+      var easing = modeArg.forTransition ?
+        el.transitionNext && el.transitionNext.easing :
+        el.kenburns && el.kenburns.easing;
+      var paddingW = Math.max(10, (innerWidth - innerHeight) / 2);
+      onChange = function (value) {
+        setEasing(modeArg, value);
+      };
+      panel = <BezierEditor
+        width={innerWidth}
+        height={innerHeight}
+        value={easing}
+        onChange={onChange}
+        handleRadius={10}
+        padding={[10, paddingW, 20, paddingW]}
       />;
     }
 
