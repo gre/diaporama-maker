@@ -33,7 +33,7 @@ var TimelineTransition = React.createClass({
           <input type="number" min={100} step={100} max={3000} value={transition.duration} onChange={this.onDurationChange} />
         </div>
         <div>
-        {!_.keys(transitionObject.types).length ? undefined :
+        {!transitionObject || !_.keys(transitionObject.types).length ? undefined :
           <UniformsEditor initialUniformValues={_.extend({}, transitionObject.uniforms, transition.uniforms)} uniforms={transitionObject.types} onUniformsChange={this.props.onUniformsChange} />
         }
         </div>
