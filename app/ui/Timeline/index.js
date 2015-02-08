@@ -31,13 +31,21 @@ var Timeline = React.createClass({
     var bound = this.props.bound;
     var timeScale = this.state.timeScale;
 
-    var headerHeight = 50;
-    var lineHeight = (bound.height - headerHeight);
+    var headerHeight = 30;
+    var gridHeight = bound.height - headerHeight;
+    var gridTop = bound.height-gridHeight;
+    var lineHeight = gridHeight - 20;
+    var lineTop = 16;
 
     var headerStyle = { width: bound.width+"px", height: headerHeight+"px" };
-    var lineStyle = { width: bound.width+"px", height: lineHeight + "px" };
-    var gridHeight = lineHeight + 10;
-    var gridStyle = { zIndex: 2, position: "absolute", top: (bound.height-gridHeight)+"px" };
+    var lineStyle = { top: lineTop+"px", width: bound.width+"px", height: lineHeight + "px" };
+    var lineContainerStyle = {
+      position: "absolute",
+      top: gridTop+"px",
+      left: "0px",
+      height: gridHeight+"px",
+      overflow: "auto"
+    };
 
     var lineContent = [];
     var x = 0;
@@ -80,6 +88,9 @@ var Timeline = React.createClass({
       prevTransitionWidth = transitionw;
       x += thumbw;
     }
+    x += prevTransitionWidth/2;
+
+    var gridWidth = Math.max(x, bound.width);
 
     return <div className="timeline" style={boundToStyle(bound)}>
       <header style={headerStyle}>
@@ -88,9 +99,9 @@ var Timeline = React.createClass({
           <TimelineZoomControls from={0.01} to={0.2} step={0.01} value={timeScale} onChange={this.setTimeScale} />
         </div>
       </header>
-      <div className="line" style={lineStyle}>{lineContent}</div>
-      <div style={gridStyle}>
-        <TimelineGrid timeScale={timeScale} width={bound.width} height={gridHeight} />
+      <div style={lineContainerStyle}>
+        <div className="line" style={lineStyle}>{lineContent}</div>
+        <TimelineGrid timeScale={timeScale} width={gridWidth} height={gridHeight} />
       </div>
     </div>;
   }
