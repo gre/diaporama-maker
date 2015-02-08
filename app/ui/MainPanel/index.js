@@ -7,9 +7,11 @@ var toProjectUrl = require("../../core/toProjectUrl");
 var Library = require("../Library");
 var Transitions = require("../Transitions");
 var KenBurnsEditor = require("../KenBurnsEditor");
+var Settings = require("../Settings");
 var Icon = require("../Icon");
 
 var NAV = [
+  { mode: "settings", icon: "cogs" },
   { mode: "library", icon: "folder-open" },
   { mode: "transitions", icon: "magic" },
   { mode: "crop", icon: "crop" },
@@ -41,11 +43,14 @@ var MainPanel = React.createClass({
     var panel = null, el, onChange;
     // TODO: this should be given by children...
     // Should I try react-router ?
-    if (mode === "library") {
+    if (mode === "settings") {
+      panel = <Settings />;
+    }
+    else if (mode === "library") {
       panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.onAddToTimeline} />;
     }
     else if (mode === "transitions") {
-      panel = <Transitions width={innerWidth} height={innerHeight} />;
+      panel = <Transitions width={innerWidth} height={innerHeight} onTransitionSelected={this.props.onTransitionSelected} />;
     }
     else if (mode === "crop") {
       el = Diaporama.timelineForId(diaporama, modeArg);

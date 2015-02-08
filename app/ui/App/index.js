@@ -104,12 +104,21 @@ var App = React.createClass({
     this.saveDiaporama(newDiaporama);
   },
 
+  onTransitionSelected: function (name) {
+    var newDiaporama = Diaporama.setTransition(this.state.diaporama, name); // FIXME do it for one particular id
+    this.saveDiaporama(newDiaporama);
+  },
+
   onTimelineAction: function (action, id) {
     // TODO: we might change the mode on some actions ?
     var newDiaporama = Diaporama.timelineAction(this.state.diaporama, action, id);
     if (newDiaporama) {
       this.saveDiaporama(newDiaporama);
     }
+  },
+
+  onDiaporamaEdit: function (newDiaporama) {
+    this.saveDiaporama(newDiaporama);
   },
 
   render: function () {
@@ -161,7 +170,7 @@ var App = React.createClass({
 
     return m("div", null, [
       Header({ bound: headerBound }),
-      MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns, setEasing: this.setEasing }),
+      MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onTransitionSelected: this.onTransitionSelected, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns, setEasing: this.setEasing, onDiaporamaEdit: this.onDiaporamaEdit }),
       Viewer({ bound: viewerBound, diaporama: Diaporama.localize(diaporama) }),
       Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop, onEasing: this.onEasing }),
       draggingElement

@@ -81,6 +81,18 @@ Diaporama.setEasing = function (diaporama, id, forTransition, easing) {
   return clone;
 };
 
+Diaporama.setTransition = function (diaporama, name) {
+  var clone = _.cloneDeep(diaporama);
+  for (var i=0; i<clone.timeline.length; ++i) {
+    var el = clone.timeline[i];
+    if (el.transitionNext && el.transitionNext.name !== name) {
+      delete el.transitionNext.uniforms;
+      el.transitionNext.name = name;
+    }
+  }
+  return clone;
+};
+
 Diaporama.timelineAction = function (diaporama, action, id) {
   var clone, index = Diaporama.timelineIndexOfId(diaporama, id);
   if (index === -1) return;

@@ -112,7 +112,11 @@ var Transitions = React.createClass({
     var nbPages = Math.ceil(coll.length / perPage);
     coll = coll.slice(page * perPage, (page+1) * perPage);
 
+    var self = this;
     var items = _.map(coll, function (t) {
+      function onClick () {
+        self.props.onTransitionSelected(t.name);
+      }
       return <Vignette
         key={t.name}
         glsl={t.glsl}
@@ -121,6 +125,9 @@ var Transitions = React.createClass({
         width={vignetteWidth}
         height={vignetteHeight}>
         <span className="tname">{t.name}</span>
+        <div className="actions">
+          <Icon name="level-down" color="#fff" onClick={onClick} style={{ position: "absolute", top: ((vignetteHeight-32)/2)+"px" }} />
+        </div>
         <span className="tauthor">by <em>{t.owner}</em></span>
       </Vignette>;
     });

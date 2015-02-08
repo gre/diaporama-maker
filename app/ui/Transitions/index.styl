@@ -47,6 +47,23 @@
         overflow: hidden;
         white-space: nowrap;
       }
+      &:hover {
+        .actions {
+          transition: opacity 0.4s;
+          opacity: 1;
+        }
+      }
+      .actions {
+        z-index: 3;
+        opacity: 0.1;
+        position: absolute;
+        top: 0;
+        left: 0;
+        text-align: center;
+        width: 100%;
+        font-size: 2em;
+        text-shadow: 0px 0.5px 1px #000;
+      }
     }
   }
 }
