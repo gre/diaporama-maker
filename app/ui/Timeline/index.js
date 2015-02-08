@@ -49,32 +49,32 @@ var Timeline = React.createClass({
       var thumbw = transitionw/2 + prevTransitionWidth/2 + Math.round(timeScale * item.duration);
 
       lineContent.push(
-        TimelineElement({
-          x: x,
-          width: thumbw,
-          height: lineHeight,
-          item: item,
-          key: item.id,
-          onMoveLeft: this.props.onAction.bind(null, "moveLeft", item.id),
-          onMoveRight: this.props.onAction.bind(null, "moveRight", item.id),
-          onRemove: this.props.onAction.bind(null, "remove", item.id),
-          onCrop: this.props.onCrop.bind(null, item.id),
-          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: false }),
-          onDurationChange: this.props.onElementDurationChange.bind(null, item.id)
-        })
+        <TimelineElement
+          x={x}
+          width={thumbw}
+          height={lineHeight}
+          item={item}
+          key={item.id}
+          onMoveLeft={this.props.onAction.bind(null, "moveLeft", item.id)}
+          onMoveRight={this.props.onAction.bind(null, "moveRight", item.id)}
+          onRemove={this.props.onAction.bind(null, "remove", item.id)}
+          onCrop={this.props.onCrop.bind(null, item.id)}
+          onEasing={this.props.onEasing.bind(null, { id: item.id, forTransition: false })}
+          onDurationChange={this.props.onElementDurationChange.bind(null, item.id)}
+        />
       );
 
       lineContent.push(
-        TimelineTransition({
-          xcenter: x + thumbw,
-          width: transitionw,
-          height: lineHeight,
-          transition: item.transitionNext,
-          key: item.id+"@t",
-          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: true }),
-          onDurationChange: this.props.onTransitionDurationChange.bind(null, item.id),
-          onUniformsChange: this.props.onTransitionUniformsChange.bind(null, item.id)
-        })
+        <TimelineTransition
+          xcenter={x + thumbw}
+          width={transitionw}
+          height={lineHeight}
+          transition={item.transitionNext}
+          key={item.id+"@t"}
+          onEasing={this.props.onEasing.bind(null, { id: item.id, forTransition: true })}
+          onDurationChange={this.props.onTransitionDurationChange.bind(null, item.id)}
+          onUniformsChange={this.props.onTransitionUniformsChange.bind(null, item.id)}
+        />
       );
 
       prevTransitionWidth = transitionw;
