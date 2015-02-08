@@ -1,7 +1,12 @@
 var React = require("react");
 var translateStyle = require("../../core/translateStyle");
+var Icon = require("../Icon");
 
 var TimelineTransition = React.createClass({
+
+  onDurationChange: function (e) {
+    this.props.onDurationChange(parseInt(e.target.value));
+  },
 
   render: function () {
     var xcenter = this.props.xcenter;
@@ -16,6 +21,12 @@ var TimelineTransition = React.createClass({
         <span className="name">
           {transition.name || "fade"}
         </span>
+        <div className="sub-actions">
+          <Icon name="line-chart" color="#fff" onClick={this.props.onEasing} />
+        </div>
+        <div>
+          <input type="number" min={100} step={100} max={3000} value={transition.duration} onChange={this.onDurationChange} />
+        </div>
       </div>
     </div>;
   }

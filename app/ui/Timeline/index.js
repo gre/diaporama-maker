@@ -59,12 +59,21 @@ var Timeline = React.createClass({
           onMoveRight: this.props.onAction.bind(null, "moveRight", item.id),
           onRemove: this.props.onAction.bind(null, "remove", item.id),
           onCrop: this.props.onCrop.bind(null, item.id),
-          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: false })
+          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: false }),
+          onDurationChange: this.props.onElementDurationChange.bind(null, item.id)
         })
       );
 
       lineContent.push(
-        TimelineTransition({ xcenter: x + thumbw, width: transitionw, height: lineHeight, transition: item.transitionNext, key: item.id+"@t" })
+        TimelineTransition({
+          xcenter: x + thumbw,
+          width: transitionw,
+          height: lineHeight,
+          transition: item.transitionNext,
+          key: item.id+"@t",
+          onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: true }),
+          onDurationChange: this.props.onTransitionDurationChange.bind(null, item.id)
+        })
       );
 
       prevTransitionWidth = transitionw;

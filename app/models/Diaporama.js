@@ -93,6 +93,21 @@ Diaporama.setTransition = function (diaporama, name) {
   return clone;
 };
 
+Diaporama.setTransitionDuration = function (diaporama, id, duration) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  if (!el.transitionNext) el.transitionNext = {};
+  el.transitionNext.duration = duration;
+  return clone;
+};
+
+Diaporama.setDuration = function (diaporama, id, duration) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  el.duration = duration;
+  return clone;
+};
+
 Diaporama.timelineAction = function (diaporama, action, id) {
   var clone, index = Diaporama.timelineIndexOfId(diaporama, id);
   if (index === -1) return;

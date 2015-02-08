@@ -6,6 +6,10 @@ var Icon = require("../Icon");
 
 var TimelineElement = React.createClass({
 
+  onDurationChange: function (e) {
+    this.props.onDurationChange(parseInt(e.target.value));
+  },
+
   render: function () {
     var x = this.props.x;
     var width = this.props.width;
@@ -24,6 +28,9 @@ var TimelineElement = React.createClass({
       <div className="sub-actions">
         <Icon name="crop" color="#fff" onClick={this.props.onCrop} />
         <Icon name="line-chart" color="#fff" onClick={this.props.onEasing} />
+        <div>
+          <input type="number" min={500} step={100} max={10000} value={item.duration} onChange={this.onDurationChange} />
+        </div>
       </div>
     </div>;
   }

@@ -73,6 +73,16 @@ var App = React.createClass({
     }
   },
 
+  onElementDurationChange: function (id, duration) {
+    var newDiaporama = Diaporama.setDuration(this.state.diaporama, id, duration);
+    this.saveDiaporama(newDiaporama);
+  },
+
+  onTransitionDurationChange: function (id, duration) {
+    var newDiaporama = Diaporama.setTransitionDuration(this.state.diaporama, id, duration);
+    this.saveDiaporama(newDiaporama);
+  },
+
   onEasing: function (args) {
     var el = Diaporama.timelineForId(this.state.diaporama, args.id);
     if (el) {
@@ -172,7 +182,7 @@ var App = React.createClass({
       Header({ bound: headerBound }),
       MainPanel({ bound: mainPanelBound, mode: mode, modeArg: modeArg, diaporama: diaporama, onTransitionSelected: this.onTransitionSelected, onAddToTimeline: this.addToTimeline, setMode: this.setMode, setKenBurns: this.setKenBurns, setEasing: this.setEasing, onDiaporamaEdit: this.onDiaporamaEdit }),
       Viewer({ bound: viewerBound, diaporama: Diaporama.localize(diaporama) }),
-      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop, onEasing: this.onEasing }),
+      Timeline({ bound: timelineBound, timeline: diaporama.timeline, onAction: this.onTimelineAction, onCrop: this.onCrop, onEasing: this.onEasing, onTransitionDurationChange: this.onTransitionDurationChange, onElementDurationChange: this.onElementDurationChange }),
       draggingElement
     ]);
   }
