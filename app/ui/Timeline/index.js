@@ -72,7 +72,8 @@ var Timeline = React.createClass({
           transition: item.transitionNext,
           key: item.id+"@t",
           onEasing: this.props.onEasing.bind(null, { id: item.id, forTransition: true }),
-          onDurationChange: this.props.onTransitionDurationChange.bind(null, item.id)
+          onDurationChange: this.props.onTransitionDurationChange.bind(null, item.id),
+          onUniformsChange: this.props.onTransitionUniformsChange.bind(null, item.id)
         })
       );
 

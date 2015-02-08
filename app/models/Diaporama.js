@@ -101,6 +101,14 @@ Diaporama.setTransitionDuration = function (diaporama, id, duration) {
   return clone;
 };
 
+Diaporama.setTransitionUniforms = function (diaporama, id, uniforms) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  if (!el.transitionNext) el.transitionNext = {};
+  el.transitionNext.uniforms = uniforms;
+  return clone;
+};
+
 Diaporama.setDuration = function (diaporama, id, duration) {
   var clone = _.cloneDeep(diaporama);
   var el = Diaporama.timelineForId(clone, id);

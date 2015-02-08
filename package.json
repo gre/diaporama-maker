@@ -28,6 +28,7 @@
     "diaporama": "^0.2.3",
     "express": "^4.11.1",
     "glsl-transition": "^0.6.7",
+    "glsl-transition-validator": "^0.3.4",
     "glsl-transitions": "^2015.1.24",
     "glsl.io-client": "0.0.2",
     "inquirer": "^0.8.0",

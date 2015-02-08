@@ -1,38 +1,9 @@
 var React = require("react");
 var Q = require("q");
 var _ = require("lodash");
-var GlslTransitions = require("glsl-transitions");
-var GlslTransition = require("glsl-transition");
 var Vignette = require("glsl.io-client/src/ui/Vignette");
 var Icon = require("../Icon");
-
-function filterWithoutCustomSampler2D (transitions, mapFilter) {
-  return transitions.filter(function (t) {
-    for (var k in t.uniforms)
-    if (typeof t.uniforms[k] === "string")
-    return false;
-  return true;
-  }).map(mapFilter).filter(function (t) { return !!t; });
-}
-
-// Test and filter transitions
-var canvas = document.createElement("canvas");
-var T = GlslTransition(canvas);
-var filteredGlslTransitions = filterWithoutCustomSampler2D(GlslTransitions.sort(function (a, b) {
-  return b.stars - a.stars;
-}), function (t) {
-  try {
-    var compiled = T(t.glsl, t.uniforms);
-    compiled.destroy();
-    return t;
-  }
-  catch (e) {
-    console.log("transition '"+ t.name +"' failed to compile:", e.stack);
-  }
-});
-T = null;
-canvas = null;
-//////////////
+var transitions = require("../../models/transitions");
 
 var d1 = Q.defer();
 var d2 = Q.defer();
@@ -106,9 +77,9 @@ var Transitions = React.createClass({
     var vignetteWidth = Math.min(Math.floor((width-2) / cols - 14), vignetteWidthBase);
     var vignetteHeight = Math.floor(vignetteHeightBase * vignetteWidth/vignetteWidthBase);
 
-    var coll = _.filter(filteredGlslTransitions, function (t) {
-        return queryMatch(q, t.owner) || queryMatch(q, t.name);
-      });
+    var coll = _.filter(transitions.collection, function (t) {
+      return queryMatch(q, t.owner) || queryMatch(q, t.name);
+    });
     var nbPages = Math.ceil(coll.length / perPage);
     coll = coll.slice(page * perPage, (page+1) * perPage);
 
