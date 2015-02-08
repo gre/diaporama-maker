@@ -6,6 +6,7 @@ var uglify = require("uglify-stream");
 
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
+var genTimelineElementDefault = require("../common/genTimelineElementDefault");
 
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
@@ -70,15 +71,7 @@ Diaporama.bootstrapDirectory = function (dir) {
       if (answers.bootstrap === "images") {
         json = Q.all([ json, findAllFiles(dir, isImage) ])
         .spread(function (json, images) {
-          json.timeline = images.map(function (image) {
-            return {
-              image: image,
-              duration: 2000,
-              transitionNext: {
-                duration: 1000
-              }
-            };
-          });
+          json.timeline = images.map(genTimelineElementDefault);
           return json;
         });
       }

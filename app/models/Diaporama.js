@@ -3,6 +3,7 @@ var _ = require("lodash");
 var Qajax = require("qajax");
 
 var toProjectUrl = require("../core/toProjectUrl");
+var genTimelineElementDefault = require("../../common/genTimelineElementDefault");
 
 var Diaporama = {};
 
@@ -141,12 +142,9 @@ Diaporama.timelineAction = function (diaporama, action, id) {
 
 Diaporama.timelineAdd = function (diaporama, file) {
   var clone = _.cloneDeep(diaporama);
-  clone.timeline.push({
-    id: newId(),
-    image: file,
-    duration: 2000,
-    transitionNext: { duration: 1000 }
-  });
+  var obj = genTimelineElementDefault(file);
+  obj.id = newId();
+  clone.timeline.push(obj);
   return clone;
 };
 

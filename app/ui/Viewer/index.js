@@ -11,7 +11,9 @@ var Viewer = React.createClass({
 
     return <a href="/preview" target="_blank" className="viewer" style={boundToStyle(bound)}>
       <h2>Viewer</h2>
-      <Diaporama width={bound.width} height={bound.height} diaporama={this.props.diaporama} />
+      { !this.props.diaporama.timeline.length ? undefined :
+        <Diaporama width={bound.width} height={bound.height} diaporama={this.props.diaporama} />
+      }
       <div className="hover-overlay">
         <Icon name="external-link" color="#fff" size={64} style={{ paddingTop: ((bound.height-32)/2)+"px" }} />
       </div>
