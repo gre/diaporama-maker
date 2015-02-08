@@ -12,6 +12,17 @@ var EDIT_TOPLEFT = 1,
     EDIT_BOTTOMRIGHT = 4,
     EDIT_MOVE = 5;
 
+function cursorForEdit (s) {
+  if (!s) return "pointer";
+  if (s === EDIT_MOVE) return "move";
+  if (s === EDIT_TOPLEFT || s === EDIT_BOTTOMRIGHT) return "nwse-resize";
+  if (s === EDIT_TOPRIGHT || s === EDIT_BOTTOMLEFT) return "nesw-resize";
+}
+
+function centerText (p) {
+  return Math.round(100*p[0])+"% "+Math.round(100*p[0])+"%";
+}
+
 function rectGrow (rect, size) {
   return [
     rect[0] - size[0], rect[1] - size[1],
@@ -94,9 +105,15 @@ var KenBurnsEditorRect = React.createClass({
         stroke: "rgba(255,255,255,"+(edit ? 1 : 0.5)+")",
         strokeWidth: edit ? 2 : 1
       };
+      var arrowTextStyle = {
+        fill: "#fff",
+        fontSize: 8,
+        alignmentBaseline: "text-before-edge"
+      };
       arrow = <g>
         <line key="a1" style={arrowStyle} x1={center[0]-size} x2={center[0]+size} y1={center[1]} y2={center[1]} />
         <line key="a2" style={arrowStyle} y1={center[1]-size} y2={center[1]+size} x1={center[0]} x2={center[0]} />
+        <text x={center[0]+4} y={center[1]+2} style={arrowTextStyle}>{ this.props.centerText }</text>
       </g>;
     }
 
@@ -108,6 +125,12 @@ var KenBurnsEditorRect = React.createClass({
         stroke: "#fff",
         strokeWidth: 2
       };
+      var zoomTextStyle = {
+        fill: "#000",
+        fontSize: 10,
+        textAnchor: "end",
+        alignmentBaseline: "text-after-edge"
+      };
       var topleftCorner = cornerPath([rect[0],rect[1]], [size, size]);
       var toprightCorner = cornerPath([rect[0]+rect[2],rect[1]], [-size, size]);
       var bottomleftCorner = cornerPath([rect[0],rect[1]+rect[3]], [size, -size]);
@@ -117,6 +140,7 @@ var KenBurnsEditorRect = React.createClass({
         <path key="c2" style={cornerStyle} d={toprightCorner.join(" ")} />
         <path key="c3" style={cornerStyle} d={bottomleftCorner.join(" ")} />
         <path key="c4" style={cornerStyle} d={bottomrightCorner.join(" ")} />
+        <text x={rect[0]+rect[2]} y={rect[1]+rect[3]} style={zoomTextStyle}>{this.props.zoomText}</text>
       </g>;
     }
 
@@ -265,14 +289,6 @@ var KenBurnsEditor = React.createClass({
     var w = this.innerRect[2];
     var h = this.innerRect[3];
     var c = [ el[1][0] * w, el[1][1] * h ];
-    /*
-    var r = { width: w, height: h };
-    var viewport = [0,0,w,h];
-    var rect = rectClamp(
-      rectCrop.apply(null, el)(r,r),
-      viewport
-    );
-    */
     
     var pos = this.pos(e);
     var delta = [
@@ -285,7 +301,7 @@ var KenBurnsEditor = React.createClass({
       case EDIT_TOPRIGHT:
       case EDIT_BOTTOMLEFT:
       case EDIT_BOTTOMRIGHT:
-        el[0] = Math.max(0.1, el[0] * distance(c, pos) / distance(c, this.state.downAt));
+        el[0] = Math.min(Math.max(0.1, el[0] * distance(c, pos) / distance(c, this.state.downAt)), 1);
         this.props.onChange(clone);
         break;
       case EDIT_MOVE:
@@ -369,7 +385,8 @@ var KenBurnsEditor = React.createClass({
       overflow: "hidden",
       backgroundColor: "#000",
       width: fullWidth+"px",
-      height: fullHeight+"px"
+      height: fullHeight+"px",
+      cursor: cursorForEdit(this.state.edit)
     };
 
     if (!this.innerRect) {
@@ -389,8 +406,8 @@ var KenBurnsEditor = React.createClass({
       progressRect = <KenBurnsEditorRect edit={false} rect={pRect} viewport={viewport} progress={true} />;
     }
 
-    var from = <KenBurnsEditorRect name="from" edit={editFrom} rect={fromRect} viewport={viewport} center={dot(value.from[1], [w,h])} />;
-    var to = <KenBurnsEditorRect name="to" edit={!editFrom} rect={toRect} viewport={viewport} center={dot(value.to[1], [w,h])} />;
+    var from = <KenBurnsEditorRect name="from" edit={editFrom} rect={fromRect} viewport={viewport} center={dot(value.from[1], [w,h])} centerText={centerText(value.from[1])} zoomText={value.from[0].toFixed(2)} />;
+    var to = <KenBurnsEditorRect name="to" edit={!editFrom} rect={toRect} viewport={viewport} center={dot(value.to[1], [w,h])} centerText={centerText(value.to[1])} zoomText={value.to[0].toFixed(2)} />;
 
     var before = !editFrom ? from : to;
     var after = editFrom ? from : to;
