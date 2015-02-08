@@ -34,6 +34,10 @@ function rectContains (rect, point) {
          point[1] <= rect[1]+rect[3] ;
 }
 
+function dot (a, b) {
+  return [ a[0] * b[0], a[1] * b[1] ];
+}
+
 function distance (a, b) {
   var dx = a[0] - b[0];
   var dy = a[1] - b[1];
@@ -71,20 +75,13 @@ var KenBurnsEditorOverlay = React.createClass({
 var KenBurnsEditorRect = React.createClass({
 
   render: function () {
+    var center = this.props.center;
     var edit = this.props.edit;
     var rect = this.props.rect;
     var name = this.props.name;
     var viewport = this.props.viewport;
     var progress = this.props.progress;
     var size;
-    var center;
-
-    if (!progress) {
-      center = [
-        rect[0] + rect[2] / 2,
-        rect[1] + rect[3] / 2
-      ];
-    }
 
     var arrow;
     var corners;
@@ -268,6 +265,14 @@ var KenBurnsEditor = React.createClass({
     var w = this.innerRect[2];
     var h = this.innerRect[3];
     var c = [ el[1][0] * w, el[1][1] * h ];
+    /*
+    var r = { width: w, height: h };
+    var viewport = [0,0,w,h];
+    var rect = rectClamp(
+      rectCrop.apply(null, el)(r,r),
+      viewport
+    );
+    */
     
     var pos = this.pos(e);
     var delta = [
@@ -283,7 +288,6 @@ var KenBurnsEditor = React.createClass({
         el[0] = Math.max(0.1, el[0] * distance(c, pos) / distance(c, this.state.downAt));
         this.props.onChange(clone);
         break;
-
       case EDIT_MOVE:
         var center = el[1];
         center[0] = Math.min(Math.max(0, center[0] + delta[0] / w), 1);
@@ -385,8 +389,8 @@ var KenBurnsEditor = React.createClass({
       progressRect = <KenBurnsEditorRect edit={false} rect={pRect} viewport={viewport} progress={true} />;
     }
 
-    var from = <KenBurnsEditorRect name="from" edit={editFrom} rect={fromRect} viewport={viewport} />;
-    var to = <KenBurnsEditorRect name="to" edit={!editFrom} rect={toRect} viewport={viewport} />;
+    var from = <KenBurnsEditorRect name="from" edit={editFrom} rect={fromRect} viewport={viewport} center={dot(value.from[1], [w,h])} />;
+    var to = <KenBurnsEditorRect name="to" edit={!editFrom} rect={toRect} viewport={viewport} center={dot(value.to[1], [w,h])} />;
 
     var before = !editFrom ? from : to;
     var after = editFrom ? from : to;
