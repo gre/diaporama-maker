@@ -90,7 +90,7 @@ var MainPanel = React.createClass({
       function switchMode () {
         self.setMode(n.mode);
       }
-      return <Icon key={n.mode} name={n.icon} color={current ? "#999" : "#000"} onClick={switchMode} />;
+      return <Icon key={n.mode} name={n.icon} color={!current ? "#999" : "#000"} onClick={switchMode} />;
     });
 
     return <div className="main-panel" style={boundToStyle(bound)}>
