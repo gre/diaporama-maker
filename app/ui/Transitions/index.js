@@ -1,3 +1,7 @@
+/**
+ * TODO: rename to TransitionPicker
+ */
+
 var React = require("react");
 var Q = require("q");
 var _ = require("lodash");

@@ -140,6 +140,16 @@ Diaporama.timelineAction = function (diaporama, action, id) {
   console.log("unknown action "+action);
 };
 
+Diaporama.applySettings = function (diaporama, id, value) {
+  var clone = _.cloneDeep(diaporama);
+  switch (id) {
+    case "loop":
+      clone[id] = value;
+      break;
+  }
+  return clone;
+};
+
 Diaporama.timelineAdd = function (diaporama, file) {
   var clone = _.cloneDeep(diaporama);
   var obj = genTimelineElementDefault(file);

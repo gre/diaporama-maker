@@ -34,8 +34,8 @@ var Timeline = React.createClass({
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
     var gridTop = bound.height-gridHeight;
-    var lineHeight = gridHeight - 20;
     var lineTop = 16;
+    var lineHeight = gridHeight - lineTop;
 
     var headerStyle = { width: bound.width+"px", height: headerHeight+"px" };
     var lineStyle = { top: lineTop+"px", width: bound.width+"px", height: lineHeight + "px" };
@@ -96,7 +96,7 @@ var Timeline = React.createClass({
       <header style={headerStyle}>
         <h2>Timeline</h2>
         <div style={{ position: "absolute", right: "4px", top: "4px" }}>
-          <TimelineZoomControls from={0.01} to={0.2} step={0.01} value={timeScale} onChange={this.setTimeScale} />
+          <TimelineZoomControls value={timeScale} onChange={this.setTimeScale} />
         </div>
       </header>
       <div style={lineContainerStyle}>

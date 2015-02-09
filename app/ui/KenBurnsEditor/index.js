@@ -1,3 +1,9 @@
+/**
+ * TODO
+ * directional line with arrow steps between the 2 centers to also visualize the easing.
+ */
+
+
 var React = require("react");
 var _ = require("lodash");
 var rectClamp = require("rect-clamp");

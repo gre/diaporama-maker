@@ -1,3 +1,8 @@
+/*
+ * TODO:
+ * display folders instead of flattened?
+ */
+
 var React = require("react");
 var _ = require("lodash");
 var Qajax = require("qajax");
@@ -81,7 +86,7 @@ var Library = React.createClass({
       <h2>Library</h2>
       <div className="body" style={{ height: contentHeight+"px" }}>
         {items}
-      </div>;
+      </div>
     </div>;
   }
 });

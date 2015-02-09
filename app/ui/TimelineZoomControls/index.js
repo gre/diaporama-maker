@@ -1,19 +1,27 @@
 var React = require("react");
+var Icon = require("../Icon");
 
 var TimelineZoomControls = React.createClass({
 
-  onchange: function (e) {
-    this.props.onChange(parseFloat(e.target.value));
+  getDefaultProps: function () {
+    return {
+      mult: 1.5
+    };
+  },
+
+  increment: function () {
+    this.props.onChange(this.props.value * this.props.mult);
+  },
+
+  decrement: function () {
+    this.props.onChange(this.props.value / this.props.mult);
   },
 
   render: function () {
     return <div className="zoom-control">
-      <span>{this.props.value}</span>
-      <input type="range" min={this.props.from}
-        max={this.props.to}
-        step={this.props.step}
-        value={this.props.value}
-        onChange={this.onchange} />
+      <Icon onClick={this.decrement} name="search-minus" />
+      &nbsp;
+      <Icon onClick={this.increment} name="search-plus" />
     </div>;
   }
 });

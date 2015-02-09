@@ -58,6 +58,7 @@ var App = React.createClass({
   },
 
   saveDiaporama: function (newDiaporama) {
+    if (!newDiaporama) return;
     this.setState({ diaporama: newDiaporama });
     // TODO debounce it a bit
     // TODO better feedback on failure cases
@@ -65,25 +66,40 @@ var App = React.createClass({
   },
 
   addToTimeline: function (file) {
-    var newDiaporama = Diaporama.timelineAdd(this.state.diaporama, file);
-    if (newDiaporama) {
-      this.saveDiaporama(newDiaporama);
-    }
+    this.saveDiaporama( Diaporama.timelineAdd(this.state.diaporama, file) );
   },
 
   onElementDurationChange: function (id, duration) {
-    var newDiaporama = Diaporama.setDuration(this.state.diaporama, id, duration);
-    this.saveDiaporama(newDiaporama);
+    this.saveDiaporama( Diaporama.setDuration(this.state.diaporama, id, duration) );
   },
 
   onTransitionDurationChange: function (id, duration) {
-    var newDiaporama = Diaporama.setTransitionDuration(this.state.diaporama, id, duration);
-    this.saveDiaporama(newDiaporama);
+    this.saveDiaporama( Diaporama.setTransitionDuration(this.state.diaporama, id, duration) );
   },
 
   onTransitionUniformsChange: function (id, uniforms) {
-    var newDiaporama = Diaporama.setTransitionUniforms(this.state.diaporama, id, uniforms);
-    this.saveDiaporama(newDiaporama);
+    this.saveDiaporama( Diaporama.setTransitionUniforms(this.state.diaporama, id, uniforms) );
+  },
+
+  setKenBurns: function (id, kenburns) {
+    this.saveDiaporama( Diaporama.setKenBurns(this.state.diaporama, id, kenburns) );
+  },
+
+  setEasing: function (args, easing) {
+    this.saveDiaporama( Diaporama.setEasing(this.state.diaporama, args.id, args.forTransition, easing) );
+  },
+
+  onTransitionSelected: function (name) {
+    this.saveDiaporama( Diaporama.setTransition(this.state.diaporama, name) ); // FIXME do it for one particular id
+  },
+
+  onTimelineAction: function (action, id) {
+    // TODO: we might change the mode on some actions ?
+    this.saveDiaporama( Diaporama.timelineAction(this.state.diaporama, action, id) );
+  },
+
+  onSettingsChange: function (id, value) {
+    this.saveDiaporama( Diaporama.applySettings(this.state.diaporama, id, value) );
   },
 
   onEasing: function (args) {
@@ -105,33 +121,6 @@ var App = React.createClass({
       mode: mode,
       modeArg: modeArg
     });
-  },
-
-  setKenBurns: function (id, kenburns) {
-    var newDiaporama = Diaporama.setKenBurns(this.state.diaporama, id, kenburns);
-    this.saveDiaporama(newDiaporama);
-  },
-
-  setEasing: function (args, easing) {
-    var newDiaporama = Diaporama.setEasing(this.state.diaporama, args.id, args.forTransition, easing);
-    this.saveDiaporama(newDiaporama);
-  },
-
-  onTransitionSelected: function (name) {
-    var newDiaporama = Diaporama.setTransition(this.state.diaporama, name); // FIXME do it for one particular id
-    this.saveDiaporama(newDiaporama);
-  },
-
-  onTimelineAction: function (action, id) {
-    // TODO: we might change the mode on some actions ?
-    var newDiaporama = Diaporama.timelineAction(this.state.diaporama, action, id);
-    if (newDiaporama) {
-      this.saveDiaporama(newDiaporama);
-    }
-  },
-
-  onDiaporamaEdit: function (newDiaporama) {
-    this.saveDiaporama(newDiaporama);
   },
 
   render: function () {
@@ -190,6 +179,7 @@ var App = React.createClass({
         mode={mode}
         modeArg={modeArg}
         diaporama={diaporama}
+        onSettingsChange={this.onSettingsChange}
         onTransitionSelected={this.onTransitionSelected}
         onAddToTimeline={this.addToTimeline}
         setMode={this.setMode}

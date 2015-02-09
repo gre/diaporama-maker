@@ -44,7 +44,7 @@ var MainPanel = React.createClass({
     // TODO: this should be given by children...
     // Should I try react-router ?
     if (mode === "settings") {
-      panel = <Settings />;
+      panel = <Settings diaporama={diaporama} onChange={this.props.onSettingsChange} />;
     }
     else if (mode === "library") {
       panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.onAddToTimeline} />;
