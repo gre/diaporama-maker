@@ -32,8 +32,10 @@ var App = React.createClass({
       width: getWidth(),
       height: getHeight(),
       diaporama: null,
+      diaporamaLocalized: null,
       mode: "library",
-      modeArg: null
+      modeArg: null,
+      time: 0
     };
   },
 
@@ -42,7 +44,8 @@ var App = React.createClass({
     Diaporama.fetch()
       .then(function (diaporama) {
         self.setState({
-          diaporama: diaporama
+          diaporama: diaporama,
+          diaporamaLocalized: Diaporama.localize(diaporama)
         });
       })
       .done();
@@ -59,7 +62,10 @@ var App = React.createClass({
 
   saveDiaporama: function (newDiaporama) {
     if (!newDiaporama) return;
-    this.setState({ diaporama: newDiaporama });
+    this.setState({
+      diaporama: newDiaporama,
+      diaporamaLocalized: Diaporama.localize(newDiaporama)
+    });
     // TODO debounce it a bit
     // TODO better feedback on failure cases
     Diaporama.save(newDiaporama).done();
@@ -123,12 +129,22 @@ var App = React.createClass({
     });
   },
 
+  onTimelineHover: function (time) {
+    if (this.state.time !== time) {
+      this.setState({
+        time: time
+      });
+    }
+  },
+
   render: function () {
     var W = this.state.width;
     var H = this.state.height;
     var diaporama = this.state.diaporama;
+    var diaporamaLocalized = this.state.diaporamaLocalized;
     var mode = this.state.mode;
     var modeArg = this.state.modeArg;
+    var time = this.state.time;
 
     if (!diaporama) return <div />;
 
@@ -188,10 +204,13 @@ var App = React.createClass({
         onDiaporamaEdit={this.onDiaporamaEdit} />
 
       <Viewer
+        time={time}
         bound={viewerBound}
-        diaporama={Diaporama.localize(diaporama)} />
+        diaporama={diaporamaLocalized} />
 
       <Timeline
+        time={time}
+        onHover={this.onTimelineHover}
         bound={timelineBound}
         timeline={diaporama.timeline}
         onAction={this.onTimelineAction}

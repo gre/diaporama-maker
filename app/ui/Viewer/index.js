@@ -3,7 +3,6 @@ var boundToStyle = require("../../core/boundToStyle");
 var GlslTransitions = require("glsl-transitions");
 
 var DiaporamaElement = require("diaporama-react").lib(React);
-
 var Icon = require("../Icon");
 
 var Viewer = React.createClass({
@@ -18,6 +17,7 @@ var Viewer = React.createClass({
         width={bound.width}
         height={bound.height}
         data={this.props.diaporama}
+        currentTime={this.props.time}
       />
       <div className="hover-overlay">
         <Icon name="external-link" color="#fff" size={64} style={{ paddingTop: ((bound.height-32)/2)+"px" }} />
