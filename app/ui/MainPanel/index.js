@@ -11,11 +11,13 @@ var Settings = require("../Settings");
 var Icon = require("../Icon");
 
 var NAV = [
-  { mode: "settings", icon: "cogs" },
-  { mode: "library", icon: "folder-open" },
+  //{ mode: "settings", icon: "cogs" },
+  { mode: "library", icon: "folder-open", title: "Library" }
+  /*,
   { mode: "transitions", icon: "magic" },
   { mode: "crop", icon: "crop" },
   { mode: "easing", icon: "line-chart" }
+  */
 ];
 
 var MainPanel = React.createClass({
@@ -90,7 +92,7 @@ var MainPanel = React.createClass({
       function switchMode () {
         self.setMode(n.mode);
       }
-      return <Icon key={n.mode} name={n.icon} color={!current ? "#999" : "#000"} onClick={switchMode} />;
+      return <Icon title={n.title} key={n.mode} name={n.icon} color={!current ? "#999" : "#000"} onClick={switchMode} />;
     });
 
     return <div className="main-panel" style={boundToStyle(bound)}>

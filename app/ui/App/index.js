@@ -2,7 +2,6 @@ var React = require("react");
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
-var Header = require("../Header");
 var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
@@ -149,46 +148,37 @@ var App = React.createClass({
     if (!diaporama) return <div />;
 
     // Bounds
-    var headerH = 38;
     var viewerW, viewerH;
-    if ((H-headerH) * 2 / 3 < W / 2) {
-      viewerH = Math.round((H-headerH) / 2);
+    if (H * 2 / 3 < W / 2) {
+      viewerH = Math.round(H / 2);
       viewerW = Math.round(viewerH * 4 / 3);
     }
     else {
       viewerW = Math.round(W / 2);
       viewerH = Math.round(viewerW * 3 / 4);
     }
-    var headerBound = {
-      x: 0,
-      y: 0,
-      width: W,
-      height: headerH
-    };
     var viewerBound = {
       x: W-viewerW,
-      y: headerH,
+      y: 0,
       width: viewerW,
       height: viewerH
     };
     var mainPanelBound = {
       x: 0,
-      y: headerH,
+      y: 0,
       width: W-viewerW,
       height: viewerH
     };
     var timelineBound = {
       x: 0,
-      y: headerH+viewerH,
+      y: viewerH,
       width: W,
-      height: H-headerH-viewerH
+      height: H-viewerH
     };
 
     var draggingElement = null;
 
     return <div>
-
-      <Header bound={headerBound} />
 
       <MainPanel
         bound={mainPanelBound}
