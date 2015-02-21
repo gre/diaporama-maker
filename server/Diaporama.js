@@ -91,10 +91,12 @@ Diaporama.prototype = {
     }
 
     var diaporama = this;
-    return json.then(function (json) {
-      diaporama.json = json;
-      return diaporama;
-    });
+    return json
+      .then(function (json) {
+        diaporama.json = json;
+        return diaporama;
+      })
+      .invoke("save");
   },
   save: function () {
     return fs.writeFile(

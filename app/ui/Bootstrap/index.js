@@ -127,10 +127,10 @@ var Bootstrap = React.createClass({
       <h2 className="section"><Icon name="picture-o" />Bootstrap Images</h2>
 
       <BooleanInput title="Pick all images from folder and sub-folders..." value={this.state.pickAllImages} onChange={this.onChangePickAllImages} />
-      {!this.state.pickAllImages ? undefined : <div className="image-properties">
+      <div className="image-properties" style={{ display: this.state.pickAllImages ? "block" : "none" }}>
         <DurationInput title="Duration of each image:" value={this.state.imageSkeleton.duration} onChange={this.onChangeImageDuration} />
         <BooleanInput title="Apply a generic kenburns effect" value={!!this.state.withKenburns} onChange={this.onChangeWithKenburns} />
-        {!this.state.withKenburns ? undefined :
+        <div style={{ display: this.state.withKenburns ? "block" : "none" }}>
           <KenBurnsEditor
             value={this.state.imageSkeleton.kenburns}
             onChange={this.onChangeKenburns}
@@ -139,22 +139,22 @@ var Bootstrap = React.createClass({
             image={images.fromImage.src}
             progress={this.state.progress}
           />
-        }
+        </div>
 
         <BooleanInput title="Initially shuffle images" value={this.state.shuffle} onChange={this.onChangeShuffle} />
 
         <h2 className="section"><Icon name="magic" />Bootstrap Transitions</h2>
 
         <BooleanInput title={"Add a transition between all images: "} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
-        {!this.state.withTransition ? undefined : <div className="transition-properties">
+        <div className="transition-properties" style={{ display: this.state.withTransition ? "block": "none" }}>
           <TransitionCustomizer
             value={this.state.transitionSkeleton}
             onChange={this.onChangeTransitionSkeleton}
             width={width}
           />
-        </div>}
+        </div>
 
-      </div> }
+      </div>
 
       <h2 className="section"><Icon name="cogs" />Bootstrap the diaporama</h2>
 
