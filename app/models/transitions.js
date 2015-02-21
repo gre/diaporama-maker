@@ -1,5 +1,6 @@
 var GlslTransitions = require("glsl-transitions");
 var _ = require("lodash");
+var GlslTransitionFade = require("glsl-transition-fade");
 
 var validator = require("../core/validator");
 
@@ -35,6 +36,7 @@ var collection = filterWithoutCustomSampler2D(GlslTransitions.sort(function (a, 
      console.log("transition '"+ t.name +"' failed to compile.");
   }
 });
+collection.push(_.extend({ types: {} }, GlslTransitionFade));
 
 var byName = _.groupBy(collection, "name");
 
@@ -42,6 +44,6 @@ module.exports = {
   collection: collection,
   byName: function (name) {
     var o = byName[name];
-    return o && o[0];
+    return o && o[0] || GlslTransitionFade;
   }
 };

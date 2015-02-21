@@ -54,8 +54,22 @@ module.exports = function server (diaporama, port) {
       });
   });
 
+  app.post("/diaporama/bootstrap", function (req, res) {
+    diaporama.bootstrap(req.body)
+      .then(function (diaporama) {
+        res.type("json").send(JSON.stringify(diaporama.json));
+      })
+      .fail(function (e) {
+        console.error(e);
+        res.status(400).send(e.message);
+      });
+  });
+
   app.get('/diaporama.json', function(req, res) {
-    res.type("json").send(JSON.stringify(diaporama.json));
+    if (!diaporama.json)
+      res.status(204).send();
+    else
+      res.type("json").send(JSON.stringify(diaporama.json));
   });
 
   app.post('/diaporama.json', function(req, res) {

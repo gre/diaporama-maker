@@ -388,6 +388,7 @@ var KenBurnsEditor = React.createClass({
     var editFrom = this.state.editFrom;
 
     var style = {
+      position: "relative",
       overflow: "hidden",
       backgroundColor: "#000",
       width: fullWidth+"px",

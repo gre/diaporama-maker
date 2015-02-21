@@ -2,7 +2,7 @@ var React = require("react");
 var boundToStyle = require("../../core/boundToStyle");
 var GlslTransitions = require("glsl-transitions");
 
-var DiaporamaElement = require("diaporama-react").lib(React);
+var DiaporamaElement = require("../DiaporamaElement");
 var Icon = require("../Icon");
 
 var Viewer = React.createClass({

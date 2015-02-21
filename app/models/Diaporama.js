@@ -15,6 +15,26 @@ function arraymove(arr, fromIndex, toIndex) {
   arr.splice(toIndex, 0, element);
 }
 
+function assignIds (json) {
+  if (json.timeline) {
+    for (var i = 0; i < json.timeline.length; ++i) {
+      json.timeline[i].id = newId();
+    }
+  }
+  return json;
+}
+
+Diaporama.bootstrap = function (options) {
+  return Qajax({
+    method: "POST",
+    url: "/diaporama/bootstrap",
+    data: options
+  })
+  .then(Qajax.filterSuccess)
+  .then(Qajax.toJSON)
+  .then(assignIds)
+};
+
 Diaporama.save = function (diaporama) {
   var copy = _.cloneDeep(diaporama);
   if (copy.timeline) {
@@ -36,15 +56,14 @@ Diaporama.fetch = function () {
     method: "GET",
     url: "/diaporama.json"
   })
-  .then(Qajax.filterSuccess)
+  .then(Qajax.filterStatus(200))
   .then(Qajax.toJSON)
-  .then(function (json) {
-    if (json.timeline) {
-      for (var i = 0; i < json.timeline.length; ++i) {
-        json.timeline[i].id = newId();
-      }
+  .then(assignIds)
+  .fail(function (maybeXhr) {
+    if (maybeXhr && maybeXhr.status === 204) {
+      return null; // recover No Content
     }
-    return json;
+    throw maybeXhr;
   });
 };
 
@@ -159,6 +178,7 @@ Diaporama.timelineAdd = function (diaporama, file) {
 };
 
 Diaporama.localize = function (diaporama) {
+  if (!diaporama) return null;
   var clone = _.cloneDeep(diaporama);
   clone.timeline.forEach(function (item) {
     item.image = toProjectUrl(item.image);

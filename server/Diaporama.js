@@ -1,4 +1,5 @@
 var path = require("path");
+var _ = require("lodash");
 var Q = require("q");
 var inquirer = require("inquirer");
 var browserify = require("browserify");
@@ -6,7 +7,6 @@ var uglify = require("uglify-stream");
 
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
-var genTimelineElementDefault = require("../common/genTimelineElementDefault");
 
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
@@ -48,66 +48,61 @@ Diaporama.validate = function (json) {
   });
 };
 
-Diaporama.bootstrapDirectory = function (dir) {
-  return prompt([
-    {
-      name: "bootstrap",
-      type: "list",
-      message: "Bootstrap a diaporama",
-      choices: [
-        { name: "using all images of this folder (and sub-folders recursively)", value: "images" },
-        { name: "with an empty diaporama (will customize image per image later in an editor)", value: "empty" }
-      ]
-    },
-    {
-      name: "html",
-      type: "confirm",
-      message: "Do you want to bootstrap an index.html file running the diaporama?"
-    }
-  ])
-    .then(function (answers) {
-      var json = Q.fcall(getInitialJson);
-
-      if (answers.bootstrap === "images") {
-        json = Q.all([ json, findAllFiles(dir, isImage) ])
-        .spread(function (json, images) {
-          json.timeline = images.map(genTimelineElementDefault);
-          return json;
-        });
-      }
-
-      if (answers.html) {
-        console.log("Building browserify build.js bundle ...");
-        var buildjs = Q.defer();
-        var b = browserify();
-        b.add(path.join(__dirname, "../bootstrap/index.js"));
-        b.bundle()
-          .pipe(uglify({ compress: true, mangle: true }))
-          .pipe(fs.createWriteStream(path.join(dir, "build.js")))
-          .on("error", buildjs.reject)
-          .on("finish", buildjs.resolve);
-
-        console.log("Bootstrapping index.html ...");
-        var copyhtml = Q.defer();
-        fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"))
-          .pipe(fs.createWriteStream(path.join(dir, "index.html")))
-          .on("error", copyhtml.reject)
-          .on("finish", copyhtml.resolve);
-
-        json = Q.all([
-          buildjs.promise,
-          copyhtml.promise
-        ]).thenResolve(json);
-      }
-
-      return json;
-    })
-    .then(function (json) {
-      return Diaporama(dir, json);
-    });
+Diaporama.genEmpty = function (dir) {
+  return Diaporama(dir, null);
 };
 
 Diaporama.prototype = {
+  bootstrap: function (options) {
+    var dir = this.dir;
+
+    var json = Q.fcall(getInitialJson);
+
+    if (options.pickAllImages) {
+      json = Q.all([ json, findAllFiles(dir, isImage) ])
+      .spread(function (json, images) {
+        if (options.shuffle) {
+          images.sort(function () {
+            return Math.random() - 0.5;
+          });
+        }
+        json.timeline = images.map(function (image) {
+          return _.defaults({ image: image }, _.cloneDeep(options.timelineSkeleton));
+        });
+        return json;
+      });
+    }
+
+    if (options.withHTML) {
+      console.log("Building browserify build.js bundle ...");
+      var buildjs = Q.defer();
+      var b = browserify();
+      b.add(path.join(__dirname, "../bootstrap/index.js"));
+      b.bundle()
+        .pipe(uglify({ compress: true, mangle: true }))
+        .pipe(fs.createWriteStream(path.join(dir, "build.js")))
+        .on("error", buildjs.reject)
+        .on("finish", buildjs.resolve);
+
+      console.log("Bootstrapping index.html ...");
+      var copyhtml = Q.defer();
+      fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"))
+        .pipe(fs.createWriteStream(path.join(dir, "index.html")))
+        .on("error", copyhtml.reject)
+        .on("finish", copyhtml.resolve);
+
+      json = Q.all([
+        buildjs.promise,
+        copyhtml.promise
+      ]).thenResolve(json);
+    }
+
+    var diaporama = this;
+    return json.then(function (json) {
+      diaporama.json = json;
+      return diaporama;
+    });
+  },
   save: function () {
     return fs.writeFile(
       path.join(this.dir, Diaporama.jsonfile),

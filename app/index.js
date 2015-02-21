@@ -1,4 +1,6 @@
 var React = require("react");
 var App = require("./ui/App");
 
-React.render(<App />, document.body);
+require("./resource/images").ready.then(function () {
+  React.render(<App />, document.body);
+});

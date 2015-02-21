@@ -1,4 +1,5 @@
 var React = require("react");
+var _ = require("lodash");
 
 var Icon = React.createClass({
   render: function () {
@@ -12,7 +13,11 @@ var Icon = React.createClass({
     if (this.props.onClick) {
       style.cursor = "pointer";
     }
-    return <i className={"fa fa-"+this.props.name} style={style} {...this.props}></i>;
+    var props = _.clone(this.props);
+    delete props.style;
+    delete props.color;
+    delete props.size;
+    return <i className={"fa fa-"+this.props.name} style={style} {...props}></i>;
   }
 });
 

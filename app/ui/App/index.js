@@ -5,6 +5,7 @@ var Diaporama = require("../../models/Diaporama");
 var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
+var Bootstrap = require("../Bootstrap");
 
 function getWidth () {
   return Math.max(800, window.innerWidth);
@@ -19,7 +20,7 @@ var App = React.createClass({
 
   componentDidMount: function () {
     window.addEventListener("resize", this.onresize);
-    this.sync();
+    this.sync(Diaporama.fetch());
   },
 
   componentWillUnmount: function () {
@@ -30,7 +31,7 @@ var App = React.createClass({
     return {
       width: getWidth(),
       height: getHeight(),
-      diaporama: null,
+      diaporama: undefined, // undefined means not loaded yet, null means no diaporama init yet
       diaporamaLocalized: null,
       mode: "library",
       modeArg: null,
@@ -38,17 +39,16 @@ var App = React.createClass({
     };
   },
 
-  sync: function () {
+  sync: function (diaporamaPromise) {
     var self = this;
-    Diaporama.fetch()
-      .then(function (diaporama) {
-        self.setState({
-          diaporama: diaporama,
-          diaporamaLocalized: Diaporama.localize(diaporama)
-        });
-      })
-      .done();
+    diaporamaPromise.then(function (diaporama) {
+      self.setState({
+        diaporama: diaporama,
+        diaporamaLocalized: Diaporama.localize(diaporama)
+      });
+    }, function skipErrors(){}).done();
   },
+
   onresize: function () {
     this.resize(getWidth(), getHeight());
   },
@@ -57,6 +57,10 @@ var App = React.createClass({
       width: W,
       height: H
     });
+  },
+
+  bootstrap: function (options) {
+    this.sync(Diaporama.bootstrap(options));
   },
 
   saveDiaporama: function (newDiaporama) {
@@ -145,7 +149,9 @@ var App = React.createClass({
     var modeArg = this.state.modeArg;
     var time = this.state.time;
 
-    if (!diaporama) return <div />;
+    if (diaporama === undefined) return <div>Loading...</div>;
+
+    if (diaporama === null) return <Bootstrap onSubmit={this.bootstrap} />;
 
     // Bounds
     var viewerW, viewerH;

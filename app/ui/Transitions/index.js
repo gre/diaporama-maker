@@ -3,21 +3,14 @@
  */
 
 var React = require("react");
-var Q = require("q");
 var _ = require("lodash");
 var Vignette = require("glsl.io-client/src/ui/Vignette");
 var Icon = require("../Icon");
 var transitions = require("../../models/transitions");
+var images = require("../../resource/images");
 
-var d1 = Q.defer();
-var d2 = Q.defer();
-var fromImage = new window.Image();
-var toImage = new window.Image();
-fromImage.onload = d1.resolve; fromImage.onerror = d1.reject;
-toImage.onload = d2.resolve; toImage.onerror = d2.reject;
-fromImage.src = "/static/images/1.jpg";
-toImage.src = "/static/images/2.jpg";
-var ready = Q.all([ d1.promise, d2.promise ]);
+var fromImage = images.fromImage;
+var toImage = images.toImage;
 
 var vignetteWidthBase = 256;
 var vignetteHeightBase = 200;
@@ -81,6 +74,8 @@ var Transitions = React.createClass({
     var vignetteWidth = Math.min(Math.floor((width-2) / cols - 14), vignetteWidthBase);
     var vignetteHeight = Math.floor(vignetteHeightBase * vignetteWidth/vignetteWidthBase);
 
+    var buttonSize = Math.floor(vignetteHeight / 2);
+
     var coll = _.filter(transitions.collection, function (t) {
       return queryMatch(q, t.owner) || queryMatch(q, t.name);
     });
@@ -101,7 +96,7 @@ var Transitions = React.createClass({
         height={vignetteHeight}>
         <span className="tname">{t.name}</span>
         <div className="actions">
-          <Icon name="level-down" color="#fff" onClick={onClick} style={{ position: "absolute", top: ((vignetteHeight-32)/2)+"px" }} />
+          <Icon name="check-square" color="#fff" size={buttonSize} onClick={onClick} style={{ position: "absolute", left: ((vignetteWidth-buttonSize)/2)+"px", top: ((vignetteHeight-buttonSize)/2)+"px" }} />
         </div>
         <span className="tauthor">by <em>{t.owner}</em></span>
       </Vignette>;
@@ -126,7 +121,5 @@ var Transitions = React.createClass({
   }
 
 });
-
-Transitions.ready = ready;
 
 module.exports = Transitions;

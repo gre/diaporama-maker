@@ -29,9 +29,14 @@ var cwd = process.cwd();
 fs.readdir(cwd)
   .then(function (files) {
     if (!_.contains(files, Diaporama.jsonfile)) {
+
+      return edit(Diaporama.genEmpty(cwd));
+
+      /*
       return Diaporama.bootstrapDirectory(cwd)
         .post("save")
         .then(edit);
+        */
     }
     else {
       return Diaporama.fromDirectory(cwd)
@@ -39,6 +44,4 @@ fs.readdir(cwd)
     }
   })
   .done();
-
-
 

@@ -23,10 +23,12 @@
     "slideshow"
   ],
   "dependencies": {
+    "bezier-easing": "^0.4.4",
     "body-parser": "^1.10.2",
     "browserify": "^8.1.1",
     "express": "^4.11.1",
     "glsl-transition": "^0.6.7",
+    "glsl-transition-fade": "^1.0.0",
     "glsl-transition-validator": "^0.3.4",
     "glsl-transitions": "^2015.1.24",
     "glsl.io-client": "^0.0.4",
@@ -37,6 +39,7 @@
     "q": "^1.1.2",
     "q-io": "^1.11.6",
     "qajax": "^1.0.2",
+    "raf": "^2.0.4",
     "react": "0.12.x",
     "reactify": "^1.0.0",
     "rect-clamp": "0.0.0",

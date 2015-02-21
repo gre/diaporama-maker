@@ -1,3 +1,4 @@
+// FIXME DEPRECATED
 module.exports = function (image) {
   return {
     image: image,
