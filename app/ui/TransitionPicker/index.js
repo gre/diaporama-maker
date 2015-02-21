@@ -4,6 +4,12 @@ var Vignette = require("glsl.io-client/src/ui/Vignette");
 var images = require("../../resource/images");
 var Icon = require("../Icon");
 
+function safeDuration (d) {
+  if (isNaN(d)) return 100;
+  if (d <= 0) return 100;
+  return d;
+}
+
 var TransitionPicker = React.createClass({
 
   propTypes: {
@@ -59,7 +65,7 @@ var TransitionPicker = React.createClass({
     };
 
     var vignette = <Vignette
-      transitionDuration={this.props.transitionDuration}
+      transitionDuration={safeDuration(this.props.transitionDuration)}
       transitionEasing={this.props.transitionEasing}
       autostart={true}
       controlsMode={"none"}
@@ -90,9 +96,7 @@ var TransitionPicker = React.createClass({
       left: bounds[0]+"px",
       top: bounds[1]+"px",
       background: "#fff",
-      padding: "10px",
-      zIndex: 1001,
-      border: "#000 1px solid"
+      zIndex: 1001
     };
 
     return <div style={{ position: "relative" }}>

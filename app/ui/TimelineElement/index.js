@@ -15,7 +15,6 @@ var TimelineElement = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var item = this.props.item;
-    //  <Icon name="crop" color="#FFF" onClick={this.props.onCrop} />
     return <div className="timeline-element" style={translateStyle(x, 0)}>
       <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
       <div className="actions">
@@ -26,11 +25,7 @@ var TimelineElement = React.createClass({
         <Icon name="arrow-circle-o-right" color="#fff" onClick={this.props.onMoveRight} />
       </div>
       <div className="sub-actions">
-        <Icon name="crop" color="#fff" onClick={this.props.onCrop} />
-        <Icon name="line-chart" color="#fff" onClick={this.props.onEasing} />
-        <div>
-          <input type="number" min={500} step={100} max={10000} value={item.duration} onChange={this.onDurationChange} />
-        </div>
+        <Icon name="pencil-square" color="#fff" size={50} onClick={this.props.onSelect} />
       </div>
     </div>;
   }

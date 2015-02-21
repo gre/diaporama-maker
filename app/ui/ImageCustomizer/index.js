@@ -42,10 +42,10 @@ var croppingModes = {
         <BezierEditor
           value={value.kenburns.easing}
           onChange={this.onChangeKenburnsEasing}
-          width={w2}
+          width={w2-10}
           height={h}
           handleRadius={10}
-          padding={[10, Math.max(0, paddingW-10), 20, interPadding+10]}
+          padding={[10, paddingW, 20, interPadding+10]}
         />
         </div>
       </div>;
@@ -97,17 +97,14 @@ var ImageCustomizer = React.createClass({
     var modes = [];
     for (var k in croppingModes) {
       var m = croppingModes[k];
-      var mode = <a href="#" className={k===modeId ? "selected" : ""} onClick={this.selectMode.bind(this, k)}>{m.title}</a>;
+      var mode = <a href="#" className={k===modeId ? "selected" : ""} onClick={this.selectMode.bind(this, k)}><Icon name="crop" />&nbsp;{m.title}</a>;
       modes.push(mode);
     }
 
     var render = croppingModes[modeId].render;
 
     return <div className="image-customizer">
-      <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} />
-      <h3>
-        <Icon name="crop" />&nbsp;Cropping
-      </h3>
+      <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} width={width} />
       <div className="mode-select">{modes}</div>
       {!render ? undefined : render.call(this)}
     </div>;

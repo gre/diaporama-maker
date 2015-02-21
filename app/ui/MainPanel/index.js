@@ -9,98 +9,85 @@ var Transitions = require("../Transitions");
 var KenBurnsEditor = require("../KenBurnsEditor");
 var Settings = require("../Settings");
 var Icon = require("../Icon");
+var TransitionCustomizer = require("../TransitionCustomizer");
+var ImageCustomizer = require("../ImageCustomizer");
 
-var NAV = [
-  //{ mode: "settings", icon: "cogs" },
-  { mode: "library", icon: "folder-open", title: "Library" }
-  /*,
-  { mode: "transitions", icon: "magic" },
-  { mode: "crop", icon: "crop" },
-  { mode: "easing", icon: "line-chart" }
-  */
-];
+var panels = {
+  library: {
+    standalone: true,
+    icon: "folder-open",
+    title: "Library",
+    render: function (innerWidth, innerHeight) {
+      var diaporama = this.props.diaporama;
+      return <Library
+        width={innerWidth}
+        height={innerHeight}
+        usedImages={_.pluck(diaporama.timeline, "image")}
+        onAddToTimeline={this.props.onAddToTimeline}
+      />;
+    }
+  },
+
+  editImage: {
+    icon: "picture-o",
+    title: "Edit Image",
+    render: function (innerWidth, innerHeight, id) {
+      var diaporama = this.props.diaporama;
+      var element = Diaporama.timelineForId(diaporama, id);
+      return <ImageCustomizer
+        value={element}
+        onChange={this.props.onSelectedImageEdit}
+        width={innerWidth}
+      />;
+    }
+  },
+
+  editTransition: {
+    icon: "magic",
+    title: "Edit Transition",
+    render: function (innerWidth, innerHeight, id) {
+      var diaporama = this.props.diaporama;
+      var transitionNext = Diaporama.timelineForId(diaporama, id).transitionNext;
+      return <TransitionCustomizer
+        value={transitionNext}
+        onChange={this.props.onSelectedTransitionEdit}
+        width={innerWidth}
+      />;
+    }
+  }
+
+};
 
 var MainPanel = React.createClass({
 
-  setMode: function (mode, o) {
-    this.props.setMode(mode, o);
-  },
-
-  onAddToTimeline: function (item) {
-    this.props.onAddToTimeline(item);
-  },
-
   render: function () {
     var bound = this.props.bound;
-    var diaporama = this.props.diaporama;
     var mode = this.props.mode;
     var modeArg = this.props.modeArg;
-    var setKenBurns = this.props.setKenBurns;
-    var setEasing = this.props.setEasing;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
     var innerHeight = bound.height;
 
-    var panel = null, el, onChange;
-    // TODO: this should be given by children...
-    // Should I try react-router ?
-    if (mode === "settings") {
-      panel = <Settings diaporama={diaporama} onChange={this.props.onSettingsChange} />;
-    }
-    else if (mode === "library") {
-      panel = <Library width={innerWidth} height={innerHeight} usedImages={_.pluck(diaporama.timeline, "image")} onAddToTimeline={this.onAddToTimeline} />;
-    }
-    else if (mode === "transitions") {
-      panel = <Transitions width={innerWidth} height={innerHeight} onTransitionSelected={this.props.onTransitionSelected} />;
-    }
-    else if (mode === "crop") {
-      el = Diaporama.timelineForId(diaporama, modeArg);
-      onChange = function (value) {
-        setKenBurns(modeArg, value);
-      };
-      panel = <KenBurnsEditor
-        width={innerWidth}
-        height={innerHeight}
-        image={toProjectUrl(el.image)}
-        onChange={onChange}
-        value={el.kenburns}
-      />;
-    }
-    else if (mode === "easing") {
-      el = Diaporama.timelineForId(diaporama, modeArg.id);
-      var easing = modeArg.forTransition ?
-        el.transitionNext && el.transitionNext.easing :
-        el.kenburns && el.kenburns.easing;
-      var paddingW = Math.max(10, (innerWidth - innerHeight) / 2);
-      onChange = function (value) {
-        setEasing(modeArg, value);
-      };
-      panel = <BezierEditor
-        width={innerWidth}
-        height={innerHeight}
-        value={easing}
-        onChange={onChange}
-        handleRadius={10}
-        padding={[10, paddingW, 20, paddingW]}
-      />;
-    }
+    var panel = panels[mode];
+    var panelDom = panel && panel.render && panel.render.call(this, innerWidth, innerHeight, modeArg);
 
-    var self = this;
-    var navs = NAV.map(function (n) {
-      var current = n.mode===mode;
-      function switchMode () {
-        self.setMode(n.mode);
-      }
-      return <Icon title={n.title} key={n.mode} name={n.icon} color={!current ? "#999" : "#000"} onClick={switchMode} />;
-    });
+    var navs = _.map(panels, function (panel, panelMode) {
+      return <Icon
+        title={panel.title}
+        key={panelMode}
+        name={panel.icon}
+        color={panelMode === mode ? "#000" : "#999"}
+        onClick={panel.standalone ? this.props.setMode.bind(this, panelMode) : undefined}
+      />;
+    }, this);
 
     return <div className="main-panel" style={boundToStyle(bound)}>
       <nav style={boundToStyle({ x: 0, y: 0, width: navWidth, height: bound.height })}>
         {navs}
       </nav>
       <div className="body" style={boundToStyle({ x: navWidth, y: 0, width: innerWidth, height: innerHeight })}>
-      {panel}
+      {panelDom}
       </div>
     </div>;
   }

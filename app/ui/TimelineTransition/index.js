@@ -1,8 +1,5 @@
 var React = require("react");
-var _ = require("lodash");
-var UniformsEditor = require("glsl.io-client/src/ui/UniformsEditor");
 var translateStyle = require("../../core/translateStyle");
-var transitions = require("../../models/transitions");
 var Icon = require("../Icon");
 
 var TimelineTransition = React.createClass({
@@ -17,8 +14,6 @@ var TimelineTransition = React.createClass({
     var height = this.props.height;
     var transition = this.props.transition;
 
-    var transitionObject = transitions.byName(transition.name);
-
     var x = xcenter - width/2;
 
     return <div className="timeline-transition" style={translateStyle(x, 0)}>
@@ -27,15 +22,7 @@ var TimelineTransition = React.createClass({
           {transition.name || "fade"}
         </span>
         <div className="sub-actions">
-          <Icon name="line-chart" color="#fff" onClick={this.props.onEasing} />
-        </div>
-        <div>
-          <input type="number" min={100} step={100} max={3000} value={transition.duration} onChange={this.onDurationChange} />
-        </div>
-        <div>
-        {!transitionObject || !_.keys(transitionObject.types).length ? undefined :
-          <UniformsEditor initialUniformValues={_.extend({}, transitionObject.uniforms, transition.uniforms)} uniforms={transitionObject.types} onUniformsChange={this.props.onUniformsChange} />
-        }
+          <Icon name="pencil-square" color="#fff" size={50} onClick={this.props.onSelect} />
         </div>
       </div>
     </div>;

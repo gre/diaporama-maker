@@ -15,7 +15,9 @@ var TransitionCustomizer = React.createClass({
 
   propTypes: {
     value: React.PropTypes.object,
-    onChange: React.PropTypes.func
+    onChange: React.PropTypes.func,
+    width: React.PropTypes.number,
+    maxBezierEditorSize: React.PropTypes.number
   },
 
   getDefaultProps: function () {
@@ -46,7 +48,7 @@ var TransitionCustomizer = React.createClass({
     var transition = transitions.byName(value.name);
     var width = this.props.width;
     var w = width / 2;
-    var h = Math.round(w * 0.75);
+    var h = Math.round(w * 0.6);
     var bezierEditorSize = Math.min(this.props.maxBezierEditorSize, w);
     var paddingW = (w-bezierEditorSize) / 2;
 
@@ -68,7 +70,7 @@ var TransitionCustomizer = React.createClass({
           onChange={this.onTransitionChange}
           width={w}
           height={h}
-          overlayBounds={[ -1, -1, width+2, Math.max(h+2, width*0.6) ]}
+          overlayBounds={[ 0, 0, width, Math.max(h, width*0.6) ]}
           transitionUniforms={uniforms}
           transitionDuration={value.duration}
           transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
@@ -92,15 +94,15 @@ var TransitionCustomizer = React.createClass({
       />
 
       {!_.keys(transition.types).length ? undefined :
-      <div style={{ marginLeft: (w)+"px" }}>
-        <p>
-          <strong style={{ marginLeft: "-70px" }}>Uniforms:</strong>
-        </p>
-        <UniformsEditor
-          initialUniformValues={uniforms}
-          uniforms={transition.types}
-          onUniformsChange={this.onUniformsChange}
-        />
+      <div style={{ position: "relative" }}>
+        <strong style={{ position: "absolute", left: "0px", top: "10px" }}>Uniforms:</strong>
+        <div style={{ marginLeft: (w)+"px" }}>
+          <UniformsEditor
+            initialUniformValues={uniforms}
+            uniforms={transition.types}
+            onUniformsChange={this.onUniformsChange}
+          />
+        </div>
       </div>
       }
     </div>;

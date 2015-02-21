@@ -78,51 +78,9 @@ var App = React.createClass({
     this.saveDiaporama( Diaporama.timelineAdd(this.state.diaporama, file) );
   },
 
-  onElementDurationChange: function (id, duration) {
-    this.saveDiaporama( Diaporama.setDuration(this.state.diaporama, id, duration) );
-  },
-
-  onTransitionDurationChange: function (id, duration) {
-    this.saveDiaporama( Diaporama.setTransitionDuration(this.state.diaporama, id, duration) );
-  },
-
-  onTransitionUniformsChange: function (id, uniforms) {
-    this.saveDiaporama( Diaporama.setTransitionUniforms(this.state.diaporama, id, uniforms) );
-  },
-
-  setKenBurns: function (id, kenburns) {
-    this.saveDiaporama( Diaporama.setKenBurns(this.state.diaporama, id, kenburns) );
-  },
-
-  setEasing: function (args, easing) {
-    this.saveDiaporama( Diaporama.setEasing(this.state.diaporama, args.id, args.forTransition, easing) );
-  },
-
-  onTransitionSelected: function (name) {
-    this.saveDiaporama( Diaporama.setTransition(this.state.diaporama, name) ); // FIXME do it for one particular id
-  },
-
   onTimelineAction: function (action, id) {
     // TODO: we might change the mode on some actions ?
     this.saveDiaporama( Diaporama.timelineAction(this.state.diaporama, action, id) );
-  },
-
-  onSettingsChange: function (id, value) {
-    this.saveDiaporama( Diaporama.applySettings(this.state.diaporama, id, value) );
-  },
-
-  onEasing: function (args) {
-    var el = Diaporama.timelineForId(this.state.diaporama, args.id);
-    if (el) {
-      this.setMode("easing", args);
-    }
-  },
-
-  onCrop: function (id) {
-    var el = Diaporama.timelineForId(this.state.diaporama, id);
-    if (el) {
-      this.setMode("crop", id);
-    }
   },
 
   setMode: function (mode, modeArg) {
@@ -132,12 +90,34 @@ var App = React.createClass({
     });
   },
 
+  onSelectTransition: function (id) {
+    this.setMode("editTransition", id);
+  },
+
+  onSelectImage: function (id) {
+    this.setMode("editImage", id);
+  },
+
   onTimelineHover: function (time) {
     if (this.state.time !== time) {
       this.setState({
         time: time
       });
     }
+  },
+
+  onSelectedImageEdit: function (element) {
+    var id = this.state.modeArg;
+    this.saveDiaporama(
+      Diaporama.setTimelineElement(this.state.diaporama, id, element)
+    );
+  },
+
+  onSelectedTransitionEdit: function (transitionNext) {
+    var id = this.state.modeArg;
+    this.saveDiaporama(
+      Diaporama.setTransition(this.state.diaporama, id, transitionNext)
+    );
   },
 
   render: function () {
@@ -191,13 +171,11 @@ var App = React.createClass({
         mode={mode}
         modeArg={modeArg}
         diaporama={diaporama}
-        onSettingsChange={this.onSettingsChange}
-        onTransitionSelected={this.onTransitionSelected}
         onAddToTimeline={this.addToTimeline}
         setMode={this.setMode}
-        setKenBurns={this.setKenBurns}
-        setEasing={this.setEasing}
-        onDiaporamaEdit={this.onDiaporamaEdit} />
+        onSelectedImageEdit={this.onSelectedImageEdit}
+        onSelectedTransitionEdit={this.onSelectedTransitionEdit}
+      />
 
       <Viewer
         time={time}
@@ -210,11 +188,9 @@ var App = React.createClass({
         bound={timelineBound}
         timeline={diaporama.timeline}
         onAction={this.onTimelineAction}
-        onCrop={this.onCrop}
-        onEasing={this.onEasing}
-        onTransitionDurationChange={this.onTransitionDurationChange}
-        onTransitionUniformsChange={this.onTransitionUniformsChange}
-        onElementDurationChange={this.onElementDurationChange} />
+        onSelectImage={this.onSelectImage}
+        onSelectTransition={this.onSelectTransition}
+      />
 
       {draggingElement}
 

@@ -32,7 +32,7 @@ Diaporama.bootstrap = function (options) {
   })
   .then(Qajax.filterSuccess)
   .then(Qajax.toJSON)
-  .then(assignIds)
+  .then(assignIds);
 };
 
 Diaporama.save = function (diaporama) {
@@ -76,63 +76,17 @@ Diaporama.timelineForId = function (diaporama, id) {
   return diaporama.timeline[Diaporama.timelineIndexOfId(diaporama, id)];
 };
 
-Diaporama.setKenBurns = function (diaporama, id, kenburns) {
+Diaporama.setTimelineElement = function (diaporama, id, element) {
   var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  if (el) {
-    el.kenburns = kenburns;
-  }
+  var index = Diaporama.timelineIndexOfId(clone, id);
+  clone.timeline[index] = element;
   return clone;
 };
 
-Diaporama.setEasing = function (diaporama, id, forTransition, easing) {
+Diaporama.setTransition = function (diaporama, id, transition) {
   var clone = _.cloneDeep(diaporama);
   var el = Diaporama.timelineForId(clone, id);
-  if (el) {
-    if (forTransition) {
-      if (!el.transitionNext) el.transitionNext = {};
-      el.transitionNext.easing = easing;
-    }
-    else {
-      if (!el.kenburns) el.kenburns = {};
-      el.kenburns.easing = easing;
-    }
-  }
-  return clone;
-};
-
-Diaporama.setTransition = function (diaporama, name) {
-  var clone = _.cloneDeep(diaporama);
-  for (var i=0; i<clone.timeline.length; ++i) {
-    var el = clone.timeline[i];
-    if (el.transitionNext && el.transitionNext.name !== name) {
-      delete el.transitionNext.uniforms;
-      el.transitionNext.name = name;
-    }
-  }
-  return clone;
-};
-
-Diaporama.setTransitionDuration = function (diaporama, id, duration) {
-  var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  if (!el.transitionNext) el.transitionNext = {};
-  el.transitionNext.duration = duration;
-  return clone;
-};
-
-Diaporama.setTransitionUniforms = function (diaporama, id, uniforms) {
-  var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  if (!el.transitionNext) el.transitionNext = {};
-  el.transitionNext.uniforms = uniforms;
-  return clone;
-};
-
-Diaporama.setDuration = function (diaporama, id, duration) {
-  var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  el.duration = duration;
+  el.transitionNext = transition;
   return clone;
 };
 
@@ -157,16 +111,6 @@ Diaporama.timelineAction = function (diaporama, action, id) {
     return clone;
   }
   console.log("unknown action "+action);
-};
-
-Diaporama.applySettings = function (diaporama, id, value) {
-  var clone = _.cloneDeep(diaporama);
-  switch (id) {
-    case "loop":
-      clone[id] = value;
-      break;
-  }
-  return clone;
 };
 
 Diaporama.timelineAdd = function (diaporama, file) {
