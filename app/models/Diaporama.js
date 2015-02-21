@@ -1,6 +1,7 @@
 
 var _ = require("lodash");
 var Qajax = require("qajax");
+var transitions = require("./transitions");
 
 var toProjectUrl = require("../core/toProjectUrl");
 var genTimelineElementDefault = require("../../common/genTimelineElementDefault");
@@ -24,6 +25,21 @@ function assignIds (json) {
   return json;
 }
 
+Diaporama.inlineTransitions = function (diaporama) {
+  var copy = _.clone(diaporama);
+  var keys = {};
+  for (var i = 0; i < copy.timeline.length; ++i) {
+    var obj = copy.timeline[i];
+    if (obj.transitionNext && obj.transitionNext.name) {
+      keys[obj.transitionNext.name] = 1;
+    }
+  }
+  copy.transitions = _.map(_.keys(keys), function (name) {
+    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
+  });
+  return copy;
+};
+
 Diaporama.bootstrap = function (options) {
   return Qajax({
     method: "POST",
@@ -36,7 +52,7 @@ Diaporama.bootstrap = function (options) {
 };
 
 Diaporama.save = function (diaporama) {
-  var copy = _.cloneDeep(diaporama);
+  var copy = Diaporama.inlineTransitions(_.cloneDeep(diaporama));
   if (copy.timeline) {
     for (var i = 0; i < copy.timeline.length; ++i) {
       delete copy.timeline[i].id;

@@ -20,7 +20,7 @@ var App = React.createClass({
 
   componentDidMount: function () {
     window.addEventListener("resize", this.onresize);
-    this.sync(Diaporama.fetch());
+    this.sync(Diaporama.fetch()).done();
   },
 
   componentWillUnmount: function () {
@@ -41,17 +41,19 @@ var App = React.createClass({
 
   sync: function (diaporamaPromise) {
     var self = this;
-    diaporamaPromise.then(function (diaporama) {
+    return diaporamaPromise.then(function (diaporama) {
       self.setState({
         diaporama: diaporama,
         diaporamaLocalized: Diaporama.localize(diaporama)
       });
-    }, function skipErrors(){}).done();
+      return diaporama;
+    }, function skipErrors(){});
   },
 
   onresize: function () {
     this.resize(getWidth(), getHeight());
   },
+
   resize: function (W, H) {
     this.setState({
       width: W,
@@ -60,7 +62,8 @@ var App = React.createClass({
   },
 
   bootstrap: function (options) {
-    this.sync(Diaporama.bootstrap(options));
+    this.sync(Diaporama.bootstrap(options))
+      .then(this.saveDiaporama.bind(this));
   },
 
   saveDiaporama: function (newDiaporama) {
