@@ -12,7 +12,8 @@ var fs = require("./fs"); // FIXME use q-io
 
 function getInitialJson () {
   return {
-    generator: { version: package.version, url: package.homepage }
+    generator: { version: package.version, url: package.homepage },
+    timeline: []
   };
 }
 

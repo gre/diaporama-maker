@@ -1,12 +1,10 @@
 var React = require("react");
 var _ = require("lodash");
-var images = require("../../resource/images");
 var GlslTransitions = require("glsl-transitions");
 
 var BooleanInput = require("../BooleanInput");
-var DurationInput = require("../DurationInput");
+var ImageCustomizer = require("../ImageCustomizer");
 var TransitionCustomizer = require("../TransitionCustomizer");
-var KenBurnsEditor = require("../KenBurnsEditor");
 var DiaporamaElement = require("../DiaporamaElement");
 var Icon = require("../Icon");
 
@@ -31,15 +29,10 @@ var Bootstrap = React.createClass({
     return {
       pickAllImages: false,
       shuffle: false,
-      withKenburns: false,
       withTransition: false,
       withHTML: true,
       imageSkeleton: {
-        duration: 2000,
-        kenburns: {
-          from: [1, [0.5, 0.5]],
-          to: [0.75, [0.5, 0.5]]
-        }
+        duration: 2000
       },
       transitionSkeleton: {
         duration: 1000
@@ -49,7 +42,6 @@ var Bootstrap = React.createClass({
   },
   computeTimelineSkeleton: function () {
     var skeleton = _.clone(this.state.imageSkeleton);
-    if (!this.state.withKenburns) delete skeleton.kenburns;
     if (this.state.withTransition) {
       skeleton.transitionNext = _.cloneDeep(this.state.transitionSkeleton);
     }
@@ -82,11 +74,6 @@ var Bootstrap = React.createClass({
       withHTML: value
     });
   },
-  onChangeWithKenburns: function (value) {
-    this.setState({
-      withKenburns: value
-    });
-  },
   onChangeKenburns: function (value) {
     this.setState({
       imageSkeleton: _.defaults({ kenburns: value }, this.state.imageSkeleton)
@@ -102,6 +89,11 @@ var Bootstrap = React.createClass({
       withTransition: value
     });
   },
+  onChangeImageSkeleton: function (value) {
+    this.setState({
+      imageSkeleton: value
+    });
+  },
   onChangeTransitionSkeleton: function (value) {
     this.setState({
       transitionSkeleton: value
@@ -113,6 +105,7 @@ var Bootstrap = React.createClass({
     });
   },
   render: function () {
+    var imageSkeleton = this.state.imageSkeleton;
     var transitionSkeleton = this.state.transitionSkeleton;
     var width = 600;
 
@@ -120,43 +113,59 @@ var Bootstrap = React.createClass({
 
       <h1>Bootstrap a new Diaporama</h1>
       <blockquote>
-        <strong>Welcome to Diaporama Maker Editor!</strong>
+        <strong>Welcome to Diaporama Maker!</strong>
         This first step will help you bootstrapping a first version of the diaporama from the current folder.<br/>
       </blockquote>
 
-      <h2 className="section"><Icon name="picture-o" />Bootstrap Images</h2>
+      <h2 className="section"><Icon name="folder-open" />Bootstrap Library</h2>
+
+      <blockquote>
+        Import images from local directory.
+      </blockquote>
 
       <BooleanInput title="Pick all images from folder and sub-folders..." value={this.state.pickAllImages} onChange={this.onChangePickAllImages} />
-      <div className="image-properties" style={{ display: this.state.pickAllImages ? "block" : "none" }}>
-        <DurationInput title="Duration of each image:" value={this.state.imageSkeleton.duration} onChange={this.onChangeImageDuration} />
-        <BooleanInput title="Apply a generic kenburns effect" value={!!this.state.withKenburns} onChange={this.onChangeWithKenburns} />
-        <div style={{ display: this.state.withKenburns ? "block" : "none" }}>
-          <KenBurnsEditor
-            value={this.state.imageSkeleton.kenburns}
-            onChange={this.onChangeKenburns}
-            width={width}
-            height={width * 0.75}
-            image={images.fromImage.src}
-            progress={this.state.progress}
-          />
+
+      <div style={{ display: this.state.pickAllImages ? "block" : "none" }}>
+
+        <div className="sub-options">
+          <BooleanInput title="Initially shuffle images" value={this.state.shuffle} onChange={this.onChangeShuffle} />
         </div>
 
-        <BooleanInput title="Initially shuffle images" value={this.state.shuffle} onChange={this.onChangeShuffle} />
+        <h2 className="section"><Icon name="picture-o" />Bootstrap Images</h2>
 
-        <h2 className="section"><Icon name="magic" />Bootstrap Transitions</h2>
+        <blockquote>
+          Configure the Image settings for all images.
+        </blockquote>
 
-        <BooleanInput title={"Add a transition between all images: "} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
-        <div className="transition-properties" style={{ display: this.state.withTransition ? "block": "none" }}>
-          <TransitionCustomizer
-            value={this.state.transitionSkeleton}
-            onChange={this.onChangeTransitionSkeleton}
+        <div className="image-properties">
+
+          <ImageCustomizer
+            value={imageSkeleton}
+            onChange={this.onChangeImageSkeleton}
             width={width}
           />
+
+
+          <h2 className="section"><Icon name="magic" />Bootstrap Transitions</h2>
+
+          <blockquote>
+            Configure the Transition settings for all images.
+          </blockquote>
+
+          <BooleanInput title={"Enable transitions between all images:"} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
+          <div className="transition-properties" style={{ display: this.state.withTransition ? "block": "none" }}>
+            <TransitionCustomizer
+              value={transitionSkeleton}
+              onChange={this.onChangeTransitionSkeleton}
+              width={width}
+            />
+          </div>
+
         </div>
 
       </div>
 
-      <h2 className="section"><Icon name="cogs" />Bootstrap the diaporama</h2>
+      <h2 className="section"><Icon name="cogs" />Bootstrap the Diaporama</h2>
 
       { !this.state.pickAllImages ?
         <div className="buttons">
