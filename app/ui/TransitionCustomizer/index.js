@@ -50,6 +50,8 @@ var TransitionCustomizer = React.createClass({
     var bezierEditorSize = Math.min(this.props.maxBezierEditorSize, w);
     var paddingW = (w-bezierEditorSize) / 2;
 
+    var uniforms = _.extend({}, transition.uniforms, value.uniforms);
+
     var previewStyle = {
       fontFamily: "monospace",
       textAlign: "center",
@@ -67,6 +69,7 @@ var TransitionCustomizer = React.createClass({
           width={w}
           height={h}
           overlayBounds={[ -1, -1, width+2, Math.max(h+2, width*0.6) ]}
+          transitionUniforms={uniforms}
           transitionDuration={value.duration}
           transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
         />
@@ -94,7 +97,7 @@ var TransitionCustomizer = React.createClass({
           <strong style={{ marginLeft: "-70px" }}>Uniforms:</strong>
         </p>
         <UniformsEditor
-          initialUniformValues={_.extend({}, value.uniforms, transition.uniforms)}
+          initialUniformValues={uniforms}
           uniforms={transition.types}
           onUniformsChange={this.onUniformsChange}
         />

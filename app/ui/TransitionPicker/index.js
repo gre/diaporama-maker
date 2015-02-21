@@ -14,7 +14,11 @@ var TransitionPicker = React.createClass({
       uniforms: React.PropTypes.object
     }).isRequired,
     onChange: React.PropTypes.func.isRequired,
-    overlayBounds: React.PropTypes.arrayOf(React.PropTypes.number).isRequired
+    overlayBounds: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
+
+    transitionDuration: React.PropTypes.number,
+    transitionEasing: React.PropTypes.func,
+    transitionUniforms: React.PropTypes.object
   },
 
   getInitialState: function () {
@@ -53,13 +57,14 @@ var TransitionPicker = React.createClass({
       top: ((vignetteHeight-vignetteButtonSize)/2)+"px",
       textShadow: "0px 0.5px 1px #000"
     };
+
     var vignette = <Vignette
       transitionDuration={this.props.transitionDuration}
       transitionEasing={this.props.transitionEasing}
       autostart={true}
       controlsMode={"none"}
       glsl={t.glsl}
-      uniforms={t.uniforms}
+      uniforms={this.props.transitionUniforms || t.uniforms}
       images={[ images.fromImage, images.toImage ]}
       width={vignetteWidth}
       height={vignetteHeight}>

@@ -1,7 +1,6 @@
 var path = require("path");
 var _ = require("lodash");
 var Q = require("q");
-var inquirer = require("inquirer");
 var browserify = require("browserify");
 var uglify = require("uglify-stream");
 
@@ -10,12 +9,6 @@ var isImage = require("../common/isImage");
 
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
-
-var prompt = function (questions) {
-  var d = Q.defer();
-  inquirer.prompt(questions, d.resolve);
-  return d.promise;
-};
 
 function getInitialJson () {
   return {
