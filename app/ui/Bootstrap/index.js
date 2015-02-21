@@ -29,7 +29,7 @@ var Bootstrap = React.createClass({
     return {
       pickAllImages: false,
       shuffle: false,
-      withTransition: false,
+      withTransition: true,
       withHTML: true,
       imageSkeleton: {
         duration: 2000
@@ -152,7 +152,7 @@ var Bootstrap = React.createClass({
             Configure the Transition settings for all images.
           </blockquote>
 
-          <BooleanInput title={"Enable transitions between all images:"} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
+          <BooleanInput title={"Enable transitions between all images."} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
           <div className="transition-properties" style={{ display: this.state.withTransition ? "block": "none" }}>
             <TransitionCustomizer
               value={transitionSkeleton}

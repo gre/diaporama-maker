@@ -8,12 +8,15 @@ var DurationInput = require("../DurationInput");
 var KenBurnsEditor = require("../KenBurnsEditor");
 var Icon = require("../Icon");
 
-
-// TODO : kenburns easing
-
 var croppingModes = {
   fitcenter: {
-    title: "Fit Center"
+    title: "Fit Center",
+    render: function () {
+      return <blockquote>
+        <strong>Fit Center</strong> preserves the image ratio regardless of the diaporama resolution.
+        It uses the biggest centered crop of the image.
+      </blockquote>;
+    }
   },
   kenburns: {
     title: "KenBurns effect",
