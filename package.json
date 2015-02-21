@@ -26,6 +26,7 @@
     "bezier-easing": "^0.4.4",
     "body-parser": "^1.10.2",
     "browserify": "^8.1.1",
+    "diaporama": "^1.1.10",
     "diaporama-react": "^1.1.1",
     "express": "^4.11.1",
     "glsl-transition": "^0.6.7",
