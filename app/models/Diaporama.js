@@ -1,9 +1,12 @@
 
+var DiaporamaRecorder = require("diaporama-recorder");
 var _ = require("lodash");
+var Q = require("q");
 var Qajax = require("qajax");
 var transitions = require("./transitions");
 
 var toProjectUrl = require("../core/toProjectUrl");
+var network = require("../core/network");
 var genTimelineElementDefault = require("../../common/genTimelineElementDefault");
 
 var Diaporama = {};
@@ -25,19 +28,44 @@ function assignIds (json) {
   return json;
 }
 
-Diaporama.inlineTransitions = function (diaporama) {
-  var copy = _.clone(diaporama);
-  var keys = {};
-  for (var i = 0; i < copy.timeline.length; ++i) {
-    var obj = copy.timeline[i];
-    if (obj.transitionNext && obj.transitionNext.name) {
-      keys[obj.transitionNext.name] = 1;
-    }
+Diaporama.generateVideo = function (diaporama, options) {
+
+  var recorder = DiaporamaRecorder(Diaporama.localize(diaporama), options);
+  var d = Q.defer();
+  var i = 0;
+
+  var tl = diaporama.timeline;
+  var duration = 0;
+  var lastTransitionDuration = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var el = tl[i];
+    duration += el.duration + (lastTransitionDuration = el.transitionNext.duration);
   }
-  copy.transitions = _.map(_.keys(keys), function (name) {
-    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
-  });
-  return copy;
+  duration -= lastTransitionDuration;
+
+  network.emit("beginvideo", options);
+
+  recorder
+    .record()
+    .subscribe(function (data) {
+      network.emit("videoframe", data);
+      d.notify(i++ / recorder.nbFrames);
+    }, function (error) {
+      network.emit("endvideo", { message: error.message });
+      d.reject(error);
+    }, function () {
+      network.emit("endvideo", null);
+      d.resolve();
+    });
+  return d.promise;
+};
+
+Diaporama.generateHTML = function () {
+  return Qajax({
+    method: "POST",
+    url: "/diaporama/generate/html"
+  })
+  .then(Qajax.filterSuccess);
 };
 
 Diaporama.bootstrap = function (options) {
@@ -58,6 +86,7 @@ Diaporama.save = function (diaporama) {
       delete copy.timeline[i].id;
     }
   }
+  // TODO: replace with using network
   return Qajax({
     method: "POST",
     url: "/diaporama.json",
@@ -183,6 +212,21 @@ Diaporama.timelineAdd = function (diaporama, file) {
   obj.id = newId();
   clone.timeline.push(obj);
   return clone;
+};
+
+Diaporama.inlineTransitions = function (diaporama) {
+  var copy = _.clone(diaporama);
+  var keys = {};
+  for (var i = 0; i < copy.timeline.length; ++i) {
+    var obj = copy.timeline[i];
+    if (obj.transitionNext && obj.transitionNext.name) {
+      keys[obj.transitionNext.name] = 1;
+    }
+  }
+  copy.transitions = _.map(_.keys(keys), function (name) {
+    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
+  });
+  return copy;
 };
 
 Diaporama.localize = function (diaporama) {

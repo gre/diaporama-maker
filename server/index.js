@@ -1,18 +1,24 @@
 var browserify = require('browserify');
-var uglify = require("uglify-stream");
 var stylus = require("stylus");
 var express = require("express");
 var nib = require("nib");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
+var fs = require("fs");
 var path = require('path');
+var streamBuffers = require("stream-buffers");
 var Q = require('q');
-var fs = require('q-io/fs');
+var qfs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
+var Diaporama = require("./Diaporama");
+var Video = require("./Video");
 
 module.exports = function server (diaporama, port) {
   var app = express();
+
+  var http = require('http').Server(app);
+  var io = require('socket.io')(http);
 
   // TODO: ports
   if (!port) port = 9325;
@@ -27,7 +33,7 @@ module.exports = function server (diaporama, port) {
   });
 
   app.get('/index.css', function (req, res) {
-    fs.read(path.join(__dirname, '../app/index.styl'))
+    qfs.read(path.join(__dirname, '../app/index.styl'))
       .then(function (styl) {
         return stylus(styl)
           .set('paths', [
@@ -50,6 +56,16 @@ module.exports = function server (diaporama, port) {
       .then(JSON.stringify)
       .then(function (json) {
         res.type("json").send(json);
+      }, function (e) {
+        console.error(e);
+        res.status(400).send(e.message);
+      });
+  });
+
+  app.post("/diaporama/generate/html", function (req, res) {
+    Diaporama.generateHTML(diaporama.dir)
+      .then(function () {
+        res.status(204).send();
       }, function (e) {
         console.error(e);
         res.status(400).send(e.message);
@@ -90,9 +106,73 @@ module.exports = function server (diaporama, port) {
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 
-  app.listen(port);
-  var url = "http://localhost:"+port;
-  console.log("Listening on "+url);
+  io.sockets.on('connection', function (socket) {
 
-  return Q(url).delay(100);
+    // Handle Video Submission
+    socket.once("beginvideo", function beginvideo (options) {
+      var frame = 0;
+      var video = new Video(options);
+      console.log("Receiving video...");
+
+      var input = new streamBuffers.ReadableStreamBuffer();
+      var output = fs.createWriteStream('output.avi');
+
+      video.feed(input, output);
+
+      function videoframe (dataUrl) {
+        console.log("frame", frame);
+        var buffer = new Buffer(dataUrl.split(",")[1], 'base64');
+        input.put(buffer);
+        // ...
+        frame ++;
+      }
+
+      function success () {
+        console.log("Video received. "+frame+" frames.");
+        input.destroySoon();
+      }
+
+      function failure (message) {
+        console.log("failure to finalize the video: "+message);
+        input.destroySoon();
+        output.end();
+        // Ensure no file remain created.
+      }
+
+      function disconnect () {
+        failure("User disconnected.");
+      }
+
+      function endvideo (err) {
+        if (err) {
+          failure(err.message);
+        }
+        else {
+          success();
+        }
+
+        socket.removeListener("videoframe", videoframe);
+        socket.removeListener("disconnect", disconnect);
+        socket.once("beginvideo", beginvideo);
+      }
+
+      socket.on("videoframe", videoframe);
+      socket.once("disconnect", disconnect);
+      socket.once("endvideo", endvideo);
+    });
+
+
+  });
+
+  var defer = Q.defer();
+  http.listen(port, function (err) {
+    if (err) defer.reject(err);
+    else {
+      var url = "http://localhost:"+port;
+      console.log("Listening on "+url);
+      defer.resolve(url);
+    }
+  });
+
+  return defer.promise;
 };

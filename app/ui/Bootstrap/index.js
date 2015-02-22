@@ -30,7 +30,6 @@ var Bootstrap = React.createClass({
       pickAllImages: false,
       shuffle: false,
       withTransition: true,
-      withHTML: true,
       imageSkeleton: {
         duration: 2000
       },
@@ -59,19 +58,13 @@ var Bootstrap = React.createClass({
     var data = {
       pickAllImages: this.state.pickAllImages,
       shuffle: this.state.shuffle,
-      timelineSkeleton: this.computeTimelineSkeleton(),
-      withHTML: this.state.withHTML
+      timelineSkeleton: this.computeTimelineSkeleton()
     };
     this.props.onSubmit(data);
   },
   onChangePickAllImages: function (value) {
     this.setState({
       pickAllImages: value
-    });
-  },
-  onChangeWithHTML: function (value) {
-    this.setState({
-      withHTML: value
     });
   },
   onChangeKenburns: function (value) {
@@ -178,8 +171,6 @@ var Bootstrap = React.createClass({
 
         :
         <div>
-
-          <BooleanInput title="also Generate a standalone index.html to run the diaporama." value={this.state.withHTML} onChange={this.onChangeWithHTML} />
 
           <div className="settings-preview">
             <h3>Settings Preview</h3>

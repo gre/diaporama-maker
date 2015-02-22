@@ -46,10 +46,33 @@ Diaporama.genEmpty = function (dir) {
   return Diaporama(dir, null);
 };
 
+Diaporama.generateHTML = function (dir) {
+  console.log("Building browserify build.js bundle ...");
+  var buildjs = Q.defer();
+  var b = browserify();
+  b.add(path.join(__dirname, "../bootstrap/index.js"));
+  b.bundle()
+    .pipe(uglify({ compress: true, mangle: true }))
+    .pipe(fs.createWriteStream(path.join(dir, "build.js")))
+    .on("error", buildjs.reject)
+    .on("finish", buildjs.resolve);
+
+  console.log("Bootstrapping index.html ...");
+  var copyhtml = Q.defer();
+  fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"))
+    .pipe(fs.createWriteStream(path.join(dir, "index.html")))
+    .on("error", copyhtml.reject)
+    .on("finish", copyhtml.resolve);
+
+  return Q.all([
+    buildjs.promise,
+    copyhtml.promise
+  ]);
+};
+
 Diaporama.prototype = {
   bootstrap: function (options) {
     var dir = this.dir;
-
     var json = Q.fcall(getInitialJson);
 
     if (options.pickAllImages) {
@@ -65,30 +88,6 @@ Diaporama.prototype = {
         });
         return json;
       });
-    }
-
-    if (options.withHTML) {
-      console.log("Building browserify build.js bundle ...");
-      var buildjs = Q.defer();
-      var b = browserify();
-      b.add(path.join(__dirname, "../bootstrap/index.js"));
-      b.bundle()
-        .pipe(uglify({ compress: true, mangle: true }))
-        .pipe(fs.createWriteStream(path.join(dir, "build.js")))
-        .on("error", buildjs.reject)
-        .on("finish", buildjs.resolve);
-
-      console.log("Bootstrapping index.html ...");
-      var copyhtml = Q.defer();
-      fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"))
-        .pipe(fs.createWriteStream(path.join(dir, "index.html")))
-        .on("error", copyhtml.reject)
-        .on("finish", copyhtml.resolve);
-
-      json = Q.all([
-        buildjs.promise,
-        copyhtml.promise
-      ]).thenResolve(json);
     }
 
     var diaporama = this;

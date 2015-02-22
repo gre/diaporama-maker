@@ -18,7 +18,7 @@ var Thumbnail = React.createClass({
   getDefaultProps: function () {
     return {
       zoom: 1,
-      center: [ 0.5, 0.5]
+      center: [ 0.5, 0.5 ]
     };
   },
 
@@ -37,7 +37,7 @@ var Thumbnail = React.createClass({
 
     var rect = rectCrop(props.zoom, props.center)(props, this.img);
     var imgStyle = scaleTranslateStyle(
-      [ props.width / rect[2], props.height / rect[3] ],
+      props.width / rect[2],
       [ -rect[0], -rect[1] ]);
 
     return <div className="thumbnail" style={style}>

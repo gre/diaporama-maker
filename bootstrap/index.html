@@ -21,7 +21,7 @@
 Qajax.getJSON("./diaporama.json").then(function (json) {
   var div = document.getElementById("diaporama");
 
-  var diaporama = Diaporama(div, json, {
+  diaporama = Diaporama(div, json, {
     width: window.innerWidth,
     height: window.innerHeight,
     autoplay: true,

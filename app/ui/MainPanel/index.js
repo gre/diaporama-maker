@@ -7,8 +7,24 @@ var Library = require("../Library");
 var Icon = require("../Icon");
 var TransitionCustomizer = require("../TransitionCustomizer");
 var ImageCustomizer = require("../ImageCustomizer");
+var GenerateScreen = require("../GenerateScreen");
 
 var panels = {
+
+  generate: {
+    standalone: true,
+    icon: "cogs",
+    title: "Save / Generate",
+    render: function (innerWidth, innerHeight) {
+      var diaporama = this.props.diaporama;
+      return <GenerateScreen
+        width={innerWidth}
+        height={innerHeight}
+        diaporama={diaporama}
+      />;
+    }
+  },
+
   library: {
     standalone: true,
     icon: "folder-open",

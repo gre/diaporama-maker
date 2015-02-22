@@ -29,6 +29,7 @@
     "diaporama": "^1.1.10",
     "diaporama-react": "^1.1.1",
     "express": "^4.11.1",
+    "fluent-ffmpeg": "^2.0.0-rc3",
     "glsl-transition": "^0.6.7",
     "glsl-transition-fade": "^1.0.0",
     "glsl-transition-validator": "^0.3.4",
@@ -48,6 +49,9 @@
     "rect-crop": "0.0.0",
     "rect-mix": "0.0.0",
     "serve-static": "^1.8.1",
+    "socket.io": "^1.3.4",
+    "socket.io-client": "^1.3.4",
+    "stream-buffers": "^1.1.0",
     "stylus": "^0.49.3",
     "uglify-stream": "^1.1.0",
     "vendor-prefix": "^0.1.0"
