@@ -1,13 +1,9 @@
 var React = require("react");
 var _ = require("lodash");
-var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
 var Diaporama = require("../../models/Diaporama");
 var boundToStyle = require("../../core/boundToStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
 var Library = require("../Library");
-var Transitions = require("../Transitions");
-var KenBurnsEditor = require("../KenBurnsEditor");
-var Settings = require("../Settings");
 var Icon = require("../Icon");
 var TransitionCustomizer = require("../TransitionCustomizer");
 var ImageCustomizer = require("../ImageCustomizer");
@@ -47,11 +43,12 @@ var panels = {
     title: "Edit Transition",
     render: function (innerWidth, innerHeight, id) {
       var diaporama = this.props.diaporama;
-      var transitionNext = Diaporama.timelineForId(diaporama, id).transitionNext;
+      var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
       return <TransitionCustomizer
-        value={transitionNext}
+        value={transitionInfos.transitionNext}
         onChange={this.props.onSelectedTransitionEdit}
         width={innerWidth}
+        images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
       />;
     }
   }

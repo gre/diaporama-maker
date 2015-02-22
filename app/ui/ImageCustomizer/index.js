@@ -1,12 +1,12 @@
 var React = require("react");
 var _ = require("lodash");
 
-var BezierEasing = require("bezier-easing");
 var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
 var images = require("../../resource/images");
 var DurationInput = require("../DurationInput");
 var KenBurnsEditor = require("../KenBurnsEditor");
 var Icon = require("../Icon");
+var toProjectUrl = require("../../core/toProjectUrl");
 
 var croppingModes = {
   fitcenter: {
@@ -23,6 +23,7 @@ var croppingModes = {
     render: function () {
       var value = this.props.value;
       var width = this.props.width;
+      var image = value.image && toProjectUrl(value.image) || images.fromImage.src;
       var interPadding = 10;
       var w1 = Math.floor(width * 0.6);
       var w2 = width - w1;
@@ -35,7 +36,7 @@ var croppingModes = {
           onChange={this.onChangeKenburns}
           width={w1-interPadding}
           height={h}
-          image={images.fromImage.src}
+          image={image}
         />
         </div>
         <div style={{ display: "inline-block" }}>

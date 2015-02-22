@@ -1,4 +1,6 @@
 var React = require("react");
+var Q = require("q");
+var Qimage = require("qimage");
 var Transitions = require("../Transitions");
 var Vignette = require("glsl.io-client/src/ui/Vignette");
 var images = require("../../resource/images");
@@ -24,7 +26,20 @@ var TransitionPicker = React.createClass({
 
     transitionDuration: React.PropTypes.number,
     transitionEasing: React.PropTypes.func,
-    transitionUniforms: React.PropTypes.object
+    transitionUniforms: React.PropTypes.object,
+    images: React.PropTypes.arrayOf(React.PropTypes.string)
+  },
+
+  componentWillMount: function () {
+    this.images = [ images.fromImage, images.toImage ];
+    if (this.props.images) {
+      Q .all(this.props.images.map(Qimage.anonymously))
+        .then(function (images) {
+          this.images = images;
+          this.forceUpdate();
+        }.bind(this))
+        .done();
+    }
   },
 
   getInitialState: function () {
@@ -71,7 +86,7 @@ var TransitionPicker = React.createClass({
       controlsMode={"none"}
       glsl={t.glsl}
       uniforms={this.props.transitionUniforms || t.uniforms}
-      images={[ images.fromImage, images.toImage ]}
+      images={this.images}
       width={vignetteWidth}
       height={vignetteHeight}>
       <span className="tname">{t.name}</span>

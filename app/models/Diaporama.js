@@ -92,6 +92,18 @@ Diaporama.timelineForId = function (diaporama, id) {
   return diaporama.timeline[Diaporama.timelineIndexOfId(diaporama, id)];
 };
 
+Diaporama.timelineTransitionForId = function (diaporama, id) {
+  var i = Diaporama.timelineIndexOfId(diaporama, id);
+  var from = diaporama.timeline[i];
+  var to = diaporama.timeline[i+1 >= diaporama.timeline.length ? 0 : i+1];
+  return {
+    from: from,
+    transitionNext: from.transitionNext,
+    to: to
+  };
+};
+
+
 Diaporama.setTimelineElement = function (diaporama, id, element) {
   var clone = _.cloneDeep(diaporama);
   var index = Diaporama.timelineIndexOfId(clone, id);
