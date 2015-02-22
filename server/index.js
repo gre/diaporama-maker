@@ -1,4 +1,5 @@
 var browserify = require('browserify');
+var uglify = require("uglify-stream");
 var stylus = require("stylus");
 var express = require("express");
 var nib = require("nib");
@@ -13,6 +14,7 @@ var isImage = require("../common/isImage");
 module.exports = function server (diaporama, port) {
   var app = express();
 
+  // TODO: ports
   if (!port) port = 9325;
 
   app.use(bodyParser.json());

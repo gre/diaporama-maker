@@ -49,6 +49,7 @@ var panels = {
         onChange={this.props.onSelectedTransitionEdit}
         width={innerWidth}
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
+        animated={false}
       />;
     }
   }

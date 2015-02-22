@@ -83,9 +83,45 @@ Diaporama.fetch = function () {
   });
 };
 
+// TODO: these should be made more efficient
+
 Diaporama.timelineIndexOfId = function (diaporama, id) {
-  // TODO: this should be made more efficient
-  return _.findIndex(diaporama.timeline, function (item) { return item.id === id; });
+  var tl = diaporama.timeline;
+  for (var i=0; i < tl.length; ++i) {
+    if (tl[i].id === id)
+      return i;
+  }
+  return -1;
+};
+
+Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
+  var tl = diaporama.timeline;
+  var t = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var el = tl[i];
+    t += el.duration;
+    if (el.id === id) {
+      return {
+        start: t,
+        end: t + el.transitionNext.duration
+      };
+    }
+    t += el.transitionNext.duration;
+  }
+};
+Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
+  var tl = diaporama.timeline;
+  var t = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var el = tl[i];
+    if (el.id === id) {
+      return {
+        start: t,
+        end: t + el.duration
+      };
+    }
+    t += el.duration + el.transitionNext.duration;
+  }
 };
 
 Diaporama.timelineForId = function (diaporama, id) {

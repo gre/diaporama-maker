@@ -18,13 +18,15 @@ var TransitionCustomizer = React.createClass({
     onChange: React.PropTypes.func,
     width: React.PropTypes.number,
     maxBezierEditorSize: React.PropTypes.number,
-    images: React.PropTypes.arrayOf(React.PropTypes.string)
+    images: React.PropTypes.arrayOf(React.PropTypes.string),
+    animated: React.PropTypes.bool
   },
 
   getDefaultProps: function () {
     return {
       width: 300,
-      maxBezierEditorSize: 200
+      maxBezierEditorSize: 200,
+      animated: true
     };
   },
 
@@ -76,6 +78,7 @@ var TransitionCustomizer = React.createClass({
           transitionDuration={value.duration}
           transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
           images={this.props.images}
+          animated={this.props.animated}
         />
       </div>
       <div style={{ display: "inline-block" }}>

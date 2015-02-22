@@ -1,4 +1,5 @@
 var React = require("react");
+var raf = require("raf");
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
@@ -21,10 +22,12 @@ var App = React.createClass({
   componentDidMount: function () {
     window.addEventListener("resize", this.onresize);
     this.sync(Diaporama.fetch()).done();
+    this.startMainLoop();
   },
 
   componentWillUnmount: function () {
     window.removeEventListener("resize", this.onresize);
+    this.stopMainLoop();
   },
 
   getInitialState: function () {
@@ -102,11 +105,51 @@ var App = React.createClass({
   },
 
   onTimelineHover: function (time) {
+    if (this.state.mode === "editTransition" || this.state.mode === "editImage")
+      return;
     if (this.state.time !== time) {
       this.setState({
         time: time
       });
     }
+  },
+
+  stopMainLoop: function () {
+    this._stop = true;
+  },
+
+  startMainLoop: function () {
+    var self = this;
+    var last;
+    var p = 0;
+    (function loop (t) {
+      if (self._stop) return;
+      raf(loop);
+      if (!last) last = t;
+      var dt = t - last;
+      last = t;
+      var mode = self.state.mode;
+      var modeArg = self.state.modeArg;
+      var diaporama = self.state.diaporama;
+      if (mode === "editTransition") {
+        var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, modeArg);
+        var duration = interval.end - interval.start;
+        p = (p + dt / duration) % 1;
+        var t = interval.start + duration * p;
+        self.setState({
+          time: t
+        });
+      }
+      else if (mode === "editImage") {
+        var interval = Diaporama.timelineTimeIntervalForId(diaporama, modeArg);
+        var duration = interval.end - interval.start;
+        p = ((duration * p + dt) / duration) % 1;
+        var t = interval.start + duration * p;
+        self.setState({
+          time: t
+        });
+      }
+    }());
   },
 
   onSelectedImageEdit: function (element) {
