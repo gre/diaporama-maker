@@ -208,8 +208,6 @@ var App = React.createClass({
       height: H-viewerH
     };
 
-    var draggingElement = null;
-
     return <div>
 
       <MainPanel
@@ -237,8 +235,6 @@ var App = React.createClass({
         onSelectImage={this.onSelectImage}
         onSelectTransition={this.onSelectTransition}
       />
-
-      {draggingElement}
 
     </div>;
   }

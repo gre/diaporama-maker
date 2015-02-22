@@ -76,7 +76,7 @@ var MainPanel = React.createClass({
         key={panelMode}
         name={panel.icon}
         color={panelMode === mode ? "#000" : "#999"}
-        onClick={panel.standalone ? this.props.setMode.bind(this, panelMode) : undefined}
+        onClick={panel.standalone ? this.props.setMode.bind(null, panelMode) : undefined}
       />;
     }, this);
 

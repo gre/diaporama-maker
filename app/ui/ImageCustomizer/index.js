@@ -30,7 +30,7 @@ var croppingModes = {
       var h = Math.min(300, w2);
       var paddingW = (w2 - h) / 2;
       return <div>
-        <div style={{ display: "inline-block", marginRight: interPadding+"px" }}>
+        <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
         <KenBurnsEditor
           value={value.kenburns}
           onChange={this.onChangeKenburns}
@@ -39,7 +39,7 @@ var croppingModes = {
           image={image}
         />
         </div>
-        <div style={{ display: "inline-block" }}>
+        <div key="r" style={{ display: "inline-block" }}>
         <BezierEditor
           value={value.kenburns.easing}
           onChange={this.onChangeKenburnsEasing}
@@ -98,7 +98,7 @@ var ImageCustomizer = React.createClass({
     var modes = [];
     for (var k in croppingModes) {
       var m = croppingModes[k];
-      var mode = <a href="#" className={k===modeId ? "selected" : ""} onClick={this.selectMode.bind(this, k)}><Icon name="crop" />&nbsp;{m.title}</a>;
+      var mode = <a key={k} href="#" className={k===modeId ? "selected" : ""} onClick={this.selectMode.bind(this, k)}><Icon name="crop" />&nbsp;{m.title}</a>;
       modes.push(mode);
     }
 
