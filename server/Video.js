@@ -1,20 +1,20 @@
 var ffmpeg = require("fluent-ffmpeg");
+var winston = require('winston');
 
 function Video (options) {
   this.options = options;
 }
 
 Video.prototype = {
-  feed: function (imageStream, outStream) {
+  feed: function (imageStream) {
     var opts = this.options;
     return ffmpeg({
-      logger: console
+      logger: winston
     })
       .input(imageStream)
       .inputFormat("image2pipe")
       .fps(opts.fps)
-      .videoCodec('libx264')
-      .writeToStream(outStream, { end: true });
+      .videoCodec('libx264');
   }
 };
 

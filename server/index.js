@@ -117,8 +117,6 @@ module.exports = function server (diaporama, port) {
       var input = new streamBuffers.ReadableStreamBuffer();
       var output = fs.createWriteStream('output.avi');
 
-      video.feed(input, output);
-
       function videoframe (dataUrl) {
         console.log("frame", frame);
         var buffer = new Buffer(dataUrl.split(",")[1], 'base64');
@@ -159,6 +157,17 @@ module.exports = function server (diaporama, port) {
       socket.on("videoframe", videoframe);
       socket.once("disconnect", disconnect);
       socket.once("endvideo", endvideo);
+
+      video.feed(input)
+        .on('error', function(err) {
+          console.log('An error occurred: ' + err.message);
+          socket.emit("videoerror", err.message);
+        })
+        .on('end', function() {
+          console.log('Processing finished !');
+          socket.emit("videoend");
+        })
+        .pipe(output, { end: true });
     });
 
 

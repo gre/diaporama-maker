@@ -45,6 +45,10 @@ Diaporama.generateVideo = function (diaporama, options) {
 
   network.emit("beginvideo", options);
 
+  network.once("videoerror", function (msg) {
+    recorder.abort(new Error(msg));
+  });
+
   recorder
     .record()
     .subscribe(function (data) {
