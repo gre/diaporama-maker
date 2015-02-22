@@ -402,11 +402,12 @@ var KenBurnsEditor = React.createClass({
 
     var w = this.innerRect[2];
     var h = this.innerRect[3];
+    var ratioRect = { width: fullWidth, height: fullHeight };
     var rect = { width: w, height: h };
     var viewport = [0,0,w,h];
 
-    var fromRect = rectRound(rectClamp(rectCrop.apply(null, value.from)(rect, rect), viewport));
-    var toRect = rectRound(rectClamp(rectCrop.apply(null, value.to)(rect, rect), viewport));
+    var fromRect = rectRound(rectClamp(rectCrop.apply(null, value.from)(ratioRect, rect), viewport));
+    var toRect = rectRound(rectClamp(rectCrop.apply(null, value.to)(ratioRect, rect), viewport));
     var progressRect;
     if (progress) {
       var pRect = rectMix(fromRect, toRect, progress);
