@@ -17,11 +17,11 @@ Video.prototype = {
     return ffmpeg({
       logger: logger
     })
-      .fps(opts.fps)
       .input(imageStream)
       .inputFormat("image2pipe")
-      .addInputOption('-c:v', 'mjpeg')
-      .outputFormat("avi");
+      .addInputOption('-vcodec', 'mjpeg')
+      .outputFormat("avi")
+      .fps(opts.fps);
   }
 };
 

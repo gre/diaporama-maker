@@ -117,15 +117,6 @@ module.exports = function server (diaporama, port) {
       var input = new streamBuffers.ReadableStreamBuffer();
       var output = fs.createWriteStream('output.avi');
 
-      function videoframe (dataUrl) {
-        console.log("frame", frame);
-        var buffer = new Buffer(dataUrl.split(",")[1], 'base64');
-        input.put(buffer);
-
-        // ...
-        frame ++;
-      }
-
       function success () {
         console.log("Video received. "+frame+" frames.");
         input.destroy();
@@ -136,6 +127,21 @@ module.exports = function server (diaporama, port) {
         input.destroy();
         // output.end();
         // TODO Ensure no file remain created.
+      }
+
+      function videoframe (dataUrl) {
+        console.log("frame", frame);
+        var split = dataUrl.split(",");
+        if (split[0] !== "data:image/jpeg;base64") {
+          failure(new Error("Only JPEG is supported."));
+        }
+        else {
+          var buffer = new Buffer(split[1], 'base64');
+          input.put(buffer);
+
+          // ...
+          frame ++;
+        }
       }
 
       function disconnect () {
