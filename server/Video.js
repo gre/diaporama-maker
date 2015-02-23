@@ -1,5 +1,11 @@
 var ffmpeg = require("fluent-ffmpeg");
-var winston = require('winston');
+
+var logger = {
+  debug: console.log,
+  info: console.info,
+  warn: console.warn,
+  error: console.error
+};
 
 function Video (options) {
   this.options = options;
@@ -9,12 +15,13 @@ Video.prototype = {
   feed: function (imageStream) {
     var opts = this.options;
     return ffmpeg({
-      logger: winston
+      logger: logger
     })
+      .fps(opts.fps)
       .input(imageStream)
       .inputFormat("image2pipe")
-      .fps(opts.fps)
-      .videoCodec('libx264');
+      .addInputOption('-c:v', 'mjpeg')
+      .outputFormat("avi");
   }
 };
 

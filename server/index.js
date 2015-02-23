@@ -121,20 +121,21 @@ module.exports = function server (diaporama, port) {
         console.log("frame", frame);
         var buffer = new Buffer(dataUrl.split(",")[1], 'base64');
         input.put(buffer);
+
         // ...
         frame ++;
       }
 
       function success () {
         console.log("Video received. "+frame+" frames.");
-        input.destroySoon();
+        input.destroy();
       }
 
       function failure (message) {
         console.log("failure to finalize the video: "+message);
-        input.destroySoon();
-        output.end();
-        // Ensure no file remain created.
+        input.destroy();
+        // output.end();
+        // TODO Ensure no file remain created.
       }
 
       function disconnect () {
@@ -167,7 +168,7 @@ module.exports = function server (diaporama, port) {
           console.log('Processing finished !');
           socket.emit("videoend");
         })
-        .pipe(output, { end: true });
+        .output(output, { end: true });
     });
 
 

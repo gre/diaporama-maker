@@ -54,7 +54,6 @@
     "stream-buffers": "^1.1.0",
     "stylus": "^0.49.3",
     "uglify-stream": "^1.1.0",
-    "vendor-prefix": "^0.1.0",
-    "winston": "^0.9.0"
+    "vendor-prefix": "^0.1.0"
   }
 }

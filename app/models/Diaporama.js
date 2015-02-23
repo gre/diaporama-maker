@@ -52,12 +52,14 @@ Diaporama.generateVideo = function (diaporama, options) {
   recorder
     .record()
     .subscribe(function (data) {
+      console.log(i);
       network.emit("videoframe", data);
       d.notify(i++ / recorder.nbFrames);
     }, function (error) {
       network.emit("endvideo", { message: error.message });
       d.reject(error);
     }, function () {
+      console.log("DONE");
       network.emit("endvideo", null);
       d.resolve();
     });

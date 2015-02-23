@@ -27,7 +27,7 @@ var Bootstrap = React.createClass({
   },
   getInitialState: function () {
     return {
-      pickAllImages: false,
+      pickAllImages: true,
       shuffle: false,
       withTransition: true,
       imageSkeleton: {
