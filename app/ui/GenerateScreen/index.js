@@ -9,9 +9,7 @@ var GenerateScreen = React.createClass({
 
   generateVideo: function () {
     Diaporama.generateVideo(this.props.diaporama, {
-      width: 800,
-      height: 600,
-      fps: 25
+      videoFormat: "matroska"
     });
   },
 

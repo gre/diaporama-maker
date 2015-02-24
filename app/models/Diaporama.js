@@ -31,7 +31,7 @@ function assignIds (json) {
 
 
 Diaporama.generateVideo = function (diaporama, options) {
-  recorderClient(Diaporama.localize(diaporama), options);
+  recorderClient.generateVideo(Diaporama.localize(diaporama), options);
 };
 
 Diaporama.generateHTML = function () {
