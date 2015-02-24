@@ -1,5 +1,4 @@
 
-var DiaporamaRecorder = require("diaporama-recorder");
 var _ = require("lodash");
 var Q = require("q");
 var Qajax = require("qajax");
@@ -8,6 +7,8 @@ var transitions = require("./transitions");
 var toProjectUrl = require("../core/toProjectUrl");
 var network = require("../core/network");
 var genTimelineElementDefault = require("../../common/genTimelineElementDefault");
+
+var recorderClient = require("diaporama-recorder/client")(network);
 
 var Diaporama = {};
 
@@ -28,42 +29,9 @@ function assignIds (json) {
   return json;
 }
 
+
 Diaporama.generateVideo = function (diaporama, options) {
-
-  var recorder = DiaporamaRecorder(Diaporama.localize(diaporama), options);
-  var d = Q.defer();
-  var i = 0;
-
-  var tl = diaporama.timeline;
-  var duration = 0;
-  var lastTransitionDuration = 0;
-  for (var i=0; i < tl.length; ++i) {
-    var el = tl[i];
-    duration += el.duration + (lastTransitionDuration = el.transitionNext.duration);
-  }
-  duration -= lastTransitionDuration;
-
-  network.emit("beginvideo", options);
-
-  network.once("videoerror", function (msg) {
-    recorder.abort(new Error(msg));
-  });
-
-  recorder
-    .record()
-    .subscribe(function (data) {
-      console.log(i);
-      network.emit("videoframe", data);
-      d.notify(i++ / recorder.nbFrames);
-    }, function (error) {
-      network.emit("endvideo", { message: error.message });
-      d.reject(error);
-    }, function () {
-      console.log("DONE");
-      network.emit("endvideo", null);
-      d.resolve();
-    });
-  return d.promise;
+  recorderClient(Diaporama.localize(diaporama), options);
 };
 
 Diaporama.generateHTML = function () {

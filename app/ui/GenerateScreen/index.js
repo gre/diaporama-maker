@@ -12,7 +12,7 @@ var GenerateScreen = React.createClass({
       width: 800,
       height: 600,
       fps: 25
-    }).done();
+    });
   },
 
   render: function () {

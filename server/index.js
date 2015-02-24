@@ -1,4 +1,5 @@
 var browserify = require('browserify');
+var _ = require("lodash");
 var stylus = require("stylus");
 var express = require("express");
 var nib = require("nib");
@@ -6,13 +7,12 @@ var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var fs = require("fs");
 var path = require('path');
-var streamBuffers = require("stream-buffers");
 var Q = require('q');
 var qfs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
-var Video = require("./Video");
+var DiaporamaRecorderServer = require("diaporama-recorder/server");
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -106,79 +106,7 @@ module.exports = function server (diaporama, port) {
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 
-  io.sockets.on('connection', function (socket) {
-
-    // Handle Video Submission
-    socket.once("beginvideo", function beginvideo (options) {
-      var frame = 0;
-      var video = new Video(options);
-      console.log("Receiving video...");
-
-      var input = new streamBuffers.ReadableStreamBuffer();
-      var output = fs.createWriteStream('output.avi');
-
-      function success () {
-        console.log("Video received. "+frame+" frames.");
-        input.destroy();
-      }
-
-      function failure (message) {
-        console.log("failure to finalize the video: "+message);
-        input.destroy();
-        // output.end();
-        // TODO Ensure no file remain created.
-      }
-
-      function videoframe (dataUrl) {
-        console.log("frame", frame);
-        var split = dataUrl.split(",");
-        if (split[0] !== "data:image/jpeg;base64") {
-          failure(new Error("Only JPEG is supported."));
-        }
-        else {
-          var buffer = new Buffer(split[1], 'base64');
-          input.put(buffer);
-
-          // ...
-          frame ++;
-        }
-      }
-
-      function disconnect () {
-        failure("User disconnected.");
-      }
-
-      function endvideo (err) {
-        if (err) {
-          failure(err.message);
-        }
-        else {
-          success();
-        }
-
-        socket.removeListener("videoframe", videoframe);
-        socket.removeListener("disconnect", disconnect);
-        socket.once("beginvideo", beginvideo);
-      }
-
-      socket.on("videoframe", videoframe);
-      socket.once("disconnect", disconnect);
-      socket.once("endvideo", endvideo);
-
-      video.feed(input)
-        .on('error', function(err) {
-          console.log('An error occurred: ' + err.message);
-          socket.emit("videoerror", err.message);
-        })
-        .on('end', function() {
-          console.log('Processing finished !');
-          socket.emit("videoend");
-        })
-        .output(output, { end: true });
-    });
-
-
-  });
+  DiaporamaRecorderServer(io);
 
   var defer = Q.defer();
   http.listen(port, function (err) {
