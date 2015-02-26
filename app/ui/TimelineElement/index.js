@@ -16,7 +16,7 @@ var TimelineElement = React.createClass({
     var height = this.props.height;
     var item = this.props.item;
     return <div className="timeline-element" style={translateStyle(x, 0)}>
-      <Thumbnail image={toProjectUrl(item.image, toProjectUrl.Quality.THUMBNAIL)} width={width} height={height} />
+      <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
       <div className="actions">
         <Icon name="arrow-circle-o-left" color="#fff" onClick={this.props.onMoveLeft} />
         &nbsp;

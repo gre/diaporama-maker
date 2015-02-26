@@ -18,13 +18,13 @@ function filesToItems (files) {
     if (isImage(file))
       return {
         file: file,
-        url: toProjectUrl(file, toProjectUrl.Quality.THUMBNAIL),
+        url: toProjectUrl(file),
         type: "image"
       };
     else
       return {
         file: file,
-        url: toProjectUrl(file, toProjectUrl.Quality.THUMBNAIL),
+        url: toProjectUrl(file),
         type: ""
       };
   });

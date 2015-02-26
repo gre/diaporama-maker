@@ -1,6 +1,5 @@
 
 var _ = require("lodash");
-var Q = require("q");
 var Qajax = require("qajax");
 var transitions = require("./transitions");
 

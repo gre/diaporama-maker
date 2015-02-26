@@ -1,12 +1,8 @@
+var isImage = require("../../common/isImage");
 
-function toProjectUrl (url, format) {
-  // TODO: use smaller images to improve performances
-  return "/preview/"+url+(!format ? "" : "?format="+format);
+function toProjectUrl (url) {
+  return "/preview/"+url+(!isImage(url) ? "" : "?format=thumbnail");
 }
-
-toProjectUrl.Quality = {
-  THUMBNAIL: "thumbnail"
-};
 
 module.exports = toProjectUrl;
 
