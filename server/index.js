@@ -12,6 +12,7 @@ var qfs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
+var Thumbnail = require("./Thumbnail");
 var DiaporamaRecorderServer = require("diaporama-recorder/server");
 
 module.exports = function server (diaporama, port) {
@@ -102,7 +103,7 @@ module.exports = function server (diaporama, port) {
       .done();
   });
 
-  app.use("/preview", serverStatic('.'));
+  Thumbnail(app, io, "preview", ".");
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 

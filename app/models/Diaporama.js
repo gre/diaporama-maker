@@ -29,6 +29,9 @@ function assignIds (json) {
   return json;
 }
 
+recorderClient.getFormats().subscribe(function (formats) {
+  console.log(formats);
+});
 
 Diaporama.generateVideo = function (diaporama, options) {
   recorderClient.generateVideo(Diaporama.localize(diaporama), options);
