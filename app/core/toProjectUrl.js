@@ -1,10 +1,24 @@
 var isImage = require("../../common/isImage");
 
-function toProjectUrl (url) {
-  return "/preview/"+url+(!isImage(url) ? "" : "?format=thumbnail");
+var _loaded = {};
+function image (url) {
+  if (_loaded[url]) return _loaded[url];
+  return (_loaded[url] = Qimage(url));
 }
 
-module.exports = toProjectUrl;
+function toProjectUrl (url) {
+  return "/preview/"+url;
+}
+
+function toProjectThumbnailUrl (url) {
+  var projUrl = toProjectUrl(url);
+  if (image(projUrl).isPending()) {
+    return projUrl;
+  }
+  return projUrl + (!isImage(url) ? "" : "?format=thumbnail");
+}
+
+module.exports = toProjectThumbnailUrl;
 
 //////// handling network resize ////////
 
@@ -20,7 +34,7 @@ network.on("preview/compute", function (url, opts) {
   var quality = opts.quality;
   console.log("Compute: "+url, opts);
 
-  Qimage(toProjectUrl(url)).then(function (img) {
+  image(toProjectUrl(url)).then(function (img) {
     var ratio = img.width / img.height;
     if (ratio > 1) {
       canvas.width = max;
