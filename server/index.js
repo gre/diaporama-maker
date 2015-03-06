@@ -1,18 +1,15 @@
 var browserify = require('browserify');
-var _ = require("lodash");
 var stylus = require("stylus");
 var express = require("express");
 var nib = require("nib");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
-var fs = require("fs");
 var path = require('path');
 var Q = require('q');
 var qfs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
-var Thumbnail = require("./Thumbnail");
 var DiaporamaRecorderServer = require("diaporama-recorder/server");
 
 module.exports = function server (diaporama, port) {
@@ -103,7 +100,7 @@ module.exports = function server (diaporama, port) {
       .done();
   });
 
-  Thumbnail(app, io, "preview", ".");
+  app.use("/preview", serverStatic('.'));
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 
