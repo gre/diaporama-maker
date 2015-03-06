@@ -111,6 +111,8 @@ var Timeline = React.createClass({
           transition={item.transitionNext}
           key={item.id+"@t"}
           onSelect={this.props.onSelectTransition.bind(null, item.id)}
+          onAdd={this.props.onAddTransition.bind(null, item.id)}
+          onRemove={this.props.onRemoveTransition.bind(null, item.id)}
         />
       );
 

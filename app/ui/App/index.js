@@ -96,6 +96,15 @@ var App = React.createClass({
     });
   },
 
+  onAddTransition: function (id) {
+    this.saveDiaporama( Diaporama.bootstrapTransition(this.state.diaporama, id) );
+    this.setMode("editTransition", id);
+  },
+
+  onRemoveTransition: function (id) {
+    this.saveDiaporama( Diaporama.removeTransition(this.state.diaporama, id) );
+  },
+
   onSelectTransition: function (id) {
     this.setMode("editTransition", id);
   },
@@ -133,21 +142,25 @@ var App = React.createClass({
       var diaporama = self.state.diaporama;
       if (mode === "editTransition") {
         var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, modeArg);
-        var duration = interval.end - interval.start;
-        p = (p + dt / duration) % 1;
-        var t = interval.start + duration * p;
-        self.setState({
-          time: t
-        });
+        if (interval) {
+          var duration = interval.end - interval.start;
+          p = (p + dt / duration) % 1;
+          var t = interval.start + duration * p;
+          self.setState({
+            time: t
+          });
+        }
       }
       else if (mode === "editImage") {
         var interval = Diaporama.timelineTimeIntervalForId(diaporama, modeArg);
-        var duration = interval.end - interval.start;
-        p = ((duration * p + dt) / duration) % 1;
-        var t = interval.start + duration * p;
-        self.setState({
-          time: t
-        });
+        if (interval) {
+          var duration = interval.end - interval.start;
+          p = ((duration * p + dt) / duration) % 1;
+          var t = interval.start + duration * p;
+          self.setState({
+            time: t
+          });
+        }
       }
     }());
   },
@@ -234,6 +247,8 @@ var App = React.createClass({
         onAction={this.onTimelineAction}
         onSelectImage={this.onSelectImage}
         onSelectTransition={this.onSelectTransition}
+        onAddTransition={this.onAddTransition}
+        onRemoveTransition={this.onRemoveTransition}
       />
 
     </div>;

@@ -46,6 +46,7 @@ var panels = {
     render: function (innerWidth, innerHeight, id) {
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
+      if (!element) return <div>No Slide Selected.</div>;
       return <ImageCustomizer
         value={element}
         onChange={this.props.onSelectedImageEdit}
@@ -60,6 +61,7 @@ var panels = {
     render: function (innerWidth, innerHeight, id) {
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
+      if (!transitionInfos.transitionNext) return <div>No Transition Selected.</div>;
       return <TransitionCustomizer
         value={transitionInfos.transitionNext}
         onChange={this.props.onSelectedTransitionEdit}

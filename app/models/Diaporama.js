@@ -105,13 +105,15 @@ Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
   for (var i=0; i < tl.length; ++i) {
     var el = tl[i];
     t += el.duration;
-    if (el.id === id) {
-      return {
-        start: t,
-        end: t + el.transitionNext.duration
-      };
+    if (el.transitionNext) {
+      if (el.id === id) {
+        return {
+          start: t,
+          end: t + el.transitionNext.duration
+        };
+      }
+      t += el.transitionNext.duration;
     }
-    t += el.transitionNext.duration;
   }
 };
 Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
@@ -125,7 +127,7 @@ Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
         end: t + el.duration
       };
     }
-    t += el.duration + el.transitionNext.duration;
+    t += el.duration + (el.transitionNext && el.transitionNext.duration || 0);
   }
 };
 
@@ -152,11 +154,25 @@ Diaporama.setTimelineElement = function (diaporama, id, element) {
   return clone;
 };
 
+Diaporama.removeTransition = function (diaporama, id) {
+  var clone = _.cloneDeep(diaporama);
+  var el = Diaporama.timelineForId(clone, id);
+  delete el.transitionNext;
+  return clone;
+};
+
 Diaporama.setTransition = function (diaporama, id, transition) {
   var clone = _.cloneDeep(diaporama);
   var el = Diaporama.timelineForId(clone, id);
   el.transitionNext = transition;
   return clone;
+};
+
+Diaporama.bootstrapTransition = function (diaporama, id) {
+                                                // vvv  TODO not supported  vvv
+  return Diaporama.setTransition(diaporama, id, diaporama.maker && diaporama.maker.defaultTransition || {
+    duration: 1000
+  });
 };
 
 Diaporama.timelineAction = function (diaporama, action, id) {
