@@ -32,7 +32,6 @@ function imageP (url) {
   if (_imagePromises[url]) return _imagePromises[url];
   return (_imagePromises[url] = Qimage(url).then(function (img) {
     _dataUrls[url] = computeDataURL(img) || url;
-    console.log(_dataUrls);
     return img;
   }));
 }
@@ -47,8 +46,10 @@ function toProjectUrl (url) {
 
 function toProjectThumbnailUrl (url) {
   var projUrl = toProjectUrl(url);
-  return image(projUrl) || projUrl;
+  return isImage(projUrl) && image(projUrl) || projUrl;
 }
 
-module.exports = toProjectThumbnailUrl;
+module.exports = function (url, fullSize) {
+  return fullSize ? toProjectUrl(url) : toProjectThumbnailUrl(url);
+};
 

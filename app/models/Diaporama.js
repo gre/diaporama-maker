@@ -33,7 +33,7 @@ recorderClient.getFormats().subscribe(function (formats) {
 });
 
 Diaporama.generateVideo = function (diaporama, options) {
-  recorderClient.generateVideo(Diaporama.localize(diaporama), options);
+  recorderClient.generateVideo(Diaporama.localize(diaporama, true), options);
 };
 
 Diaporama.generateHTML = function () {
@@ -205,11 +205,11 @@ Diaporama.inlineTransitions = function (diaporama) {
   return copy;
 };
 
-Diaporama.localize = function (diaporama) {
+Diaporama.localize = function (diaporama, fullSize) {
   if (!diaporama) return null;
   var clone = _.cloneDeep(diaporama);
   clone.timeline.forEach(function (item) {
-    item.image = toProjectUrl(item.image);
+    item.image = toProjectUrl(item.image, fullSize);
   });
   return clone;
 };
