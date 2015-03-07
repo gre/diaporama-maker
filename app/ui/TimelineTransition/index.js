@@ -55,11 +55,11 @@ var TimelineTransition = React.createClass({
     var layerWidth = Math.max(size, width);
     var x = Math.floor(xcenter - layerWidth/2);
     var editSize = 50;
+    var deleteSize = 30;
 
     var style = _.extend({
       color: "#fff",
       overflow: "hidden",
-      textAlign: "center",
       zIndex: 2
     }, boundToStyle({
       x: x,
@@ -69,8 +69,12 @@ var TimelineTransition = React.createClass({
     }));
 
     var containerStyle = {
-      position: "relative",
+      position: "absolute",
+      left: "0px",
+      top: "0px",
+      width: "100%",
       height: "100%",
+      textAlign: "center",
       zIndex: 3
     };
 
@@ -86,21 +90,17 @@ var TimelineTransition = React.createClass({
       font: "monospace 9px #fff"
     };
 
-    var editIconStyle = {
+    var editIconStyle = _.extend({
       position: "absolute",
+      top: "0px",
       left: "0px",
-      top: ((height-editSize)/2)+"px",
-      width: "100%",
-      textAlign: "center"
-    };
+    }, translateStyle(((width-editSize)/2), ((height-editSize)/2)));
 
-    var deleteIconStyle = {
+    var deleteIconStyle = _.extend({
       position: "absolute",
-      left: "0px",
       bottom: "0px",
-      width: "100%",
-      textAlign: "center"
-    };
+      left: "0px"
+    }, translateStyle(((width-deleteSize)/2), 0));
 
     return <div className="timeline-transition" style={style}>
       <div className="sub-actions" style={containerStyle}>
@@ -122,7 +122,7 @@ var TimelineTransition = React.createClass({
         }
 
         {!transition ? undefined :
-          <Icon style={deleteIconStyle} title="Delete transition" name="remove" color="#f00" size={32} onClick={this.props.onRemove} />
+          <Icon style={deleteIconStyle} title="Delete transition" name="remove" color="#f00" size={deleteSize} onClick={this.props.onRemove} />
         }
       </div>
 
