@@ -61,6 +61,8 @@ var Timeline = React.createClass({
     var timeline = this.props.timeline;
     var bound = this.props.bound;
     var time = this.props.time;
+    var selectedItem = this.props.selectedItem;
+
     var timeScale = this.state.timeScale;
 
     var headerHeight = 30;
@@ -91,6 +93,7 @@ var Timeline = React.createClass({
 
       lineContent.push(
         <TimelineElement
+          selected={selectedItem && selectedItem.id === item.id && selectedItem.transition === false}
           x={x}
           width={thumbw}
           height={lineHeight}
@@ -105,6 +108,7 @@ var Timeline = React.createClass({
 
       lineContent.push(
         <TimelineTransition
+          selected={selectedItem && selectedItem.id === item.id && selectedItem.transition === true}
           xcenter={x + thumbw}
           width={transitionw}
           height={lineHeight}

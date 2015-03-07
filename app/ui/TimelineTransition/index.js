@@ -22,10 +22,6 @@ var SvgCrossFadeBackground = React.createClass({
       "Z"
     ].join(" ");
 
-    var bgStyle = {
-      fill: "rgba(0, 0, 0, 0.1)"
-    };
-
     var crossStyle = {
       strokeWidth: 1,
       stroke: "#333",
@@ -33,7 +29,6 @@ var SvgCrossFadeBackground = React.createClass({
     };
 
     return <svg width={width} height={height}>
-      <rect style={bgStyle} x={0} y={0} width={width} height={height} />
       <path style={crossStyle} d={crossPathV} />
     </svg>;
   }
@@ -45,11 +40,18 @@ var TimelineTransition = React.createClass({
     this.props.onDurationChange(parseInt(e.target.value));
   },
 
+  onClick: function (e) {
+    if (e.target.nodeName !== "I") {
+      this.props.onSelect();
+    }
+  },
+
   render: function () {
     var xcenter = this.props.xcenter;
     var width = this.props.width;
     var height = this.props.height;
     var transition = this.props.transition;
+    var selected = this.props.selected;
 
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
@@ -60,7 +62,9 @@ var TimelineTransition = React.createClass({
     var style = _.extend({
       color: "#fff",
       overflow: "hidden",
-      zIndex: 2
+      zIndex: 2,
+      backgroundColor: !selected ? "rgba(0, 0, 0, 0.1)" : "rgba(200, 130, 0, 0.4)",
+      outline: !selected ? "1px solid transparent" : "1px dashed #fc0"
     }, boundToStyle({
       x: x,
       y: 0,
@@ -94,7 +98,7 @@ var TimelineTransition = React.createClass({
       position: "absolute",
       top: "0px",
       left: "0px",
-    }, translateStyle(((width-editSize)/2), ((height-editSize)/2)));
+    }, translateStyle(((layerWidth-editSize)/2), ((height-editSize)/2)));
 
     var deleteIconStyle = _.extend({
       position: "absolute",
@@ -102,7 +106,7 @@ var TimelineTransition = React.createClass({
       left: "0px"
     }, translateStyle(((width-deleteSize)/2), 0));
 
-    return <div className="timeline-transition" style={style}>
+    return <div className="timeline-transition" style={style} onClick={this.onClick}>
       <div className="sub-actions" style={containerStyle}>
       
         {!transition ? undefined :
@@ -116,7 +120,7 @@ var TimelineTransition = React.createClass({
         </div>
         }
         {transition ?
-          <Icon style={editIconStyle} title="Edit a transition" name="pencil-square" color="#fff" size={editSize} onClick={this.props.onSelect} />
+          undefined
             :
           <Icon style={editIconStyle} title="Add a transition" name="magic" color="#fff" size={editSize} onClick={this.props.onAdd} />
         }

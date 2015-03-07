@@ -19,6 +19,18 @@ var App = React.createClass({
 
   mixins: [ PromiseMixin ],
 
+  getInitialState: function () {
+    return {
+      width: getWidth(),
+      height: getHeight(),
+      diaporama: undefined, // undefined means not loaded yet, null means no diaporama init yet
+      diaporamaLocalized: null,
+      panel: "library",
+      selectedItem: null,
+      time: 0
+    };
+  },
+
   componentDidMount: function () {
     window.addEventListener("resize", this.onresize);
     this.sync(Diaporama.fetch()).done();
@@ -28,18 +40,6 @@ var App = React.createClass({
   componentWillUnmount: function () {
     window.removeEventListener("resize", this.onresize);
     this.stopMainLoop();
-  },
-
-  getInitialState: function () {
-    return {
-      width: getWidth(),
-      height: getHeight(),
-      diaporama: undefined, // undefined means not loaded yet, null means no diaporama init yet
-      diaporamaLocalized: null,
-      mode: "library",
-      modeArg: null,
-      time: 0
-    };
   },
 
   sync: function (diaporamaPromise) {
@@ -85,20 +85,21 @@ var App = React.createClass({
   },
 
   onTimelineAction: function (action, id) {
-    // TODO: we might change the mode on some actions ?
     this.saveDiaporama( Diaporama.timelineAction(this.state.diaporama, action, id) );
   },
 
-  setMode: function (mode, modeArg) {
+  onNav: function (panel) {
     this.setState({
-      mode: mode,
-      modeArg: modeArg
+      panel: panel
     });
   },
 
   onAddTransition: function (id) {
     this.saveDiaporama( Diaporama.bootstrapTransition(this.state.diaporama, id) );
-    this.setMode("editTransition", id);
+    this.setState({
+      panel: "editTransition",
+      selectedItem: { id: id, transition: true }
+    });
   },
 
   onRemoveTransition: function (id) {
@@ -106,15 +107,21 @@ var App = React.createClass({
   },
 
   onSelectTransition: function (id) {
-    this.setMode("editTransition", id);
+    this.setState({
+      panel: "editTransition",
+      selectedItem: { id: id, transition: true }
+    });
   },
 
   onSelectImage: function (id) {
-    this.setMode("editImage", id);
+    this.setState({
+      panel: "editImage",
+      selectedItem: { id: id, transition: false }
+    });
   },
 
   onTimelineHover: function (time) {
-    if (this.state.mode === "editTransition" || this.state.mode === "editImage")
+    if (this.state.panel === "editTransition" || this.state.panel === "editImage")
       return;
     if (this.state.time !== time) {
       this.setState({
@@ -137,11 +144,11 @@ var App = React.createClass({
       if (!last) last = t;
       var dt = t - last;
       last = t;
-      var mode = self.state.mode;
-      var modeArg = self.state.modeArg;
+      var panel = self.state.panel;
+      var selectedItem = self.state.selectedItem;
       var diaporama = self.state.diaporama;
-      if (mode === "editTransition") {
-        var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, modeArg);
+      if (panel === "editTransition") {
+        var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItem.id);
         if (interval) {
           var duration = interval.end - interval.start;
           p = (p + dt / duration) % 1;
@@ -151,8 +158,8 @@ var App = React.createClass({
           });
         }
       }
-      else if (mode === "editImage") {
-        var interval = Diaporama.timelineTimeIntervalForId(diaporama, modeArg);
+      else if (panel === "editImage") {
+        var interval = Diaporama.timelineTimeIntervalForId(diaporama, selectedItem.id);
         if (interval) {
           var duration = interval.end - interval.start;
           p = ((duration * p + dt) / duration) % 1;
@@ -166,14 +173,14 @@ var App = React.createClass({
   },
 
   onSelectedImageEdit: function (element) {
-    var id = this.state.modeArg;
+    var id = this.state.selectedItem.id;
     this.saveDiaporama(
       Diaporama.setTimelineElement(this.state.diaporama, id, element)
     );
   },
 
   onSelectedTransitionEdit: function (transitionNext) {
-    var id = this.state.modeArg;
+    var id = this.state.selectedItem.id;
     this.saveDiaporama(
       Diaporama.setTransition(this.state.diaporama, id, transitionNext)
     );
@@ -184,8 +191,8 @@ var App = React.createClass({
     var H = this.state.height;
     var diaporama = this.state.diaporama;
     var diaporamaLocalized = this.state.diaporamaLocalized;
-    var mode = this.state.mode;
-    var modeArg = this.state.modeArg;
+    var panel = this.state.panel;
+    var selectedItem = this.state.selectedItem;
     var time = this.state.time;
 
     if (diaporama === undefined) return <div>Loading...</div>;
@@ -225,11 +232,11 @@ var App = React.createClass({
 
       <MainPanel
         bound={mainPanelBound}
-        mode={mode}
-        modeArg={modeArg}
+        panel={panel}
+        selectedItem={selectedItem}
         diaporama={diaporama}
         onAddToTimeline={this.addToTimeline}
-        setMode={this.setMode}
+        onNav={this.onNav}
         onSelectedImageEdit={this.onSelectedImageEdit}
         onSelectedTransitionEdit={this.onSelectedTransitionEdit}
       />
@@ -244,6 +251,7 @@ var App = React.createClass({
         onHover={this.onTimelineHover}
         bound={timelineBound}
         timeline={diaporama.timeline}
+        selectedItem={selectedItem}
         onAction={this.onTimelineAction}
         onSelectImage={this.onSelectImage}
         onSelectTransition={this.onSelectTransition}

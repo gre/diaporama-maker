@@ -88,7 +88,7 @@ var TransitionCustomizer = React.createClass({
           width={w}
           height={h}
           handleRadius={10}
-          padding={[10, paddingW, 20, paddingW]}
+          padding={[4, paddingW, 20, paddingW]}
         />
       </div>
       <DurationInput

@@ -43,7 +43,8 @@ var panels = {
   editImage: {
     icon: "picture-o",
     title: "Edit Image",
-    render: function (innerWidth, innerHeight, id) {
+    render: function (innerWidth) {
+      var id = this.props.selectedItem.id;
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
       if (!element) return <div>No Slide Selected.</div>;
@@ -58,7 +59,8 @@ var panels = {
   editTransition: {
     icon: "magic",
     title: "Edit Transition",
-    render: function (innerWidth, innerHeight, id) {
+    render: function (innerWidth) {
+      var id = this.props.selectedItem.id;
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
       if (!transitionInfos.transitionNext) return <div>No Transition Selected.</div>;
@@ -78,15 +80,14 @@ var MainPanel = React.createClass({
 
   render: function () {
     var bound = this.props.bound;
-    var mode = this.props.mode;
-    var modeArg = this.props.modeArg;
+    var mode = this.props.panel;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
     var innerHeight = bound.height;
 
     var panel = panels[mode];
-    var panelDom = panel && panel.render && panel.render.call(this, innerWidth, innerHeight, modeArg);
+    var panelDom = panel && panel.render && panel.render.call(this, innerWidth, innerHeight);
 
     var navs = _.map(panels, function (panel, panelMode) {
       return <Icon
@@ -94,7 +95,7 @@ var MainPanel = React.createClass({
         key={panelMode}
         name={panel.icon}
         color={panelMode === mode ? "#000" : "#999"}
-        onClick={panel.standalone ? this.props.setMode.bind(null, panelMode) : undefined}
+        onClick={panel.standalone ? this.props.onNav.bind(null, panelMode) : undefined}
       />;
     }, this);
 
