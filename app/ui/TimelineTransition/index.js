@@ -8,24 +8,33 @@ var SvgCrossFadeBackground = React.createClass({
   render: function () {
     var width = this.props.width;
     var height = this.props.height;
+    var easing = this.props.easing || [ 0, 0, 1, 1 ];
 
     var crossPathV = [
-      "M", 0, 0,
-      "L", width, height,
-      "L", 0, height,
-      "L", width, 0,
+      "M", 0, height,
+      "C", Math.round(width * easing[0]), Math.round(height * (1-easing[1])),
+           Math.round(width * easing[2]), Math.round(height * (1-easing[3])),
+      width, 0,
+      "L", 0, 0,
+      "C", Math.round(width * easing[0]), Math.round(height * easing[1]),
+           Math.round(width * easing[2]), Math.round(height * easing[3]),
+      width, height,
       "Z"
     ].join(" ");
 
+    var bgStyle = {
+      fill: "rgba(0, 0, 0, 0.1)"
+    };
+
+    var crossStyle = {
+      strokeWidth: 1,
+      stroke: "#333",
+      fill: "rgba(0, 0, 0, 0.5)"
+    };
 
     return <svg width={width} height={height}>
-      <linearGradient id="grad" x1="100%" y1="0%" x2="0%" y2="0%">
-        <stop offset="0%" style={{ stopColor: "#000000", stopOpacity: 0 }} />
-        <stop offset="50%" style={{ stopColor: "#000000", stopOpacity: 1 }} />
-        <stop offset="100%" style={{ stopColor: "#000000", stopOpacity: 0 }} />
-      </linearGradient>
-      <path fill="#000" d={crossPathV} />
-      <rect fill="url(#grad)" x={0} y={0} width={width} height={height} />
+      <rect style={bgStyle} x={0} y={0} width={width} height={height} />
+      <path style={crossStyle} d={crossPathV} />
     </svg>;
   }
 });
@@ -45,52 +54,80 @@ var TimelineTransition = React.createClass({
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
     var x = Math.floor(xcenter - layerWidth/2);
+    var editSize = 50;
 
-    return <div className="timeline-transition" style={_.extend({
+    var style = _.extend({
       color: "#fff",
       overflow: "hidden",
+      textAlign: "center",
       zIndex: 2
     }, boundToStyle({
       x: x,
       y: 0,
       width: layerWidth,
       height: height
-    }))}>
-      <div style={_.extend({
-        textAlign: "center",
-        zIndex: 3
-      }, boundToStyle({
-        x: Math.floor((layerWidth - size)/2),
-        y: Math.floor((height - size) / 2),
-        width: size,
-        height: size
-      }))}>
+    }));
+
+    var containerStyle = {
+      position: "relative",
+      height: "100%",
+      zIndex: 3
+    };
+
+    var bgStyle = boundToStyle({
+      x: (layerWidth-width)/2,
+      y: 0,
+      width: width,
+      height: height
+    });
+
+    var titleStyle = {
+      whiteSpace: "nowrap",
+      font: "monospace 9px #fff"
+    };
+
+    var editIconStyle = {
+      position: "absolute",
+      left: "0px",
+      top: ((height-editSize)/2)+"px",
+      width: "100%",
+      textAlign: "center"
+    };
+
+    var deleteIconStyle = {
+      position: "absolute",
+      left: "0px",
+      bottom: "0px",
+      width: "100%",
+      textAlign: "center"
+    };
+
+    return <div className="timeline-transition" style={style}>
+      <div className="sub-actions" style={containerStyle}>
+      
         {!transition ? undefined :
         <div>
-          <div style={{ whiteSpace: "nowrap", font: "monospace 9px #fff" }}>
+          <div style={titleStyle}>
             {(transition.name || "fade")}
           </div>
-          <div style={{ whiteSpace: "nowrap", font: "monospace 9px #fff" }}>
+          <div style={titleStyle}>
             {(transition.duration/1000)+"s "}
           </div>
         </div>
         }
-        <div className="sub-actions">
         {transition ?
-          <Icon title="Edit a transition" name="pencil-square" color="#fff" size={50} onClick={this.props.onSelect} />
+          <Icon style={editIconStyle} title="Edit a transition" name="pencil-square" color="#fff" size={editSize} onClick={this.props.onSelect} />
             :
-          <Icon title="Add a transition" name="magic" color="#fff" size={50} onClick={this.props.onAdd} />
+          <Icon style={editIconStyle} title="Add a transition" name="magic" color="#fff" size={editSize} onClick={this.props.onAdd} />
         }
 
         {!transition ? undefined :
-          <div style={{ position: "absolute", width: "100%", textAlign: "center", bottom: Math.round((size-height)/2+5)+"px" }}>
-            <Icon title="Delete transition" name="remove" color="#f00" size={32} onClick={this.props.onRemove} />
-          </div>
+          <Icon style={deleteIconStyle} title="Delete transition" name="remove" color="#f00" size={32} onClick={this.props.onRemove} />
         }
-        </div>
       </div>
-      <div style={translateStyle((layerWidth-width)/2, 0)}>
-        <SvgCrossFadeBackground width={width} height={height} />
+
+      <div style={bgStyle}>
+        <SvgCrossFadeBackground width={width} height={height} easing={transition && transition.easing} />
       </div>
     </div>;
   }
