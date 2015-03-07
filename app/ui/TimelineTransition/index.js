@@ -51,7 +51,6 @@ var TimelineTransition = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var transition = this.props.transition;
-    var selected = this.props.selected;
 
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
@@ -63,8 +62,7 @@ var TimelineTransition = React.createClass({
       color: "#fff",
       overflow: "hidden",
       zIndex: 2,
-      backgroundColor: !selected ? "rgba(0, 0, 0, 0.1)" : "rgba(200, 130, 0, 0.4)",
-      outline: !selected ? "1px solid transparent" : "1px dashed #fc0"
+      backgroundColor: "rgba(0, 0, 0, 0.1)"
     }, boundToStyle({
       x: x,
       y: 0,

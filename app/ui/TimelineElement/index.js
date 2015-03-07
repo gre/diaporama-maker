@@ -13,7 +13,7 @@ var TimelineElement = React.createClass({
   },
 
   onClick: function (e) {
-    if (e.target.nodeName === "IMG") {
+    if (e.target.nodeName !== "I") {
       this.props.onSelect();
     }
   },
@@ -23,23 +23,10 @@ var TimelineElement = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var item = this.props.item;
-    var selected = this.props.selected;
 
     var style = translateStyle(x, 0);
 
-    var selectedOverlay;
-    if (selected) {
-      var selectedStyle = _.extend({
-        zIndex: 5,
-        backgroundColor: "rgba(200, 130, 0, 0.4)",
-        border: "1px dashed #fc0"
-      }, boundToStyle({ x: 0, y: 0, width: width, height: height }));
-
-      selectedOverlay = <div style={selectedStyle} />;
-    }
-
     return <div className="timeline-element" style={style} onClick={this.onClick}>
-      {selectedOverlay}
       <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
       <div className="actions">
         <Icon name="arrow-circle-o-left" color="#fff" onClick={this.props.onMoveLeft} />

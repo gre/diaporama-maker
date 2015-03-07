@@ -1,4 +1,5 @@
 var React = require("react");
+var _ = require("lodash");
 var boundToStyle = require("../../core/boundToStyle");
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var TimelineGrid = require("../TimelineGrid");
@@ -82,6 +83,8 @@ var Timeline = React.createClass({
       overflow: "auto"
     };
 
+    var selectedOverlay;
+
     var lineContent = [];
     var x = 0;
     var prevTransitionWidth = 0;
@@ -91,9 +94,22 @@ var Timeline = React.createClass({
 
       var thumbw = transitionw/2 + prevTransitionWidth/2 + Math.round(timeScale * item.duration);
 
+      var currentSelected = selectedItem && selectedItem.id === item.id;
+
+      if (currentSelected) {
+        var sx = selectedItem.transition ? x + thumbw - transitionw / 2 : x;
+        var sw = selectedItem.transition ? transitionw : thumbw;
+        var selectedStyle = _.extend({
+          zIndex: 5,
+          backgroundColor: "rgba(200, 130, 0, 0.4)",
+          border: "1px dashed #fc0"
+        }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
+        selectedOverlay = <div style={selectedStyle} />;
+      }
+
       lineContent.push(
         <TimelineElement
-          selected={selectedItem && selectedItem.id === item.id && selectedItem.transition === false}
+          selected={currentSelected && !selectedItem.transition}
           x={x}
           width={thumbw}
           height={lineHeight}
@@ -108,7 +124,7 @@ var Timeline = React.createClass({
 
       lineContent.push(
         <TimelineTransition
-          selected={selectedItem && selectedItem.id === item.id && selectedItem.transition === true}
+          selected={currentSelected && selectedItem.transition}
           xcenter={x + thumbw}
           width={transitionw}
           height={lineHeight}
@@ -124,6 +140,10 @@ var Timeline = React.createClass({
       x += thumbw;
     }
     x += prevTransitionWidth/2;
+
+    if (selectedOverlay) {
+      lineContent.push(selectedOverlay);
+    }
 
     var gridWidth = Math.max(x, bound.width);
 
