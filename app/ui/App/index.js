@@ -149,10 +149,9 @@ var App = React.createClass({
     var timelineCollide = this.refs.timeline.collidesPosition(stats.at);
     if (timelineCollide) {
       var lookup = Diaporama.lookupSegment(this.state.diaporama, timelineCollide.time);
-      if (lookup) {
-        console.log(libraryDrag);
-        this.saveDiaporama( Diaporama.bootstrapImage(this.state.diaporama, libraryDrag.item.file, lookup.id).diaporama );
-      }
+      this.saveDiaporama(
+        Diaporama.bootstrapImage(this.state.diaporama, libraryDrag.item.file, lookup && lookup.id || null).diaporama
+      );
     }
 
     this.setState({
