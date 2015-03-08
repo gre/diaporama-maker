@@ -116,12 +116,14 @@ var Timeline = React.createClass({
       var timeFrom = scrollLeft / timeScale;
       var timeTo = timeFrom + scrollDuration;
       var interval = Diaporama.timelineTimeIntervalForItem(newProps.diaporama, newProps.selectedItem);
-      // Fix the scrolling by "window of width"
-      if (interval.end < timeFrom) {
-        node.scrollLeft = scrollLeft - timeScale * scrollDuration * Math.ceil((timeFrom - interval.end) / scrollDuration);
-      }
-      else if (timeTo < interval.start) {
-        node.scrollLeft = scrollLeft + timeScale * scrollDuration * Math.ceil((interval.start - timeTo) / scrollDuration);
+      if (interval) {
+        // Fix the scrolling by "window of width"
+        if (interval.end < timeFrom) {
+          node.scrollLeft = scrollLeft - timeScale * scrollDuration * Math.ceil((timeFrom - interval.end) / scrollDuration);
+        }
+        else if (timeTo < interval.start) {
+          node.scrollLeft = scrollLeft + timeScale * scrollDuration * Math.ceil((interval.start - timeTo) / scrollDuration);
+        }
       }
     }
   },
