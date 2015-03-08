@@ -146,6 +146,36 @@ Diaporama.timelineTransitionForId = function (diaporama, id) {
   };
 };
 
+Diaporama.lookupSegment = function (diaporama, time) {
+  var tl = diaporama.timeline;
+  var t = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var item = tl[i];
+    var duration = item.duration || 0;
+    var tnext = item.transitionNext;
+    var tnextDuration = tnext && tnext.duration || 0;
+
+    if (t <= time && time <= t + duration) {
+      return {
+        id: item.id,
+        transition: false
+      };
+    }
+
+    t += duration;
+
+    if (tnext) {
+      if (t <= time && time <= t + tnextDuration) {
+        return {
+          id: item.id,
+          transition: true
+        };
+      }
+      t += tnextDuration;
+    }
+  }
+  return null;
+};
 
 Diaporama.setTimelineElement = function (diaporama, id, element) {
   var clone = _.cloneDeep(diaporama);

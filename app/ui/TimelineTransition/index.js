@@ -40,17 +40,12 @@ var TimelineTransition = React.createClass({
     this.props.onDurationChange(parseInt(e.target.value));
   },
 
-  onClick: function (e) {
-    if (e.target.nodeName !== "I") {
-      this.props.onSelect();
-    }
-  },
-
   render: function () {
     var xcenter = this.props.xcenter;
     var width = this.props.width;
     var height = this.props.height;
     var transition = this.props.transition;
+    var selected = this.props.selected;
 
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
@@ -104,9 +99,9 @@ var TimelineTransition = React.createClass({
       left: "0px"
     }, translateStyle(((width-deleteSize)/2), 0));
 
-    return <div className="timeline-transition" style={style} onClick={this.onClick}>
-      <div className="sub-actions" style={containerStyle}>
-      
+    return <div style={style}>
+      <div style={containerStyle}>
+
         {!transition ? undefined :
         <div>
           <div style={titleStyle}>
@@ -117,6 +112,9 @@ var TimelineTransition = React.createClass({
           </div>
         </div>
         }
+
+      { !selected ? undefined : <div>
+      
         {transition ?
           undefined
             :
@@ -126,6 +124,10 @@ var TimelineTransition = React.createClass({
         {!transition ? undefined :
           <Icon style={deleteIconStyle} title="Delete transition" name="remove" color="#f00" size={deleteSize} onClick={this.props.onRemove} />
         }
+
+      </div>
+      }
+
       </div>
 
       <div style={bgStyle}>

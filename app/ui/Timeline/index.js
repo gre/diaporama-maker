@@ -6,6 +6,7 @@ var TimelineGrid = require("../TimelineGrid");
 var TimelineElement = require("../TimelineElement");
 var TimelineZoomControls = require("../TimelineZoomControls");
 var TimelineTransition = require("../TimelineTransition");
+var Diaporama = require("../../models/Diaporama");
 
 var TimelineCursor = React.createClass({
 
@@ -31,11 +32,12 @@ var Timeline = React.createClass({
   mixins: [ PromiseMixin ],
 
   propTypes: {
-    timeline: React.PropTypes.array
+    diaporama: React.PropTypes.object.isRequired
   },
 
   getInitialState: function () {
     return {
+      mouseDown: null,
       timeScale: 0.1 // pixels per milliseconds
     };
   },
@@ -46,20 +48,81 @@ var Timeline = React.createClass({
     });
   },
 
-  onHover: function (e) {
-    var cb = this.props.onHover;
-    if (!cb) return;
+  getEventPosition: function (e) {
     var bounds = this.getDOMNode().getBoundingClientRect();
+    var node = this.refs.scrollcontainer.getDOMNode();
     var x = e.clientX - bounds.left;
-    if (x < 0 || x > bounds.width) return;
-    var scrollLeft = this.refs.scrollcontainer.getDOMNode().scrollLeft;
+    var y = e.clientY - bounds.top;
+    var scrollLeft = node.scrollLeft;
     x += scrollLeft;
-    var time = x / this.state.timeScale;
-    cb(time);
+    return [ x, y ];
+
+  },
+
+  getEventStats: function (e) {
+    return {
+      at: this.getEventPosition(e),
+      time: Date.now()
+    };
+  },
+
+  eventPositionToTime: function (p) {
+    return p[0] / this.state.timeScale;
+  },
+
+  onMouseMove: function (e) {
+    var cb = this.props.onHoverMove;
+    if (!cb) return;
+    var mouseMove = this.getEventStats(e);
+    cb(this.eventPositionToTime(mouseMove.at));
+    if (this.state.mouseDown) {
+      // ...
+    }
+  },
+
+  onMouseDown: function (e) {
+    var mouseDown = this.getEventStats(e);
+    this.setState({
+      mouseDown: mouseDown
+    });
+  },
+
+  onMouseUp: function (e) {
+    var mouseDown = this.state.mouseDown;
+    if (mouseDown) {
+      var mouseUp = this.getEventStats(e);
+      var deltaT = mouseUp.time - mouseDown.time;
+      var delta = [ mouseUp.at[0] - mouseDown.at[0], mouseUp.at[1] - mouseDown.at[1] ];
+      var dist2 = delta[0] * delta[0] + delta[1] * delta[1];
+      if (dist2 < 5*5 && deltaT < 300) {
+        // That's a tap
+        this.onTap(mouseUp.at);
+      }
+      this.setState({ mouseDown: null });
+    }
+  },
+
+  onMouseEnter: function () {
+    this.props.onHoverEnter();
+  },
+
+  onMouseLeave: function () {
+    this.props.onHoverLeave();
+    if (this.state.mouseDown) {
+      this.setState({ mouseDown: null });
+    }
+  },
+
+  onTap: function (pos) {
+    var lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
+    if (lookup && !_.isEqual(lookup, this.props.selectedItem)) {
+      this.props.onSelect(lookup);
+    }
   },
 
   render: function () {
-    var timeline = this.props.timeline;
+    var diaporama = this.props.diaporama;
+    var timeline = diaporama.timeline;
     var bound = this.props.bound;
     var time = this.props.time;
     var selectedItem = this.props.selectedItem;
@@ -101,8 +164,8 @@ var Timeline = React.createClass({
         var sw = selectedItem.transition ? transitionw : thumbw;
         var selectedStyle = _.extend({
           zIndex: 5,
-          backgroundColor: "rgba(200, 130, 0, 0.4)",
-          border: "1px dashed #fc0"
+          backgroundColor: "rgba(200, 130, 0, 0.2)",
+          border: "2px dashed #fc0"
         }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
         selectedOverlay = <div style={selectedStyle} />;
       }
@@ -118,7 +181,6 @@ var Timeline = React.createClass({
           onMoveLeft={this.props.onAction.bind(null, "moveLeft", item.id)}
           onMoveRight={this.props.onAction.bind(null, "moveRight", item.id)}
           onRemove={this.props.onAction.bind(null, "remove", item.id)}
-          onSelect={this.props.onSelectImage.bind(null, item.id)}
         />
       );
 
@@ -130,7 +192,6 @@ var Timeline = React.createClass({
           height={lineHeight}
           transition={item.transitionNext}
           key={item.id+"@t"}
-          onSelect={this.props.onSelectTransition.bind(null, item.id)}
           onAdd={this.props.onAddTransition.bind(null, item.id)}
           onRemove={this.props.onRemoveTransition.bind(null, item.id)}
         />
@@ -147,7 +208,12 @@ var Timeline = React.createClass({
 
     var gridWidth = Math.max(x, bound.width);
 
-    return <div className="timeline" style={boundToStyle(bound)} onMouseMove={this.onHover}>
+    return <div className="timeline" style={boundToStyle(bound)}
+      onMouseDown={this.onMouseDown}
+      onMouseUp={this.onMouseUp}
+      onMouseMove={this.onMouseMove}
+      onMouseEnter={this.onMouseEnter}
+      onMouseLeave={this.onMouseLeave}>
       <header style={headerStyle}>
         <h2>Timeline</h2>
         <div style={{ position: "absolute", right: "4px", top: "4px" }}>

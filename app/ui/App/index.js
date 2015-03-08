@@ -26,18 +26,24 @@ var App = React.createClass({
       diaporama: undefined, // undefined means not loaded yet, null means no diaporama init yet
       diaporamaLocalized: null,
       panel: "library",
+      hoverTimeline: false,
+      windowFocus: true,
       selectedItem: null,
       time: 0
     };
   },
 
   componentDidMount: function () {
+    window.addEventListener("blur", this.onblur);
+    window.addEventListener("focus", this.onfocus);
     window.addEventListener("resize", this.onresize);
     this.sync(Diaporama.fetch()).done();
     this.startMainLoop();
   },
 
   componentWillUnmount: function () {
+    window.removeEventListener("blur", this.onblur);
+    window.removeEventListener("focus", this.onfocus);
     window.removeEventListener("resize", this.onresize);
     this.stopMainLoop();
   },
@@ -51,6 +57,15 @@ var App = React.createClass({
       });
       return diaporama;
     }, function skipErrors(){});
+  },
+
+  onfocus: function () {
+    if (!this.state.windowFocus)
+      this.setState({ windowFocus: true });
+  },
+  onblur: function () {
+    if (this.state.windowFocus)
+      this.setState({ windowFocus: false });
   },
 
   onresize: function () {
@@ -84,6 +99,18 @@ var App = React.createClass({
     this.saveDiaporama( Diaporama.timelineAdd(this.state.diaporama, file) );
   },
 
+  onTimelineHoverEnter: function () {
+    this.setState({
+      hoverTimeline: true
+    });
+  },
+
+  onTimelineHoverLeave: function () {
+    this.setState({
+      hoverTimeline: false
+    });
+  },
+
   onTimelineAction: function (action, id) {
     this.saveDiaporama( Diaporama.timelineAction(this.state.diaporama, action, id) );
   },
@@ -106,23 +133,14 @@ var App = React.createClass({
     this.saveDiaporama( Diaporama.removeTransition(this.state.diaporama, id) );
   },
 
-  onSelectTransition: function (id) {
+  onTimelineSelect: function (selection) {
     this.setState({
-      panel: "editTransition",
-      selectedItem: { id: id, transition: true }
-    });
-  },
-
-  onSelectImage: function (id) {
-    this.setState({
-      panel: "editImage",
-      selectedItem: { id: id, transition: false }
+      panel: selection.transition ? "editTransition" : "editImage",
+      selectedItem: selection
     });
   },
 
   onTimelineHover: function (time) {
-    if (this.state.panel === "editTransition" || this.state.panel === "editImage")
-      return;
     if (this.state.time !== time) {
       this.setState({
         time: time
@@ -147,6 +165,9 @@ var App = React.createClass({
       var panel = self.state.panel;
       var selectedItem = self.state.selectedItem;
       var diaporama = self.state.diaporama;
+      var hoverTimeline = self.state.hoverTimeline;
+      if (hoverTimeline) return;
+      if (!self.state.windowFocus) return;
       if (panel === "editTransition") {
         var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItem.id);
         if (interval) {
@@ -194,6 +215,7 @@ var App = React.createClass({
     var panel = this.state.panel;
     var selectedItem = this.state.selectedItem;
     var time = this.state.time;
+    var hoverTimeline = this.state.hoverTimeline;
 
     if (diaporama === undefined) return <div>Loading...</div>;
 
@@ -248,13 +270,15 @@ var App = React.createClass({
 
       <Timeline
         time={time}
-        onHover={this.onTimelineHover}
+        onHoverEnter={this.onTimelineHoverEnter}
+        onHoverLeave={this.onTimelineHoverLeave}
+        onHoverMove={this.onTimelineHover}
+        hover={hoverTimeline}
         bound={timelineBound}
-        timeline={diaporama.timeline}
+        diaporama={diaporama}
         selectedItem={selectedItem}
         onAction={this.onTimelineAction}
-        onSelectImage={this.onSelectImage}
-        onSelectTransition={this.onSelectTransition}
+        onSelect={this.onTimelineSelect}
         onAddTransition={this.onAddTransition}
         onRemoveTransition={this.onRemoveTransition}
       />
