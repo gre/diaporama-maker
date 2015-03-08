@@ -1,4 +1,5 @@
 var React = require("react");
+var _ = require("lodash");
 var rectCrop = require("rect-crop");
 var scaleTranslateStyle = require("../../core/scaleTranslateStyle");
 var ImageHolderMixin = require("../../mixins/ImageHolderMixin");
@@ -24,13 +25,15 @@ var Thumbnail = React.createClass({
 
   render: function () {
     var props = this.props;
-    var style = {
+    
+    var style = _.extend({
       position: "relative",
       overflow: "hidden",
       background: "#000",
       width: props.width + "px",
       height: props.height + "px"
-    };
+    }, this.props.style||{});
+
     if (!this.img.width) {
       return <div className="thumbnail" style={style}></div>;
     }

@@ -69,6 +69,11 @@ var Library = React.createClass({
     var headerHeight = 40;
     var contentHeight = (height - headerHeight);
 
+    var itemStyle = {
+      margin: "0 2px",
+      display: "inline-block"
+    };
+
     var self = this;
     var items =
       this.state.items.map(function (item) {
@@ -76,7 +81,7 @@ var Library = React.createClass({
           self.onAddToTimeline(item.file);
         }
         if (item.type === "image") {
-          return <LibraryImage key={item.file} item={item} used={_.contains(usedImages, item.file)} width={thumbnailWidth} height={thumbnailHeight} onAddToTimeline={onAddToTimeline} />;
+          return <LibraryImage key={item.file} style={itemStyle} item={item} used={_.filter(usedImages, function (f) { return f === item.file; }).length} width={thumbnailWidth} height={thumbnailHeight} onAddToTimeline={onAddToTimeline} />;
         }
         else
           return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO
@@ -84,7 +89,7 @@ var Library = React.createClass({
 
     return <div className="library" style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>
-      <div className="body" style={{ height: contentHeight+"px" }}>
+      <div className="body" style={{ overflow: "auto", padding: "1px 5px", height: contentHeight+"px" }}>
         {items}
       </div>
     </div>;
