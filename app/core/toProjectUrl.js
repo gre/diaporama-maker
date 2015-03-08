@@ -50,6 +50,8 @@ function toProjectThumbnailUrl (url) {
 }
 
 module.exports = function (url, fullSize) {
-  return fullSize ? toProjectUrl(url) : toProjectThumbnailUrl(url);
+  return toProjectUrl(url);
+  // FIXME: this creates freezes / crashes on start...
+  //return fullSize ? toProjectUrl(url) : toProjectThumbnailUrl(url);
 };
 

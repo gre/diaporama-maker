@@ -35,6 +35,7 @@
     "glsl-transition-validator": "^0.3.4",
     "glsl-transitions": "^2015.1.24",
     "glsl.io-client": "^0.0.4",
+    "is-undo-redo": "^1.0.0",
     "lodash": "^2.4.1",
     "nib": "^1.1.0",
     "open": "0.0.5",

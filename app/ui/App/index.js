@@ -1,6 +1,8 @@
 var React = require("react");
 var _ = require("lodash");
 var raf = require("raf");
+var isUndo = require('is-undo-redo').undo;
+var isRedo = require('is-undo-redo').redo;
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
@@ -20,12 +22,21 @@ var App = React.createClass({
 
   mixins: [ PromiseMixin ],
 
+  getDefaultProps: function () {
+    return {
+      maxUndos: 80,
+      maxRedos: 40
+    };
+  },
+
   getInitialState: function () {
     return {
       width: getWidth(),
       height: getHeight(),
       diaporama: undefined, // undefined means not loaded yet, null means no diaporama init yet
       diaporamaLocalized: null,
+      history: [], // used for undo
+      undoHistory: [], // used for redo
       panel: "library",
       hoverTimeline: false,
       windowFocus: true,
@@ -35,6 +46,7 @@ var App = React.createClass({
   },
 
   componentDidMount: function () {
+    this.historizeDebounced = _.debounce(this.historize, 300);
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("resize", this.onResize);
@@ -54,8 +66,15 @@ var App = React.createClass({
   },
 
   onKeyDown: function (e) {
-    console.log("down", e.which);
-    switch (e.which) {
+    if (isUndo(e)) {
+      e.preventDefault();
+      this.undo();
+    }
+    else if (isRedo(e)) {
+      e.preventDefault();
+      this.redo();
+    }
+    else switch (e.which) {
       case 13: // ENTER
         break;
       case 46: // DELETE
@@ -74,8 +93,7 @@ var App = React.createClass({
     }
   },
 
-  onKeyUp: function (e) {
-    console.log("up", e.which);
+  onKeyUp: function () {
   },
 
   onFocus: function () {
@@ -96,7 +114,9 @@ var App = React.createClass({
     return diaporamaPromise.then(function (diaporama) {
       self.setState({
         diaporama: diaporama,
-        diaporamaLocalized: Diaporama.localize(diaporama)
+        diaporamaLocalized: Diaporama.localize(diaporama),
+        history: [],
+        undoHistory: []
       });
       return diaporama;
     }, function skipErrors(){});
@@ -114,15 +134,65 @@ var App = React.createClass({
       .then(this.saveDiaporama.bind(this));
   },
 
-  saveDiaporama: function (newDiaporama) {
-    if (!newDiaporama) return;
+  _save: function (newDiaporama) {
     this.setState({
       diaporama: newDiaporama,
       diaporamaLocalized: Diaporama.localize(newDiaporama)
     });
-    // TODO debounce it a bit
-    // TODO better feedback on failure cases
+    // TODO debounce it a bit ?
+    // TODO better feedback on failure cases ?
     Diaporama.save(newDiaporama).done();
+  },
+
+  redo: function () {
+    if (this.state.undoHistory.length <= 0) return;
+    var history = _.clone(this.state.history);
+    var undoHistory = _.clone(this.state.undoHistory);
+    var newDiaporama = undoHistory.pop();
+    history.push(this.state.diaporama);
+    if (history.length >= this.props.maxUndos) {
+      history = _.rest(history);
+    }
+    this.setState({
+      history: history,
+      undoHistory: undoHistory
+    });
+    this._save(newDiaporama);
+  },
+
+  undo: function () {
+    if (this.state.history.length <= 0) return;
+    var history = _.clone(this.state.history);
+    var undoHistory = _.clone(this.state.undoHistory);
+    var newDiaporama = history.pop();
+    undoHistory.push(this.state.diaporama);
+    if (undoHistory.length >= this.props.maxRedos) {
+      undoHistory = _.rest(undoHistory);
+    }
+    this.setState({
+      history: history,
+      undoHistory: undoHistory
+    });
+    this._save(newDiaporama);
+  },
+
+  historize: function (diaporama) {
+    var history = _.clone(this.state.history);
+    var undoHistory = [];
+    history.push(diaporama);
+    if (history.length >= this.props.maxUndos) {
+      history = _.rest(history);
+    }
+    this.setState({
+      history: history,
+      undoHistory: undoHistory
+    });
+  },
+
+  saveDiaporama: function (newDiaporama) {
+    if (!newDiaporama) return;
+    this.historizeDebounced(this.state.diaporama);
+    this._save(newDiaporama);
   },
 
   addToTimeline: function (file) {
