@@ -8,35 +8,7 @@ var TimelineZoomControls = require("../TimelineZoomControls");
 var TimelineTransition = require("../TimelineTransition");
 var Diaporama = require("../../models/Diaporama");
 var Icon = require("../Icon");
-
-var TimelineCursor = React.createClass({
-
-  render: function () {
-    var time = this.props.time;
-    var timeScale = this.props.timeScale;
-    var x = time * timeScale;
-    var style = {
-      position: "absolute",
-      zIndex: 30,
-      left: Math.round(x)+"px",
-      top: 0,
-      width: "2px",
-      height: "100%",
-      background: "rgba(0,0,0,0.3)"
-    };
-    var headerStyle = {
-      position: "absolute",
-      left: 0,
-      top: 0,
-      width: "2px",
-      height: "16px",
-      background: "#fc0"
-    };
-    return <div style={style}>
-      <div style={headerStyle} />
-    </div>;
-  }
-});
+var TimelineCursor = require("./TimelineCursor");
 
 var Timeline = React.createClass({
 
@@ -203,34 +175,42 @@ var Timeline = React.createClass({
           backgroundColor: "rgba(200, 130, 0, 0.2)",
           border: "2px dashed #fc0"
         }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
-        var buttonsStyle = {
-          textAlign: "center",
-          position: "absolute",
-          bottom: "0px",
-          width: "100%"
-        };
 
         var selectedContent = [];
         if (!isTransition) {
+          var leftStyle = {
+            position: "absolute",
+            bottom: "4px",
+            left: "8px"
+          };
           selectedContent.push(
-            <Icon key="left" size={32} name="arrow-circle-o-left" color="#fff" onClick={this.props.onSelectionMoveLeft} />
+            <Icon
+              style={leftStyle}
+              key="left"
+              size={32}
+              name="arrow-circle-o-left"
+              color="#fff"
+              onClick={this.props.onSelectionMoveLeft} />
           );
-        }
 
-        if (!isTransition || isTransition && item.transitionNext && item.transitionNext.duration) {
+          var rightStyle = {
+            position: "absolute",
+            bottom: "4px",
+            right: "8px"
+          };
           selectedContent.push(
-            <Icon key="middle" size={32} name="remove" color="#F00" onClick={this.props.onSelectionRemove} />
-          );
-        }
-
-        if (!isTransition) {
-          selectedContent.push(
-            <Icon key="right" size={32} name="arrow-circle-o-right" color="#fff" onClick={this.props.onSelectionMoveRight} />
+            <Icon
+              style={rightStyle}
+              key="right"
+              size={32}
+              name="arrow-circle-o-right"
+              color="#fff"
+              onClick={this.props.onSelectionMoveRight} />
           );
         }
 
         selectedOverlay = <div key="selectionOverlay" style={selectedStyle}>
-          <div style={buttonsStyle}>{selectedContent}</div>
+          {selectedContent}
         </div>;
       }
 
@@ -245,17 +225,40 @@ var Timeline = React.createClass({
         />
       );
 
-      lineContent.push(
-        <TimelineTransition
-          selected={currentSelected && selectedItem.transition}
-          xcenter={x + thumbw}
-          width={transitionw}
-          height={lineHeight}
-          transition={item.transitionNext}
-          key={item.id+"@t"}
-          onAdd={this.props.onAddTransition.bind(null, item.id)}
-        />
-      );
+      if (item.transitionNext) {
+        lineContent.push(
+          <TimelineTransition
+            key={item.id+"@t"}
+            selected={currentSelected && selectedItem.transition}
+            xcenter={x + thumbw}
+            width={transitionw}
+            height={lineHeight}
+            transition={item.transitionNext}
+          />
+        );
+      }
+      else {
+        var xcenter = x + thumbw;
+        var editSize = 50;
+        var editIconStyle = boundToStyle({
+          x: xcenter-editSize/2,
+          y: (lineHeight-editSize)/2,
+          width: editSize,
+          height: editSize
+        });
+        editIconStyle.zIndex = 40;
+
+        lineContent.push(
+          <Icon
+            key={item.id+"@t"}
+            style={editIconStyle}
+            title="Add a transition"
+            name="magic"
+            color="#fff"
+            size={editSize}
+            onClick={this.props.onAddTransition.bind(null, item.id)} />
+        );
+      }
 
       prevTransitionWidth = transitionw;
       x += thumbw;

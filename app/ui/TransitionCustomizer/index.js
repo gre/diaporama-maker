@@ -6,6 +6,7 @@ var transitions = require("../../models/transitions");
 var TransitionPicker = require("../TransitionPicker");
 var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
 var UniformsEditor = require("glsl.io-client/src/ui/UniformsEditor");
+var Icon = require("../Icon");
 
 function printEasing (easing) {
   return "BezierEasing("+easing.map(function (value) { return Math.round(value * 100) / 100; })+")";
@@ -46,6 +47,11 @@ var TransitionCustomizer = React.createClass({
     this.props.onChange(_.defaults({ uniforms: uniforms }, this.props.value));
   },
 
+  onSelectionRemove: function (e) {
+    e.preventDefault();
+    this.props.onSelectionRemove();
+  },
+
   render: function () {
     var value = this.props.value;
     var transition = transitions.byName(value.name);
@@ -63,7 +69,18 @@ var TransitionCustomizer = React.createClass({
       margin: "4px"
     };
 
+    var deleteIconStyle = {
+      position: "absolute",
+      top: "2px",
+      right: "6px",
+      color: "#F00"
+    };
+
+
     return <div className="transition-customizer">
+      <a href="#" onClick={this.onSelectionRemove} style={deleteIconStyle}>
+        Remove&nbsp;<Icon name="remove"/>
+      </a>
       <div style={previewStyle}>
         {(value.name || "fade")+" "+(value.duration/1000)+"s "+(value.easing && printEasing(value.easing) || "linear")}
       </div>

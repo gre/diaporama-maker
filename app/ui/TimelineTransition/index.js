@@ -1,8 +1,6 @@
 var React = require("react");
 var _ = require("lodash");
-var translateStyle = require("../../core/translateStyle");
 var boundToStyle = require("../../core/boundToStyle");
-var Icon = require("../Icon");
 
 var SvgCrossFadeBackground = React.createClass({
   render: function () {
@@ -45,7 +43,6 @@ var TimelineTransition = React.createClass({
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
     var x = Math.floor(xcenter - layerWidth/2);
-    var editSize = 50;
 
     var style = _.extend({
       color: "#fff",
@@ -76,41 +73,28 @@ var TimelineTransition = React.createClass({
       height: height
     });
 
+
     var titleStyle = {
       whiteSpace: "nowrap",
       font: "monospace 9px #fff"
     };
 
-    var editIconStyle = _.extend({
-      position: "absolute",
-      top: "0px",
-      left: "0px",
-    }, translateStyle(((layerWidth-editSize)/2), ((height-editSize)/2)));
-
     return <div style={style}>
       <div style={containerStyle}>
 
-        {!transition ? undefined :
         <div>
           <div style={titleStyle}>
-            {(transition.name || "fade")}
+            {transition.name || "fade"}
           </div>
           <div style={titleStyle}>
-            {(transition.duration/1000)+"s "}
+            {(transition.duration/1000)+"s"}
           </div>
         </div>
-        }
-
-        {transition ?
-          undefined
-            :
-          <Icon style={editIconStyle} title="Add a transition" name="magic" color="#fff" size={editSize} onClick={this.props.onAdd} />
-        }
 
       </div>
 
       <div style={bgStyle}>
-        <SvgCrossFadeBackground width={width} height={height} easing={transition && transition.easing} />
+        <SvgCrossFadeBackground width={width} height={height} easing={transition.easing} />
       </div>
     </div>;
   }

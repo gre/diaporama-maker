@@ -90,6 +90,11 @@ var ImageCustomizer = React.createClass({
     this.props.onChange(clone);
   },
 
+  onSelectionRemove: function (e) {
+    e.preventDefault();
+    this.props.onSelectionRemove();
+  },
+
   render: function () {
     var value = this.props.value;
     var width = this.props.width;
@@ -104,7 +109,17 @@ var ImageCustomizer = React.createClass({
 
     var render = croppingModes[modeId].render;
 
+    var deleteIconStyle = {
+      position: "absolute",
+      top: "2px",
+      right: "6px",
+      color: "#F00"
+    };
+
     return <div className="image-customizer">
+      <a href="#" onClick={this.onSelectionRemove} style={deleteIconStyle}>
+        Remove&nbsp;<Icon name="remove"/>
+      </a>
       <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} width={width} />
       <div className="mode-select">{modes}</div>
       {!render ? undefined : render.call(this)}

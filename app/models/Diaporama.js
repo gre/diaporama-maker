@@ -202,6 +202,24 @@ Diaporama.bootstrapTransition = function (diaporama, id) {
   });
 };
 
+Diaporama.bootstrapImage = function (diaporama, src, afterId) {
+  var clone = _.cloneDeep(diaporama);
+  // vvv  TODO not supported diaporama.maker.defaultImage  vvv
+  var obj = genTimelineElementDefault(src);
+  obj.id = newId();
+  if (afterId) {
+    var index = Diaporama.timelineIndexOfId(clone, afterId) + 1;
+    clone.timeline.splice(index, 0, obj);
+  }
+  else
+    clone.timeline.push(obj);
+  return {
+    newItem: obj,
+    diaporama: clone
+  };
+};
+
+
 Diaporama._swapTimelineItemTransitions = function (clone, i, j) {
   var a = clone.timeline[i];
   var b = clone.timeline[j];
@@ -253,16 +271,6 @@ Diaporama.timelineMoveItemRight = function (diaporama, item) {
   var clone = _.cloneDeep(diaporama);
   Diaporama._swapTimelineItemTransitions(clone, index, index + 1);
   if (!item.transition) Diaporama._swapTimelineItem(clone, index, index + 1);
-  return clone;
-};
-
-// TODO rename timelineAdd to bootstrapImage
-Diaporama.timelineAdd = function (diaporama, file) {
-  var clone = _.cloneDeep(diaporama);
-  // vvv  TODO not supported diaporama.maker.defaultImage  vvv
-  var obj = genTimelineElementDefault(file);
-  obj.id = newId();
-  clone.timeline.push(obj);
   return clone;
 };
 

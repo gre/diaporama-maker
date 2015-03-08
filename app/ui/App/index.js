@@ -202,7 +202,10 @@ var App = React.createClass({
   },
 
   addToTimeline: function (file) {
-    this.saveDiaporama( Diaporama.timelineAdd(this.state.diaporama, file) );
+    var afterId = this.state.selectedItem && this.state.selectedItem.id;
+    var result = Diaporama.bootstrapImage(this.state.diaporama, file, afterId);
+    this.saveDiaporama( result.diaporama );
+    this.timelineSelect({ id: result.newItem.id, transition: false }, true);
   },
 
   onSelectionLeft: function () {
@@ -211,7 +214,7 @@ var App = React.createClass({
       var index = Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) - 1;
       var item = this.state.diaporama.timeline[index];
       if (item) {
-        this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+        this.timelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
       }
     }
   },
@@ -221,7 +224,7 @@ var App = React.createClass({
     var index = !selectedItem ? 0 : Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) + 1;
     var item = this.state.diaporama.timeline[index];
     if (item) {
-      this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+      this.timelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
     }
   },
 
@@ -242,7 +245,7 @@ var App = React.createClass({
     var selectedItem = this.state.selectedItem;
     if (selectedItem) {
       this.saveDiaporama( Diaporama.timelineRemoveItem(this.state.diaporama, selectedItem) );
-      this.onTimelineSelect(null);
+      this.timelineSelect(null);
     }
   },
 
@@ -276,10 +279,10 @@ var App = React.createClass({
     this.saveDiaporama( Diaporama.removeTransition(this.state.diaporama, id) );
   },
 
-  onTimelineSelect: function (selection) {
+  timelineSelect: function (selection, preservePanel) {
     this.setState({
       panel: selection ?
-        (selection.transition ? "editTransition" : "editImage") :
+        (preservePanel ? this.state.panel : (selection.transition ? "editTransition" : "editImage")) :
         (this.state.panel === "editTransition" || this.state.panel === "editImage" ? null : this.state.panel),
       selectedItem: selection
     });
@@ -406,6 +409,7 @@ var App = React.createClass({
         onNav={this.onNav}
         onSelectedImageEdit={this.onSelectedImageEdit}
         onSelectedTransitionEdit={this.onSelectedTransitionEdit}
+        onSelectionRemove={this.onSelectionRemove}
       />
 
       <Viewer
@@ -422,7 +426,7 @@ var App = React.createClass({
         bound={timelineBound}
         diaporama={diaporama}
         selectedItem={selectedItem}
-        onSelect={this.onTimelineSelect}
+        onSelect={this.timelineSelect}
         onSelectionRemove={this.onSelectionRemove}
         onSelectionMoveLeft={this.onSelectionMoveLeft}
         onSelectionMoveRight={this.onSelectionMoveRight}

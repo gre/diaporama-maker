@@ -52,6 +52,7 @@ var panels = {
         value={element}
         onChange={this.props.onSelectedImageEdit}
         width={innerWidth}
+        onSelectionRemove={this.props.onSelectionRemove}
       />;
     }
   },
@@ -70,6 +71,7 @@ var panels = {
         width={innerWidth}
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
         animated={false}
+        onSelectionRemove={this.props.onSelectionRemove}
       />;
     }
   }
