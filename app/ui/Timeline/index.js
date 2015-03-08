@@ -17,14 +17,24 @@ var TimelineCursor = React.createClass({
     var x = time * timeScale;
     var style = {
       position: "absolute",
-      zIndex: 1,
+      zIndex: 30,
       left: Math.round(x)+"px",
       top: 0,
       width: "2px",
       height: "100%",
-      background: "#000"
+      background: "rgba(0,0,0,0.3)"
     };
-    return <div style={style}></div>;
+    var headerStyle = {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      width: "2px",
+      height: "16px",
+      background: "#fc0"
+    };
+    return <div style={style}>
+      <div style={headerStyle} />
+    </div>;
   }
 });
 
@@ -164,7 +174,7 @@ var Timeline = React.createClass({
     var lineHeight = gridHeight - lineTop;
 
     var headerStyle = { width: bound.width+"px", height: headerHeight+"px" };
-    var lineStyle = { zIndex: 10, top: lineTop+"px", width: bound.width+"px", height: lineHeight + "px" };
+    var lineStyle = { top: lineTop+"px", width: bound.width+"px", height: lineHeight + "px" };
     var lineContainerStyle = {
       position: "absolute",
       zIndex: 1,
@@ -193,7 +203,7 @@ var Timeline = React.createClass({
         var sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
         var sw = isTransition ? transitionw : onlyImageW;
         var selectedStyle = _.extend({
-          zIndex: 5,
+          zIndex: 50,
           backgroundColor: "rgba(200, 130, 0, 0.2)",
           border: "2px dashed #fc0"
         }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
