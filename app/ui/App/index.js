@@ -84,11 +84,17 @@ var App = React.createClass({
         break;
       case 37: // LEFT
         e.preventDefault();
-        this.onSelectionLeft();
+        if (e.metaKey || e.shiftKey)
+          this.onSelectionMoveLeft();
+        else
+          this.onSelectionLeft();
         break;
       case 39: // RIGHT
         e.preventDefault();
-        this.onSelectionRight();
+        if (e.metaKey || e.shiftKey)
+          this.onSelectionMoveRight();
+        else
+          this.onSelectionRight();
         break;
     }
   },
@@ -228,27 +234,20 @@ var App = React.createClass({
   onSelectionMoveLeft: function () {
     var selectedItem = this.state.selectedItem;
     if (selectedItem) {
-      if (!selectedItem.transition) {
-        this.onTimelineAction("moveLeft", selectedItem.id);
-      }
+      this.saveDiaporama( Diaporama.timelineMoveItemLeft(this.state.diaporama, selectedItem) );
     }
   },
   onSelectionMoveRight: function () {
     var selectedItem = this.state.selectedItem;
     if (selectedItem) {
-      if (!selectedItem.transition) {
-        this.onTimelineAction("moveRight", selectedItem.id);
-      }
+      this.saveDiaporama( Diaporama.timelineMoveItemRight(this.state.diaporama, selectedItem) );
     }
   },
 
   onSelectionRemove: function () {
     var selectedItem = this.state.selectedItem;
     if (selectedItem) {
-      if (selectedItem.transition)
-        this.onRemoveTransition(selectedItem.id);
-      else
-        this.onTimelineAction("remove", selectedItem.id); // FIXME action should either be remove or replace by flux like actions
+      this.saveDiaporama( Diaporama.timelineRemoveItem(this.state.diaporama, selectedItem) );
       this.onTimelineSelect(null);
     }
   },
@@ -263,10 +262,6 @@ var App = React.createClass({
     this.setState({
       hoverTimeline: false
     });
-  },
-
-  onTimelineAction: function (action, id) {
-    this.saveDiaporama( Diaporama.timelineAction(this.state.diaporama, action, id) );
   },
 
   onNav: function (panel) {

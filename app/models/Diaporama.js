@@ -13,12 +13,6 @@ var Diaporama = {};
 
 var newId = (function (i) { return function () { return ++i; }; }(0));
 
-function arraymove(arr, fromIndex, toIndex) {
-  var element = arr[fromIndex];
-  arr.splice(fromIndex, 1);
-  arr.splice(toIndex, 0, element);
-}
-
 function assignIds (json) {
   if (json.timeline) {
     for (var i = 0; i < json.timeline.length; ++i) {
@@ -186,13 +180,6 @@ Diaporama.setTimelineElement = function (diaporama, id, element) {
   return clone;
 };
 
-Diaporama.removeTransition = function (diaporama, id) {
-  var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  delete el.transitionNext;
-  return clone;
-};
-
 Diaporama.setTransition = function (diaporama, id, transition) {
   var clone = _.cloneDeep(diaporama);
   var el = Diaporama.timelineForId(clone, id);
@@ -201,37 +188,70 @@ Diaporama.setTransition = function (diaporama, id, transition) {
 };
 
 Diaporama.bootstrapTransition = function (diaporama, id) {
-                                                // vvv  TODO not supported  vvv
+                                                // vvv  TODO not supported diaporama.maker.defaultTransition  vvv
   return Diaporama.setTransition(diaporama, id, diaporama.maker && diaporama.maker.defaultTransition || {
     duration: 1000
   });
 };
 
-Diaporama.timelineAction = function (diaporama, action, id) {
-  var clone, index = Diaporama.timelineIndexOfId(diaporama, id);
-  if (index === -1) return;
-  if (action === "remove") {
-    clone = _.cloneDeep(diaporama);
-    clone.timeline.splice(index, 1);
-    return clone;
+Diaporama._swapTimelineItemTransitions = function (clone, i, j) {
+  var a = clone.timeline[i];
+  var b = clone.timeline[j];
+  var tmp = b.transitionNext;
+  if (a.transitionNext) {
+    b.transitionNext = a.transitionNext;
   }
-  if (action === "moveLeft") {
-    if (index === 0) return;
-    clone = _.cloneDeep(diaporama);
-    arraymove(clone.timeline, index, index - 1);
-    return clone;
+  else {
+    delete b.transitionNext;
   }
-  if (action === "moveRight") {
-    if (index === diaporama.timeline.length-1) return;
-    clone = _.cloneDeep(diaporama);
-    arraymove(clone.timeline, index, index + 1);
-    return clone;
+  if (tmp) {
+    a.transitionNext = tmp;
   }
-  console.log("unknown action "+action);
+  else {
+    delete a.transitionNext;
+  }
+  return clone;
+};
+Diaporama._swapTimelineItem = function (clone, i, j) {
+  var tmp = clone.timeline[i];
+  clone.timeline[i] = clone.timeline[j];
+  clone.timeline[j] = tmp;
+  return clone;
 };
 
+Diaporama.timelineRemoveItem = function (diaporama, item) {
+  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
+  if (index === -1) return;
+  var clone = _.cloneDeep(diaporama);
+  if (item.transition)
+    delete clone.timeline[index].transitionNext;
+  else
+    clone.timeline.splice(index, 1);
+  return clone;
+};
+
+Diaporama.timelineMoveItemLeft = function (diaporama, item) {
+  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
+  if (index === 0) return;
+  var clone = _.cloneDeep(diaporama);
+  Diaporama._swapTimelineItemTransitions(clone, index, index - 1);
+  if (!item.transition) Diaporama._swapTimelineItem(clone, index, index - 1);
+  return clone;
+};
+
+Diaporama.timelineMoveItemRight = function (diaporama, item) {
+  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
+  if (index === diaporama.timeline.length-1) return;
+  var clone = _.cloneDeep(diaporama);
+  Diaporama._swapTimelineItemTransitions(clone, index, index + 1);
+  if (!item.transition) Diaporama._swapTimelineItem(clone, index, index + 1);
+  return clone;
+};
+
+// TODO rename timelineAdd to bootstrapImage
 Diaporama.timelineAdd = function (diaporama, file) {
   var clone = _.cloneDeep(diaporama);
+  // vvv  TODO not supported diaporama.maker.defaultImage  vvv
   var obj = genTimelineElementDefault(file);
   obj.id = newId();
   clone.timeline.push(obj);
