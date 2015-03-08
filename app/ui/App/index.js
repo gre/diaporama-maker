@@ -210,10 +210,7 @@ var App = React.createClass({
     if (selectedItem) {
       var index = Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) - 1;
       var item = this.state.diaporama.timeline[index];
-      if (!item) {
-        this.onTimelineSelect(null);
-      }
-      else {
+      if (item) {
         this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
       }
     }
@@ -223,10 +220,7 @@ var App = React.createClass({
     var selectedItem = this.state.selectedItem;
     var index = !selectedItem ? 0 : Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) + 1;
     var item = this.state.diaporama.timeline[index];
-    if (!item) {
-      this.onTimelineSelect(null);
-    }
-    else {
+    if (item) {
       this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
     }
   },

@@ -101,15 +101,14 @@ Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
     var el = tl[i];
     t += el.duration;
     var tnext = el.transitionNext;
-    if (tnext) {
-      if (el.id === id) {
-        return {
-          start: t,
-          end: t + tnext.duration
-        };
-      }
-      t += tnext.duration;
+    var tnextDuration = tnext && tnext.duration || 0;
+    if (el.id === id) {
+      return {
+        start: t,
+        end: t + tnextDuration
+      };
     }
+    t += tnextDuration;
   }
 };
 Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
@@ -124,6 +123,15 @@ Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
       };
     }
     t += el.duration + (el.transitionNext && el.transitionNext.duration || 0);
+  }
+};
+Diaporama.timelineTimeIntervalForItem = function (diaporama, item) {
+  // TODO: ^ this should be the only method
+  if (item.transition) {
+    return Diaporama.timelineTimeIntervalForTransitionId(diaporama, item.id);
+  }
+  else {
+    return Diaporama.timelineTimeIntervalForId(diaporama, item.id);
   }
 };
 

@@ -131,6 +131,27 @@ var Timeline = React.createClass({
     }
   },
 
+  componentWillReceiveProps: function (newProps) {
+    var props = this.props;
+    if (newProps.selectedItem && !_.isEqual(props.selectedItem, newProps.selectedItem)) {
+      var node = this.refs.scrollcontainer.getDOMNode();
+      var timeScale = this.state.timeScale;
+      var scrollLeft = node.scrollLeft;
+      var width = node.clientWidth;
+      var scrollDuration = width / timeScale;
+      var timeFrom = scrollLeft / timeScale;
+      var timeTo = timeFrom + scrollDuration;
+      var interval = Diaporama.timelineTimeIntervalForItem(newProps.diaporama, newProps.selectedItem);
+      // Fix the scrolling by "window of width"
+      if (interval.end < timeFrom) {
+        node.scrollLeft = scrollLeft - timeScale * scrollDuration * Math.ceil((timeFrom - interval.end) / scrollDuration);
+      }
+      else if (timeTo < interval.start) {
+        node.scrollLeft = scrollLeft + timeScale * scrollDuration * Math.ceil((interval.start - timeTo) / scrollDuration);
+      }
+    }
+  },
+
   render: function () {
     var diaporama = this.props.diaporama;
     var timeline = diaporama.timeline;
@@ -190,23 +211,23 @@ var Timeline = React.createClass({
         var selectedContent = [];
         if (!isTransition) {
           selectedContent.push(
-            <Icon size={32} name="arrow-circle-o-left" color="#fff" onClick={this.props.onSelectionMoveLeft} />
+            <Icon key="left" size={32} name="arrow-circle-o-left" color="#fff" onClick={this.props.onSelectionMoveLeft} />
           );
         }
 
         if (!isTransition || isTransition && item.transitionNext && item.transitionNext.duration) {
           selectedContent.push(
-            <Icon size={32} name="remove" color="#F00" onClick={this.props.onSelectionRemove} />
+            <Icon key="middle" size={32} name="remove" color="#F00" onClick={this.props.onSelectionRemove} />
           );
         }
 
         if (!isTransition) {
           selectedContent.push(
-            <Icon size={32} name="arrow-circle-o-right" color="#fff" onClick={this.props.onSelectionMoveRight} />
+            <Icon key="right" size={32} name="arrow-circle-o-right" color="#fff" onClick={this.props.onSelectionMoveRight} />
           );
         }
 
-        selectedOverlay = <div style={selectedStyle}>
+        selectedOverlay = <div key="selectionOverlay" style={selectedStyle}>
           <div style={buttonsStyle}>{selectedContent}</div>
         </div>;
       }
