@@ -133,7 +133,9 @@ var Timeline = React.createClass({
 
   componentWillReceiveProps: function (newProps) {
     var props = this.props;
-    if (newProps.selectedItem && !_.isEqual(props.selectedItem, newProps.selectedItem)) {
+    if (newProps.selectedItem && 
+        (!_.isEqual(props.selectedItem, newProps.selectedItem) ||
+         this.props.diaporama !== newProps.diaporama)) {
       var node = this.refs.scrollcontainer.getDOMNode();
       var timeScale = this.state.timeScale;
       var scrollLeft = node.scrollLeft;
