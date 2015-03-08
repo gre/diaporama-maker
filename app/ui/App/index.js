@@ -10,6 +10,8 @@ var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 var Bootstrap = require("../Bootstrap");
+var LibraryImage = require("../LibraryImage");
+var translateStyle = require("../../core/translateStyle");
 
 function getWidth () {
   return Math.max(800, window.innerWidth);
@@ -41,6 +43,7 @@ var App = React.createClass({
       hoverTimeline: false,
       windowFocus: true,
       selectedItem: null,
+      libraryDrag: null,
       time: 0
     };
   },
@@ -106,6 +109,7 @@ var App = React.createClass({
     if (!this.state.windowFocus)
       this.setState({ windowFocus: true });
   },
+
   onBlur: function () {
     if (this.state.windowFocus)
       this.setState({ windowFocus: false });
@@ -113,6 +117,57 @@ var App = React.createClass({
 
   onResize: function () {
     this.resize(getWidth(), getHeight());
+  },
+
+  getEventStats: function (e) {
+    return {
+      at: [ e.clientX, e.clientY ],
+      time: Date.now()
+    };
+  },
+
+  onMouseMove: function (e) {
+    var libraryDrag = this.state.libraryDrag;
+    if (libraryDrag) {
+      var mouseMove = this.getEventStats(e);
+      this.setState({
+        libraryDrag: _.defaults({ drag: mouseMove }, this.state.libraryDrag)
+      });
+    }
+  },
+  
+  onMouseUp: function (e) {
+    var libraryDrag = this.state.libraryDrag;
+    if (libraryDrag) {
+      this.fromLibraryDrop(e, libraryDrag);
+    }
+  },
+
+  fromLibraryDrop: function (e, libraryDrag) {
+    var stats = this.getEventStats(e);
+
+    var timelineCollide = this.refs.timeline.collidesPosition(stats.at);
+    if (timelineCollide) {
+      var lookup = Diaporama.lookupSegment(this.state.diaporama, timelineCollide.time);
+      if (lookup) {
+        console.log(libraryDrag);
+        this.saveDiaporama( Diaporama.bootstrapImage(this.state.diaporama, libraryDrag.item.file, lookup.id).diaporama );
+      }
+    }
+
+    this.setState({
+      libraryDrag: null
+    });
+  },
+
+  fromLibraryDragStart: function (item, dragStart) {
+    this.setState({
+      libraryDrag: {
+        drag: dragStart,
+        dragStart: dragStart,
+        item: item
+      }
+    });
   },
 
   sync: function (diaporamaPromise) {
@@ -364,6 +419,7 @@ var App = React.createClass({
     var selectedItem = this.state.selectedItem;
     var time = this.state.time;
     var hoverTimeline = this.state.hoverTimeline;
+    var libraryDrag = this.state.libraryDrag;
 
     if (diaporama === undefined) return <div>Loading...</div>;
 
@@ -398,7 +454,31 @@ var App = React.createClass({
       height: H-viewerH
     };
 
-    return <div>
+    var draggingElement;
+
+    if (libraryDrag) {
+      var libraryDragStyle = _.extend({
+        position: "absolute",
+        left: 0,
+        top: 0,
+        zIndex: 1000
+      }, translateStyle(
+        libraryDrag.drag.at[0] - libraryDrag.dragStart.grab[0],
+        libraryDrag.drag.at[1] - libraryDrag.dragStart.grab[1]
+      ));
+      draggingElement = <LibraryImage
+        width={120}
+        height={80}
+        style={libraryDragStyle}
+        item={libraryDrag.item}
+        dragging={true}
+      />;
+    }
+
+    return <div
+      onMouseMove={this.onMouseMove}
+      onMouseUp={this.onMouseUp}
+    >
 
       <MainPanel
         bound={mainPanelBound}
@@ -410,6 +490,7 @@ var App = React.createClass({
         onSelectedImageEdit={this.onSelectedImageEdit}
         onSelectedTransitionEdit={this.onSelectedTransitionEdit}
         onSelectionRemove={this.onSelectionRemove}
+        onLibraryDragStart={this.fromLibraryDragStart}
       />
 
       <Viewer
@@ -418,6 +499,7 @@ var App = React.createClass({
         diaporama={diaporamaLocalized} />
 
       <Timeline
+        ref="timeline"
         time={time}
         onHoverEnter={this.onTimelineHoverEnter}
         onHoverLeave={this.onTimelineHoverLeave}
@@ -432,6 +514,8 @@ var App = React.createClass({
         onSelectionMoveRight={this.onSelectionMoveRight}
         onAddTransition={this.onAddTransition}
       />
+
+      {draggingElement}
 
     </div>;
   }

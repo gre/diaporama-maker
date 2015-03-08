@@ -36,6 +36,7 @@ var panels = {
         height={innerHeight}
         usedImages={_.pluck(diaporama.timeline, "image")}
         onAddToTimeline={this.props.onAddToTimeline}
+        onDragStart={this.props.onLibraryDragStart}
       />;
     }
   },

@@ -65,6 +65,7 @@ var Library = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var usedImages = this.props.usedImages;
+    var onDragStart = this.props.onDragStart;
 
     var headerHeight = 40;
     var contentHeight = (height - headerHeight);
@@ -81,7 +82,16 @@ var Library = React.createClass({
           self.onAddToTimeline(item.file);
         }
         if (item.type === "image") {
-          return <LibraryImage key={item.file} style={itemStyle} item={item} used={_.filter(usedImages, function (f) { return f === item.file; }).length} width={thumbnailWidth} height={thumbnailHeight} onAddToTimeline={onAddToTimeline} />;
+          return <LibraryImage
+            key={item.file}
+            width={thumbnailWidth}
+            height={thumbnailHeight}
+            style={itemStyle}
+            item={item}
+            used={_.filter(usedImages, function (f) { return f === item.file; }).length}
+            onAddToTimeline={onAddToTimeline}
+            onDragStart={onDragStart.bind(null, item)}
+            />;
         }
         else
           return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO

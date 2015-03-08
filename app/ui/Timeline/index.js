@@ -39,7 +39,6 @@ var Timeline = React.createClass({
     var scrollLeft = node.scrollLeft;
     x += scrollLeft;
     return [ x, y ];
-
   },
 
   getEventStats: function (e) {
@@ -51,6 +50,17 @@ var Timeline = React.createClass({
 
   eventPositionToTime: function (p) {
     return p[0] / this.state.timeScale;
+  },
+
+  collidesPosition: function (p) {
+    var node = this.getDOMNode();
+    var rect = node.getBoundingClientRect();
+    if (p[1] < rect.top || p[1] > rect.bottom) {
+      return null;
+    }
+    return {
+      time: this.eventPositionToTime(p)
+    };
   },
 
   onMouseMove: function (e) {
@@ -175,7 +185,7 @@ var Timeline = React.createClass({
         var selectedStyle = _.extend({
           zIndex: 50,
           backgroundColor: "rgba(200, 130, 0, 0.2)",
-          border: "2px dashed #fc0"
+          border: "2px solid #fc0"
         }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
 
         var selectedContent = [];
