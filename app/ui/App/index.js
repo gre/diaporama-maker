@@ -84,14 +84,14 @@ var App = React.createClass({
         break;
       case 37: // LEFT
         e.preventDefault();
-        if (e.metaKey || e.shiftKey)
+        if (e.metaKey || e.ctrlKey)
           this.onSelectionMoveLeft();
         else
           this.onSelectionLeft();
         break;
       case 39: // RIGHT
         e.preventDefault();
-        if (e.metaKey || e.shiftKey)
+        if (e.metaKey || e.ctrlKey)
           this.onSelectionMoveRight();
         else
           this.onSelectionRight();
