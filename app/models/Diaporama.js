@@ -56,17 +56,11 @@ Diaporama.bootstrap = function (options) {
 };
 
 Diaporama.save = function (diaporama) {
-  var copy = Diaporama.inlineTransitions(_.cloneDeep(diaporama));
-  if (copy.timeline) {
-    for (var i = 0; i < copy.timeline.length; ++i) {
-      delete copy.timeline[i].id;
-    }
-  }
   // TODO: replace with using network
   return Qajax({
     method: "POST",
     url: "/diaporama.json",
-    data: copy
+    data: Diaporama.inlineTransitions(Diaporama.clean(diaporama))
   })
   .then(Qajax.filterSuccess)
   .then(Qajax.toJSON);
@@ -88,14 +82,21 @@ Diaporama.fetch = function () {
   });
 };
 
-// TODO: these should be made more efficient
+Diaporama.clean = function (diaporama) {
+  var copy = Diaporama.inlineTransitions(_.cloneDeep(diaporama));
+  if (copy.timeline) {
+    for (var i = 0; i < copy.timeline.length; ++i) {
+      delete copy.timeline[i].id;
+    }
+  }
+  return copy;
+};
 
 Diaporama.timelineIndexOfId = function (diaporama, id) {
   var tl = diaporama.timeline;
-  for (var i=0; i < tl.length; ++i) {
+  for (var i=0; i < tl.length; ++i)
     if (tl[i].id === id)
       return i;
-  }
   return -1;
 };
 
@@ -105,14 +106,15 @@ Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
   for (var i=0; i < tl.length; ++i) {
     var el = tl[i];
     t += el.duration;
-    if (el.transitionNext) {
+    var tnext = el.transitionNext;
+    if (tnext) {
       if (el.id === id) {
         return {
           start: t,
-          end: t + el.transitionNext.duration
+          end: t + tnext.duration
         };
       }
-      t += el.transitionNext.duration;
+      t += tnext.duration;
     }
   }
 };

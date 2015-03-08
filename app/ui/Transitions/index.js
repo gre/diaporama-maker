@@ -1,7 +1,3 @@
-/**
- * TODO: rename to TransitionPicker
- */
-
 var React = require("react");
 var _ = require("lodash");
 var Vignette = require("glsl.io-client/src/ui/Vignette");

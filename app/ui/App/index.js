@@ -1,4 +1,5 @@
 var React = require("react");
+var _ = require("lodash");
 var raf = require("raf");
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
@@ -34,18 +35,60 @@ var App = React.createClass({
   },
 
   componentDidMount: function () {
-    window.addEventListener("blur", this.onblur);
-    window.addEventListener("focus", this.onfocus);
-    window.addEventListener("resize", this.onresize);
+    window.addEventListener("blur", this.onBlur);
+    window.addEventListener("focus", this.onFocus);
+    window.addEventListener("resize", this.onResize);
+    document.body.addEventListener("keydown", this.onKeyDown);
+    document.body.addEventListener("keyup", this.onKeyUp);
     this.sync(Diaporama.fetch()).done();
     this.startMainLoop();
   },
 
   componentWillUnmount: function () {
-    window.removeEventListener("blur", this.onblur);
-    window.removeEventListener("focus", this.onfocus);
-    window.removeEventListener("resize", this.onresize);
+    window.removeEventListener("blur", this.onBlur);
+    window.removeEventListener("focus", this.onFocus);
+    window.removeEventListener("resize", this.onResize);
+    document.body.removeEventListener("keydown", this.onKeyDown);
+    document.body.removeEventListener("keyup", this.onKeyUp);
     this.stopMainLoop();
+  },
+
+  onKeyDown: function (e) {
+    console.log("down", e.which);
+    switch (e.which) {
+      case 13: // ENTER
+        break;
+      case 46: // DELETE
+      case 8: // BACKSPACE
+        e.preventDefault();
+        this.onSelectionRemove();
+        break;
+      case 37: // LEFT
+        e.preventDefault();
+        this.onSelectionLeft();
+        break;
+      case 39: // RIGHT
+        e.preventDefault();
+        this.onSelectionRight();
+        break;
+    }
+  },
+
+  onKeyUp: function (e) {
+    console.log("up", e.which);
+  },
+
+  onFocus: function () {
+    if (!this.state.windowFocus)
+      this.setState({ windowFocus: true });
+  },
+  onBlur: function () {
+    if (this.state.windowFocus)
+      this.setState({ windowFocus: false });
+  },
+
+  onResize: function () {
+    this.resize(getWidth(), getHeight());
   },
 
   sync: function (diaporamaPromise) {
@@ -57,19 +100,6 @@ var App = React.createClass({
       });
       return diaporama;
     }, function skipErrors(){});
-  },
-
-  onfocus: function () {
-    if (!this.state.windowFocus)
-      this.setState({ windowFocus: true });
-  },
-  onblur: function () {
-    if (this.state.windowFocus)
-      this.setState({ windowFocus: false });
-  },
-
-  onresize: function () {
-    this.resize(getWidth(), getHeight());
   },
 
   resize: function (W, H) {
@@ -97,6 +127,60 @@ var App = React.createClass({
 
   addToTimeline: function (file) {
     this.saveDiaporama( Diaporama.timelineAdd(this.state.diaporama, file) );
+  },
+
+  onSelectionLeft: function () {
+    var selectedItem = this.state.selectedItem;
+    if (selectedItem) {
+      var index = Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) - 1;
+      var item = this.state.diaporama.timeline[index];
+      if (!item) {
+        this.onTimelineSelect(null);
+      }
+      else {
+        this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+      }
+    }
+  },
+
+  onSelectionRight: function () {
+    var selectedItem = this.state.selectedItem;
+    var index = !selectedItem ? 0 : Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) + 1;
+    var item = this.state.diaporama.timeline[index];
+    if (!item) {
+      this.onTimelineSelect(null);
+    }
+    else {
+      this.onTimelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+    }
+  },
+
+  onSelectionMoveLeft: function () {
+    var selectedItem = this.state.selectedItem;
+    if (selectedItem) {
+      if (!selectedItem.transition) {
+        this.onTimelineAction("moveLeft", selectedItem.id);
+      }
+    }
+  },
+  onSelectionMoveRight: function () {
+    var selectedItem = this.state.selectedItem;
+    if (selectedItem) {
+      if (!selectedItem.transition) {
+        this.onTimelineAction("moveRight", selectedItem.id);
+      }
+    }
+  },
+
+  onSelectionRemove: function () {
+    var selectedItem = this.state.selectedItem;
+    if (selectedItem) {
+      if (selectedItem.transition)
+        this.onRemoveTransition(selectedItem.id);
+      else
+        this.onTimelineAction("remove", selectedItem.id); // FIXME action should either be remove or replace by flux like actions
+      this.onTimelineSelect(null);
+    }
   },
 
   onTimelineHoverEnter: function () {
@@ -131,15 +215,13 @@ var App = React.createClass({
 
   onRemoveTransition: function (id) {
     this.saveDiaporama( Diaporama.removeTransition(this.state.diaporama, id) );
-    this.setState({
-      panel: this.state.panel === "editTransition" ? null : this.state.panel,
-      selectedItem: null
-    });
   },
 
   onTimelineSelect: function (selection) {
     this.setState({
-      panel: selection.transition ? "editTransition" : "editImage",
+      panel: selection ?
+        (selection.transition ? "editTransition" : "editImage") :
+        (this.state.panel === "editTransition" || this.state.panel === "editImage" ? null : this.state.panel),
       selectedItem: selection
     });
   },
@@ -281,10 +363,11 @@ var App = React.createClass({
         bound={timelineBound}
         diaporama={diaporama}
         selectedItem={selectedItem}
-        onAction={this.onTimelineAction}
         onSelect={this.onTimelineSelect}
+        onSelectionRemove={this.onSelectionRemove}
+        onSelectionMoveLeft={this.onSelectionMoveLeft}
+        onSelectionMoveRight={this.onSelectionMoveRight}
         onAddTransition={this.onAddTransition}
-        onRemoveTransition={this.onRemoveTransition}
       />
 
     </div>;

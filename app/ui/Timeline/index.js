@@ -131,33 +131,6 @@ var Timeline = React.createClass({
     }
   },
 
-  onSelectionMoveLeft: function () {
-    var selectedItem = this.props.selectedItem;
-    if (selectedItem) {
-      if (!selectedItem.transition) {
-        this.props.onAction("moveLeft", selectedItem.id);
-      }
-    }
-  },
-  onSelectionMoveRight: function () {
-    var selectedItem = this.props.selectedItem;
-    if (selectedItem) {
-      if (!selectedItem.transition) {
-        this.props.onAction("moveRight", selectedItem.id);
-      }
-    }
-  },
-
-  onSelectionRemove: function () {
-    var selectedItem = this.props.selectedItem;
-    if (selectedItem) {
-      if (selectedItem.transition)
-        this.props.onRemoveTransition(selectedItem.id);
-      else
-        this.props.onAction("remove", selectedItem.id); // FIXME action should either be remove or replace by flux like actions
-    }
-  },
-
   render: function () {
     var diaporama = this.props.diaporama;
     var timeline = diaporama.timeline;
@@ -217,19 +190,19 @@ var Timeline = React.createClass({
         var selectedContent = [];
         if (!isTransition) {
           selectedContent.push(
-            <Icon size={32} name="arrow-circle-o-left" color="#fff" onClick={this.onSelectionMoveLeft} />
+            <Icon size={32} name="arrow-circle-o-left" color="#fff" onClick={this.props.onSelectionMoveLeft} />
           );
         }
 
         if (!isTransition || isTransition && item.transitionNext && item.transitionNext.duration) {
           selectedContent.push(
-            <Icon size={32} name="remove" color="#F00" onClick={this.onSelectionRemove} />
+            <Icon size={32} name="remove" color="#F00" onClick={this.props.onSelectionRemove} />
           );
         }
 
         if (!isTransition) {
           selectedContent.push(
-            <Icon size={32} name="arrow-circle-o-right" color="#fff" onClick={this.onSelectionMoveRight} />
+            <Icon size={32} name="arrow-circle-o-right" color="#fff" onClick={this.props.onSelectionMoveRight} />
           );
         }
 

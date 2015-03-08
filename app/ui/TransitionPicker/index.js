@@ -107,26 +107,31 @@ var TransitionPicker = React.createClass({
       zIndex: 1000,
       background: "rgba(0,0,0,0.5)"
     };
-    var overlayPopinStyle = {
-      position: "absolute",
-      display: opened ? "block" : "none",
-      left: bounds[0]+"px",
-      top: bounds[1]+"px",
-      background: "#fff",
-      zIndex: 1001
-    };
+
+    var overlayPopin;
+
+    if (opened) {
+      var overlayPopinStyle = {
+        position: "absolute",
+        left: bounds[0]+"px",
+        top: bounds[1]+"px",
+        background: "#fff",
+        zIndex: 1001
+      };
+      overlayPopin =
+        <div style={overlayPopinStyle}>
+          <Transitions
+            width={bounds[2]}
+            height={bounds[3]}
+            onTransitionSelected={this.onTransitionSelected}
+          />
+        </div>;
+    }
 
     return <div style={{ position: "relative" }}>
       {vignette}
-      <div style={overlayStyle} onClick={this.onOverlayOutClick}>
-      </div>
-      <div style={overlayPopinStyle}>
-        <Transitions
-          width={bounds[2]}
-          height={bounds[3]}
-          onTransitionSelected={this.onTransitionSelected}
-        />
-      </div>
+      <div style={overlayStyle} onClick={this.onOverlayOutClick} />
+      {overlayPopin}
     </div>;
   }
 });
