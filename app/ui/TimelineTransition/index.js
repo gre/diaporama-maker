@@ -36,22 +36,16 @@ var SvgCrossFadeBackground = React.createClass({
 
 var TimelineTransition = React.createClass({
 
-  onDurationChange: function (e) {
-    this.props.onDurationChange(parseInt(e.target.value));
-  },
-
   render: function () {
     var xcenter = this.props.xcenter;
     var width = this.props.width;
     var height = this.props.height;
     var transition = this.props.transition;
-    var selected = this.props.selected;
 
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
     var x = Math.floor(xcenter - layerWidth/2);
     var editSize = 50;
-    var deleteSize = 30;
 
     var style = _.extend({
       color: "#fff",
@@ -93,12 +87,6 @@ var TimelineTransition = React.createClass({
       left: "0px",
     }, translateStyle(((layerWidth-editSize)/2), ((height-editSize)/2)));
 
-    var deleteIconStyle = _.extend({
-      position: "absolute",
-      bottom: "0px",
-      left: "0px"
-    }, translateStyle(((width-deleteSize)/2), 0));
-
     return <div style={style}>
       <div style={containerStyle}>
 
@@ -113,20 +101,11 @@ var TimelineTransition = React.createClass({
         </div>
         }
 
-      { !selected ? undefined : <div>
-      
         {transition ?
           undefined
             :
           <Icon style={editIconStyle} title="Add a transition" name="magic" color="#fff" size={editSize} onClick={this.props.onAdd} />
         }
-
-        {!transition ? undefined :
-          <Icon style={deleteIconStyle} title="Delete transition" name="remove" color="#f00" size={deleteSize} onClick={this.props.onRemove} />
-        }
-
-      </div>
-      }
 
       </div>
 

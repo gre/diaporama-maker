@@ -9,7 +9,8 @@ var ImageHolderMixin = {
     var self = this;
     img.onload = function () {
       if (self.onImageLoaded) self.onImageLoaded(img);
-      self.forceUpdate();
+      if (self.isMounted())
+        self.forceUpdate();
     };
     this.img = img;
   },

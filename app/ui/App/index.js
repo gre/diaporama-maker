@@ -131,6 +131,10 @@ var App = React.createClass({
 
   onRemoveTransition: function (id) {
     this.saveDiaporama( Diaporama.removeTransition(this.state.diaporama, id) );
+    this.setState({
+      panel: this.state.panel === "editTransition" ? null : this.state.panel,
+      selectedItem: null
+    });
   },
 
   onTimelineSelect: function (selection) {

@@ -37,7 +37,8 @@ var TransitionPicker = React.createClass({
       Q .all(this.props.images.map(Qimage.anonymously))
         .then(function (images) {
           this.images = images;
-          this.forceUpdate();
+          if (this.isMounted())
+            this.forceUpdate();
         }.bind(this))
         .done();
     }

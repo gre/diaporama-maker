@@ -7,6 +7,7 @@ var TimelineElement = require("../TimelineElement");
 var TimelineZoomControls = require("../TimelineZoomControls");
 var TimelineTransition = require("../TimelineTransition");
 var Diaporama = require("../../models/Diaporama");
+var Icon = require("../Icon");
 
 var TimelineCursor = React.createClass({
 
@@ -120,6 +121,33 @@ var Timeline = React.createClass({
     }
   },
 
+  onSelectionMoveLeft: function () {
+    var selectedItem = this.props.selectedItem;
+    if (selectedItem) {
+      if (!selectedItem.transition) {
+        this.props.onAction("moveLeft", selectedItem.id);
+      }
+    }
+  },
+  onSelectionMoveRight: function () {
+    var selectedItem = this.props.selectedItem;
+    if (selectedItem) {
+      if (!selectedItem.transition) {
+        this.props.onAction("moveRight", selectedItem.id);
+      }
+    }
+  },
+
+  onSelectionRemove: function () {
+    var selectedItem = this.props.selectedItem;
+    if (selectedItem) {
+      if (selectedItem.transition)
+        this.props.onRemoveTransition(selectedItem.id);
+      else
+        this.props.onAction("remove", selectedItem.id); // FIXME action should either be remove or replace by flux like actions
+    }
+  },
+
   render: function () {
     var diaporama = this.props.diaporama;
     var timeline = diaporama.timeline;
@@ -153,21 +181,51 @@ var Timeline = React.createClass({
     var prevTransitionWidth = 0;
     for (var i=0; i<timeline.length; ++i) {
       var item = timeline[i];
-      var transitionw = item.transitionNext && item.transitionNext.duration ? Math.round(timeScale * item.transitionNext.duration) : 0; // TODO the transition should be shown in cross-fade between images
+      var transitionw = item.transitionNext && item.transitionNext.duration ? Math.round(timeScale * item.transitionNext.duration) : 0;
 
-      var thumbw = transitionw/2 + prevTransitionWidth/2 + Math.round(timeScale * item.duration);
+      var onlyImageW = Math.round(timeScale * item.duration);
+      var thumbw = transitionw/2 + prevTransitionWidth/2 + onlyImageW;
 
       var currentSelected = selectedItem && selectedItem.id === item.id;
 
       if (currentSelected) {
-        var sx = selectedItem.transition ? x + thumbw - transitionw / 2 : x;
-        var sw = selectedItem.transition ? transitionw : thumbw;
+        var isTransition = selectedItem.transition;
+        var sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
+        var sw = isTransition ? transitionw : onlyImageW;
         var selectedStyle = _.extend({
           zIndex: 5,
           backgroundColor: "rgba(200, 130, 0, 0.2)",
           border: "2px dashed #fc0"
         }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
-        selectedOverlay = <div style={selectedStyle} />;
+        var buttonsStyle = {
+          textAlign: "center",
+          position: "absolute",
+          bottom: "0px",
+          width: "100%"
+        };
+
+        var selectedContent = [];
+        if (!isTransition) {
+          selectedContent.push(
+            <Icon size={32} name="arrow-circle-o-left" color="#fff" onClick={this.onSelectionMoveLeft} />
+          );
+        }
+
+        if (!isTransition || isTransition && item.transitionNext && item.transitionNext.duration) {
+          selectedContent.push(
+            <Icon size={32} name="remove" color="#F00" onClick={this.onSelectionRemove} />
+          );
+        }
+
+        if (!isTransition) {
+          selectedContent.push(
+            <Icon size={32} name="arrow-circle-o-right" color="#fff" onClick={this.onSelectionMoveRight} />
+          );
+        }
+
+        selectedOverlay = <div style={selectedStyle}>
+          <div style={buttonsStyle}>{selectedContent}</div>
+        </div>;
       }
 
       lineContent.push(
@@ -178,9 +236,6 @@ var Timeline = React.createClass({
           height={lineHeight}
           item={item}
           key={item.id}
-          onMoveLeft={this.props.onAction.bind(null, "moveLeft", item.id)}
-          onMoveRight={this.props.onAction.bind(null, "moveRight", item.id)}
-          onRemove={this.props.onAction.bind(null, "remove", item.id)}
         />
       );
 
@@ -193,7 +248,6 @@ var Timeline = React.createClass({
           transition={item.transitionNext}
           key={item.id+"@t"}
           onAdd={this.props.onAddTransition.bind(null, item.id)}
-          onRemove={this.props.onRemoveTransition.bind(null, item.id)}
         />
       );
 
