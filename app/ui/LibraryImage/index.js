@@ -1,7 +1,6 @@
 var React = require("react");
 var _ = require("lodash");
 var Thumbnail = require("../Thumbnail");
-var Icon = require("../Icon");
 
 var DRAG_DIST = 10;
 
@@ -92,11 +91,12 @@ var LibraryImage = React.createClass({
       opacity: !used ? 1 : 0.5
     };
 
-    var border = dragging ? 0 : 2;
+    var border = dragging ? 1 : 2;
     var thumbnailContainerStyle = {
       backgroundColor: "#000",
       border: border+"px solid",
-      borderColor: used ? "#000" : "#FC0"
+      borderColor: dragging||used ? "#000" : "#FC0",
+      boxShadow: !dragging ? "" : "0px 1px 12px rgba(0,0,0,1)"
     };
 
     var countUsageStyle = {
@@ -136,11 +136,6 @@ var LibraryImage = React.createClass({
       <div style={thumbnailContainerStyle}>
         <Thumbnail style={thumbnailStyle} width={width-2*border} height={height-2*border} image={item.url} />
       </div>
-      {!this.props.onAddToTimeline ? undefined :
-      <div className="actions">
-        <Icon name="level-down" color="#fff" onClick={this.props.onAddToTimeline} />
-      </div>
-      }
       { dragging ? undefined :
       <span style={titleStyle}>{item.file}</span>
       }

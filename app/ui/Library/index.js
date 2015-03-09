@@ -57,10 +57,6 @@ var Library = React.createClass({
     .done();
   },
 
-  onAddToTimeline: function (item) {
-    this.props.onAddToTimeline(item);
-  },
-
   render: function () {
     var width = this.props.width;
     var height = this.props.height;
@@ -75,12 +71,8 @@ var Library = React.createClass({
       display: "inline-block"
     };
 
-    var self = this;
     var items =
       this.state.items.map(function (item) {
-        function onAddToTimeline () {
-          self.onAddToTimeline(item.file);
-        }
         if (item.type === "image") {
           return <LibraryImage
             key={item.file}
@@ -89,7 +81,6 @@ var Library = React.createClass({
             style={itemStyle}
             item={item}
             used={_.filter(usedImages, function (f) { return f === item.file; }).length}
-            onAddToTimeline={onAddToTimeline}
             onDragStart={onDragStart.bind(null, item)}
             />;
         }

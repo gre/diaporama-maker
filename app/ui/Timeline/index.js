@@ -153,8 +153,23 @@ var Timeline = React.createClass({
     var lineTop = 16;
     var lineHeight = gridHeight - lineTop;
 
-    var headerStyle = { width: bound.width+"px", height: headerHeight+"px" };
-    var lineStyle = { top: lineTop+"px", width: bound.width+"px", height: lineHeight + "px" };
+    var style = _.extend({
+      background: "#fcfcfc"
+    }, boundToStyle(bound));
+
+    var headerStyle = {
+      width: bound.width+"px",
+      height: headerHeight+"px"
+    };
+    
+    var lineStyle = {
+      background: "#333",
+      position: "relative",
+      top: lineTop+"px",
+      width: bound.width+"px",
+      height: lineHeight + "px"
+    };
+
     var lineContainerStyle = {
       position: "absolute",
       zIndex: 1,
@@ -283,7 +298,7 @@ var Timeline = React.createClass({
 
     var gridWidth = Math.max(x, bound.width);
 
-    return <div className="timeline" style={boundToStyle(bound)}
+    return <div className="timeline" style={style}
       onMouseDown={this.onMouseDown}
       onMouseUp={this.onMouseUp}
       onMouseMove={this.onMouseMove}

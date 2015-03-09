@@ -13,6 +13,8 @@ var Bootstrap = require("../Bootstrap");
 var LibraryImage = require("../LibraryImage");
 var translateStyle = require("../../core/translateStyle");
 
+var DEFAULT_PANEL = "library";
+
 function getWidth () {
   return Math.max(800, window.innerWidth);
 }
@@ -39,7 +41,7 @@ var App = React.createClass({
       diaporamaLocalized: null,
       history: [], // used for undo
       undoHistory: [], // used for redo
-      panel: "library",
+      panel: DEFAULT_PANEL,
       hoverTimeline: false,
       windowFocus: true,
       selectedItem: null,
@@ -255,13 +257,6 @@ var App = React.createClass({
     this._save(newDiaporama);
   },
 
-  addToTimeline: function (file) {
-    var afterId = this.state.selectedItem && this.state.selectedItem.id;
-    var result = Diaporama.bootstrapImage(this.state.diaporama, file, afterId);
-    this.saveDiaporama( result.diaporama );
-    this.timelineSelect({ id: result.newItem.id, transition: false }, true);
-  },
-
   onSelectionLeft: function () {
     var selectedItem = this.state.selectedItem;
     if (selectedItem) {
@@ -337,7 +332,7 @@ var App = React.createClass({
     this.setState({
       panel: selection ?
         (preservePanel ? this.state.panel : (selection.transition ? "editTransition" : "editImage")) :
-        (this.state.panel === "editTransition" || this.state.panel === "editImage" ? null : this.state.panel),
+        (this.state.panel === "editTransition" || this.state.panel === "editImage" ? DEFAULT_PANEL : this.state.panel),
       selectedItem: selection
     });
   },
@@ -484,7 +479,6 @@ var App = React.createClass({
         panel={panel}
         selectedItem={selectedItem}
         diaporama={diaporama}
-        onAddToTimeline={this.addToTimeline}
         onNav={this.onNav}
         onSelectedImageEdit={this.onSelectedImageEdit}
         onSelectedTransitionEdit={this.onSelectedTransitionEdit}
