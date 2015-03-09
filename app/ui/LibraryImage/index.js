@@ -1,79 +1,16 @@
 var React = require("react");
 var _ = require("lodash");
 var Thumbnail = require("../Thumbnail");
-
-var DRAG_DIST = 10;
+var DraggableMixin = require("../../mixins/DraggableMixin");
 
 var LibraryImage = React.createClass({
+
+  mixins: [ DraggableMixin ],
 
   getDefaultProps: function () {
     return {
       used: 0
     };
-  },
-
-  getInitialState: function () {
-    return {
-      mouseDown: null
-    };
-  },
-
-  getEventStats: function (e) {
-    return {
-      at: [ e.clientX, e.clientY ],
-      time: Date.now()
-    };
-  },
-
-  onMouseDown: function (e) {
-    e.preventDefault();
-    var mouseDown = this.getEventStats(e);
-    this.setState({
-      mouseDown: mouseDown
-    });
-  },
-
-  onMouseMove: function (e) {
-    var mouseDown = this.state.mouseDown;
-    if (!mouseDown) return;
-    e.preventDefault();
-    var mouseMove = this.getEventStats(e);
-    var delta = [ mouseMove.at[0] - mouseDown.at[0], mouseMove.at[1] - mouseDown.at[1] ];
-    var dist2 = delta[0] * delta[0] + delta[1] * delta[1];
-    if (dist2 > DRAG_DIST * DRAG_DIST) {
-      this.onDragStart(mouseMove);
-      this.setState({
-        mouseDown: null
-      });
-    }
-  },
-
-  onMouseUp: function () {
-    this.setState({
-      mouseDown: null
-    });
-  },
-
-  onMouseLeave: function (e) {
-    var mouseDown = this.state.mouseDown;
-    if (mouseDown) {
-      var mouseLeave = this.getEventStats(e);
-      this.onDragStart(mouseLeave);
-      this.setState({
-        mouseDown: null
-      });
-    }
-  },
-
-  onDragStart: function (e) {
-    var node = this.getDOMNode();
-    var rect = node.getBoundingClientRect();
-    e.grab = [
-      e.at[0] - rect.left,
-      e.at[1] - rect.top
-    ];
-    if (this.props.onDragStart)
-      this.props.onDragStart(e);
   },
 
   render: function () {
@@ -123,10 +60,7 @@ var LibraryImage = React.createClass({
       className="library-image item"
       title={item.file}
       style={style}
-      onMouseDown={this.onMouseDown}
-      onMouseMove={this.onMouseMove}
-      onMouseUp={this.onMouseUp}
-      onMouseLeave={this.onMouseLeave}
+      {...this.draggableProps()}
     >
       { !used ? undefined :
         <span style={countUsageStyle}>

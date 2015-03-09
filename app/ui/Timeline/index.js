@@ -9,6 +9,9 @@ var TimelineTransition = require("../TimelineTransition");
 var Diaporama = require("../../models/Diaporama");
 var Icon = require("../Icon");
 var TimelineCursor = require("./TimelineCursor");
+var uiConstants = require("../../constants");
+
+var MIN_DRAG_2 = uiConstants.MIN_DRAG_THRESHOLD * uiConstants.MIN_DRAG_THRESHOLD;
 
 var Timeline = React.createClass({
 
@@ -17,6 +20,21 @@ var Timeline = React.createClass({
   propTypes: {
     diaporama: React.PropTypes.object.isRequired
   },
+
+  // Exposed Methods
+
+  collidesPosition: function (p) {
+    var node = this.getDOMNode();
+    var rect = node.getBoundingClientRect();
+    if (p[1] < rect.top || p[1] > rect.bottom) {
+      return null;
+    }
+    return {
+      time: this.eventPositionToTime(p)
+    };
+  },
+
+  //////
 
   getInitialState: function () {
     return {
@@ -52,15 +70,11 @@ var Timeline = React.createClass({
     return p[0] / this.state.timeScale;
   },
 
-  collidesPosition: function (p) {
-    var node = this.getDOMNode();
-    var rect = node.getBoundingClientRect();
-    if (p[1] < rect.top || p[1] > rect.bottom) {
-      return null;
-    }
-    return {
-      time: this.eventPositionToTime(p)
-    };
+  onMouseDown: function (e) {
+    var mouseDown = this.getEventStats(e);
+    this.setState({
+      mouseDown: mouseDown
+    });
   },
 
   onMouseMove: function (e) {
@@ -68,16 +82,6 @@ var Timeline = React.createClass({
     if (!cb) return;
     var mouseMove = this.getEventStats(e);
     cb(this.eventPositionToTime(mouseMove.at));
-    if (this.state.mouseDown) {
-      // ...
-    }
-  },
-
-  onMouseDown: function (e) {
-    var mouseDown = this.getEventStats(e);
-    this.setState({
-      mouseDown: mouseDown
-    });
   },
 
   onMouseUp: function (e) {
@@ -87,7 +91,7 @@ var Timeline = React.createClass({
       var deltaT = mouseUp.time - mouseDown.time;
       var delta = [ mouseUp.at[0] - mouseDown.at[0], mouseUp.at[1] - mouseDown.at[1] ];
       var dist2 = delta[0] * delta[0] + delta[1] * delta[1];
-      if (dist2 < 5*5 && deltaT < 300) {
+      if (dist2 < MIN_DRAG_2 && deltaT < 300) {
         // That's a tap
         this.onTap(mouseUp.at);
       }
