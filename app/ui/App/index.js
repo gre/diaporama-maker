@@ -10,8 +10,6 @@ var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 var Bootstrap = require("../Bootstrap");
-var LibraryImage = require("../LibraryImage");
-var translateStyle = require("../../core/translateStyle");
 
 var DEFAULT_PANEL = "library";
 
@@ -45,7 +43,6 @@ var App = React.createClass({
       hoverTimeline: false,
       windowFocus: true,
       selectedItem: null,
-      libraryDrag: null,
       time: 0
     };
   },
@@ -128,47 +125,10 @@ var App = React.createClass({
     };
   },
 
-  onMouseMove: function (e) {
-    var libraryDrag = this.state.libraryDrag;
-    if (libraryDrag) {
-      var mouseMove = this.getEventStats(e);
-      this.setState({
-        libraryDrag: _.defaults({ drag: mouseMove }, this.state.libraryDrag)
-      });
-    }
-  },
-  
-  onMouseUp: function (e) {
-    var libraryDrag = this.state.libraryDrag;
-    if (libraryDrag) {
-      this.fromLibraryDrop(e, libraryDrag);
-    }
-  },
-
-  fromLibraryDrop: function (e, libraryDrag) {
-    var stats = this.getEventStats(e);
-
-    var timelineCollide = this.refs.timeline.collidesPosition(stats.at);
-    if (timelineCollide) {
-      var lookup = Diaporama.lookupSegment(this.state.diaporama, timelineCollide.time);
-      this.saveDiaporama(
-        Diaporama.bootstrapImage(this.state.diaporama, libraryDrag.item.file, lookup && lookup.id || null).diaporama
-      );
-    }
-
-    this.setState({
-      libraryDrag: null
-    });
-  },
-
-  fromLibraryDragStart: function (item, dragStart) {
-    this.setState({
-      libraryDrag: {
-        drag: dragStart,
-        dragStart: dragStart,
-        item: item
-      }
-    });
+  onImageDrop: function (img, after) {
+    this.saveDiaporama(
+      Diaporama.bootstrapImage(this.state.diaporama, img, after && after.id || null).diaporama
+    );
   },
 
   sync: function (diaporamaPromise) {
@@ -413,7 +373,6 @@ var App = React.createClass({
     var selectedItem = this.state.selectedItem;
     var time = this.state.time;
     var hoverTimeline = this.state.hoverTimeline;
-    var libraryDrag = this.state.libraryDrag;
 
     if (diaporama === undefined) return <div>Loading...</div>;
 
@@ -448,31 +407,7 @@ var App = React.createClass({
       height: H-viewerH
     };
 
-    var draggingElement;
-
-    if (libraryDrag) {
-      var libraryDragStyle = _.extend({
-        position: "absolute",
-        left: 0,
-        top: 0,
-        zIndex: 1000
-      }, translateStyle(
-        libraryDrag.drag.at[0] - libraryDrag.dragStart.grab[0],
-        libraryDrag.drag.at[1] - libraryDrag.dragStart.grab[1]
-      ));
-      draggingElement = <LibraryImage
-        width={120}
-        height={80}
-        style={libraryDragStyle}
-        item={libraryDrag.item}
-        dragging={true}
-      />;
-    }
-
-    return <div
-      onMouseMove={this.onMouseMove}
-      onMouseUp={this.onMouseUp}
-    >
+    return <div>
 
       <MainPanel
         bound={mainPanelBound}
@@ -506,9 +441,8 @@ var App = React.createClass({
         onSelectionMoveLeft={this.onSelectionMoveLeft}
         onSelectionMoveRight={this.onSelectionMoveRight}
         onAddTransition={this.onAddTransition}
+        onImageDrop={this.onImageDrop}
       />
-
-      {draggingElement}
 
     </div>;
   }

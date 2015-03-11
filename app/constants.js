@@ -1,3 +1,6 @@
 module.exports = {
-  MIN_DRAG_THRESHOLD: 10
+  MIN_DRAG_THRESHOLD: 10,
+  DragItems: {
+    IMAGE: 'image'
+  }
 };

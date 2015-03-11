@@ -61,7 +61,6 @@ var Library = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var usedImages = this.props.usedImages;
-    var onDragStart = this.props.onDragStart;
 
     var headerHeight = 40;
     var contentHeight = (height - headerHeight);
@@ -81,7 +80,6 @@ var Library = React.createClass({
             style={itemStyle}
             item={item}
             used={_.filter(usedImages, function (f) { return f === item.file; }).length}
-            onDragStart={onDragStart.bind(null, item)}
             />;
         }
         else

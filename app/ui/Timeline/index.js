@@ -9,13 +9,28 @@ var TimelineTransition = require("../TimelineTransition");
 var Diaporama = require("../../models/Diaporama");
 var Icon = require("../Icon");
 var TimelineCursor = require("./TimelineCursor");
-var uiConstants = require("../../constants");
-
-var MIN_DRAG_2 = uiConstants.MIN_DRAG_THRESHOLD * uiConstants.MIN_DRAG_THRESHOLD;
+var DragItems = require("../../constants").DragItems;
+var DragDropMixin = require('react-dnd').DragDropMixin;
 
 var Timeline = React.createClass({
 
-  mixins: [ PromiseMixin ],
+  mixins: [ PromiseMixin, DragDropMixin ],
+
+  statics: {
+    configureDragDrop: function (register, context) {
+      register(DragItems.IMAGE, {
+        dropTarget: {
+          acceptDrop: function (component, item) {
+            var initial = context.getInitialOffsetFromClient();
+            var delta = context.getCurrentOffsetDelta();
+            var time = component.timeForClientX(initial.x + delta.x);
+            var lookup = Diaporama.lookupSegment(component.props.diaporama, time);
+            component.props.onImageDrop(item.file, lookup);
+          }
+        }
+      });
+    }
+  },
 
   propTypes: {
     diaporama: React.PropTypes.object.isRequired
@@ -70,11 +85,10 @@ var Timeline = React.createClass({
     return p[0] / this.state.timeScale;
   },
 
-  onMouseDown: function (e) {
-    var mouseDown = this.getEventStats(e);
-    this.setState({
-      mouseDown: mouseDown
-    });
+  timeForClientX: function (x) {
+    var node = this.refs.scrollcontainer.getDOMNode();
+    var scrollLeft = node.scrollLeft;
+    return (x + scrollLeft) / this.state.timeScale;
   },
 
   onMouseMove: function (e) {
@@ -84,33 +98,16 @@ var Timeline = React.createClass({
     cb(this.eventPositionToTime(mouseMove.at));
   },
 
-  onMouseUp: function (e) {
-    var mouseDown = this.state.mouseDown;
-    if (mouseDown) {
-      var mouseUp = this.getEventStats(e);
-      var deltaT = mouseUp.time - mouseDown.time;
-      var delta = [ mouseUp.at[0] - mouseDown.at[0], mouseUp.at[1] - mouseDown.at[1] ];
-      var dist2 = delta[0] * delta[0] + delta[1] * delta[1];
-      if (dist2 < MIN_DRAG_2 && deltaT < 300) {
-        // That's a tap
-        this.onTap(mouseUp.at);
-      }
-      this.setState({ mouseDown: null });
-    }
-  },
-
   onMouseEnter: function () {
     this.props.onHoverEnter();
   },
 
   onMouseLeave: function () {
     this.props.onHoverLeave();
-    if (this.state.mouseDown) {
-      this.setState({ mouseDown: null });
-    }
   },
 
-  onTap: function (pos) {
+  onClick: function (e) {
+    var pos = this.getEventPosition(e);
     var lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
     if (lookup && !_.isEqual(lookup, this.props.selectedItem)) {
       this.props.onSelect(lookup);
@@ -303,8 +300,8 @@ var Timeline = React.createClass({
     var gridWidth = Math.max(x, bound.width);
 
     return <div className="timeline" style={style}
-      onMouseDown={this.onMouseDown}
-      onMouseUp={this.onMouseUp}
+      {...this.dropTargetFor(DragItems.IMAGE)}
+      onClick={this.onClick}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>

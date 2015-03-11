@@ -1,11 +1,26 @@
 var React = require("react");
 var _ = require("lodash");
 var Thumbnail = require("../Thumbnail");
-var DraggableMixin = require("../../mixins/DraggableMixin");
+var DragItems = require("../../constants").DragItems;
+var DragDropMixin = require('react-dnd').DragDropMixin;
 
 var LibraryImage = React.createClass({
 
-  mixins: [ DraggableMixin ],
+  mixins: [DragDropMixin],
+
+  statics: {
+    configureDragDrop: function (register) {
+      register(DragItems.IMAGE, {
+        dragSource: {
+          beginDrag: function (component) {
+            return {
+              item: component.props.item
+            };
+          }
+        }
+      });
+    }
+  },
 
   getDefaultProps: function () {
     return {
@@ -60,7 +75,7 @@ var LibraryImage = React.createClass({
       className="library-image item"
       title={item.file}
       style={style}
-      {...this.draggableProps()}
+      {...this.dragSourceFor(DragItems.IMAGE)}
     >
       { !used ? undefined :
         <span style={countUsageStyle}>
