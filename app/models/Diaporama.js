@@ -181,6 +181,42 @@ Diaporama.lookupSegment = function (diaporama, time) {
   return null;
 };
 
+Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
+  var tl = diaporama.timeline;
+  var t = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var item = tl[i];
+    var duration = item.duration || 0;
+    var tnext = item.transitionNext;
+    var tnextDuration = tnext && tnext.duration || 0;
+
+    if (t <= time && time <= t + duration) {
+      if (time <= t + duration/2) {
+        return {
+          before: item.id
+        };
+      }
+      else {
+        return {
+          after: item.id
+        };
+      }
+    }
+
+    t += duration;
+
+    if (tnext) {
+      if (t <= time && time <= t + tnextDuration) {
+        return {
+          after: item.id
+        };
+      }
+      t += tnextDuration;
+    }
+  }
+  return {};
+};
+
 Diaporama.setTimelineElement = function (diaporama, id, element) {
   var clone = _.cloneDeep(diaporama);
   var index = Diaporama.timelineIndexOfId(clone, id);
@@ -202,17 +238,23 @@ Diaporama.bootstrapTransition = function (diaporama, id) {
   });
 };
 
-Diaporama.bootstrapImage = function (diaporama, src, afterId) {
+Diaporama.bootstrapImage = function (diaporama, src, place) {
   var clone = _.cloneDeep(diaporama);
   // vvv  TODO not supported diaporama.maker.defaultImage  vvv
   var obj = genTimelineElementDefault(src);
   obj.id = newId();
-  if (afterId) {
-    var index = Diaporama.timelineIndexOfId(clone, afterId) + 1;
+  if ("after" in place) {
+    var index = Diaporama.timelineIndexOfId(clone, place.after) + 1;
     clone.timeline.splice(index, 0, obj);
   }
-  else
+  else if ("before" in place) {
+    var index = Diaporama.timelineIndexOfId(clone, place.before);
+    clone.timeline.splice(index, 0, obj);
+  }
+  else {
     clone.timeline.push(obj);
+  }
+
   return {
     newItem: obj,
     diaporama: clone

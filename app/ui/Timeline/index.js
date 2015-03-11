@@ -24,8 +24,8 @@ var Timeline = React.createClass({
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
-            var lookup = Diaporama.lookupSegment(component.props.diaporama, time);
-            component.props.onImageDrop(item.file, lookup);
+            var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+            component.props.onImageDrop(item.file, place);
           }
         }
       });
@@ -107,10 +107,14 @@ var Timeline = React.createClass({
   },
 
   onClick: function (e) {
+    if (e.target.nodeName === "I") return;
     var pos = this.getEventPosition(e);
     var lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
-    if (lookup && !_.isEqual(lookup, this.props.selectedItem)) {
-      this.props.onSelect(lookup);
+    if (lookup) {
+      if (_.isEqual(lookup, this.props.selectedItem))
+        this.props.onSelect(null);
+      else
+        this.props.onSelect(lookup);
     }
   },
 
@@ -148,6 +152,8 @@ var Timeline = React.createClass({
 
     var timeScale = this.state.timeScale;
 
+    var imageDropState = this.getDropState(DragItems.IMAGE);
+
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
     var gridTop = bound.height-gridHeight;
@@ -167,8 +173,10 @@ var Timeline = React.createClass({
       background: "#333",
       position: "relative",
       top: lineTop+"px",
-      width: bound.width+"px",
-      height: lineHeight + "px"
+      height: lineHeight+"px",
+      zIndex: 2,
+      opacity:
+        (imageDropState.isHovering ? 0.9 : 1.0)
     };
 
     var lineContainerStyle = {
@@ -176,6 +184,7 @@ var Timeline = React.createClass({
       zIndex: 1,
       top: gridTop+"px",
       left: "0px",
+      width: bound.width+"px",
       height: gridHeight+"px",
       overflow: "auto"
     };
@@ -298,6 +307,8 @@ var Timeline = React.createClass({
     }
 
     var gridWidth = Math.max(x, bound.width);
+
+    lineStyle.width = gridWidth+"px";
 
     return <div className="timeline" style={style}
       {...this.dropTargetFor(DragItems.IMAGE)}

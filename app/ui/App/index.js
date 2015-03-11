@@ -125,9 +125,9 @@ var App = React.createClass({
     };
   },
 
-  onImageDrop: function (img, after) {
+  onImageDrop: function (img, place) {
     this.saveDiaporama(
-      Diaporama.bootstrapImage(this.state.diaporama, img, after && after.id || null).diaporama
+      Diaporama.bootstrapImage(this.state.diaporama, img, place).diaporama
     );
   },
 
