@@ -323,38 +323,48 @@ var App = React.createClass({
     var self = this;
     var last;
     var p = 0;
+    // Main update loop like we can find it in games ;-)
     (function loop (t) {
       if (self._stop) return;
       raf(loop);
       if (!last) last = t;
       var dt = t - last;
       last = t;
+
+      // We do nothing when window is not focus (e.g; in tab)
+      if (!self.state.windowFocus) return;
+
       var panel = self.state.panel;
       var selectedItem = self.state.selectedItem;
       var diaporama = self.state.diaporama;
       var hoverTimeline = self.state.hoverTimeline;
-      if (hoverTimeline) return;
-      if (!self.state.windowFocus) return;
-      if (panel === "editTransition") {
-        var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItem.id);
-        if (interval) {
-          var duration = interval.end - interval.start;
-          p = (p + dt / duration) % 1;
-          var t = interval.start + duration * p;
-          self.setState({
-            time: t
-          });
+
+      if (self.refs.timeline)
+        self.refs.timeline.update(t, dt);
+
+      // Animate time when not hover and one of the edit panels
+      if (!hoverTimeline) {
+        if (panel === "editTransition") {
+          var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItem.id);
+          if (interval) {
+            var duration = interval.end - interval.start;
+            p = (p + dt / duration) % 1;
+            var t = interval.start + duration * p;
+            self.setState({
+              time: t
+            });
+          }
         }
-      }
-      else if (panel === "editImage") {
-        var interval = Diaporama.timelineTimeIntervalForId(diaporama, selectedItem.id);
-        if (interval) {
-          var duration = interval.end - interval.start;
-          p = ((duration * p + dt) / duration) % 1;
-          var t = interval.start + duration * p;
-          self.setState({
-            time: t
-          });
+        else if (panel === "editImage") {
+          var interval = Diaporama.timelineTimeIntervalForId(diaporama, selectedItem.id);
+          if (interval) {
+            var duration = interval.end - interval.start;
+            p = ((duration * p + dt) / duration) % 1;
+            var t = interval.start + duration * p;
+            self.setState({
+              time: t
+            });
+          }
         }
       }
     }());

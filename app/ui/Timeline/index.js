@@ -12,15 +12,42 @@ var TimelineCursor = require("./TimelineCursor");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
 
+function scrollSpeed (x, xtarget, normDist, speed) {
+  var dist = Math.abs(x - xtarget) / normDist;
+  return speed * Math.exp(-(dist * dist));
+}
+
+var trackDragOverX = function (context) {
+  return {
+    leave: function (component) {
+      component._dragOverX = null;
+    },
+    over: function (component) {
+      var initial = context.getInitialOffsetFromClient();
+      var delta = context.getCurrentOffsetDelta();
+      component._dragOverX = initial.x + delta.x;
+    },
+    acceptDrop: function (component) {
+      component._dragOverX = null;
+    },
+  };
+};
+
 var Timeline = React.createClass({
 
   mixins: [ PromiseMixin, DragDropMixin ],
 
   statics: {
     configureDragDrop: function (register, context) {
+      var track = trackDragOverX(context);
       register(DragItems.SLIDE, {
         dropTarget: {
+          enter: track.enter,
+          leave: track.leave,
+          over: track.over,
+
           acceptDrop: function (component, item) {
+            track.acceptDrop(component);
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
@@ -33,7 +60,12 @@ var Timeline = React.createClass({
       });
       register(DragItems.IMAGE, {
         dropTarget: {
+          enter: track.enter,
+          leave: track.leave,
+          over: track.over,
+
           acceptDrop: function (component, item) {
+            track.acceptDrop(component);
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
@@ -131,6 +163,10 @@ var Timeline = React.createClass({
     }
   },
 
+  componentWillMount: function () {
+    this._dragOverX = null;
+  },
+
   componentWillReceiveProps: function (newProps) {
     var props = this.props;
     if (newProps.selectedItem && 
@@ -156,6 +192,32 @@ var Timeline = React.createClass({
     }
   },
 
+  getAnyDropState: function () {
+    return _.reduce([
+      this.getDropState(DragItems.IMAGE),
+      this.getDropState(DragItems.SLIDE)
+    ], function (acc, state) {
+      if (state.isDragging)
+        acc.isDragging = true;
+      if (state.isHovering)
+        acc.isHovering = true;
+      return acc;
+    }, { isDragging: false, isHovering: false });
+  },
+
+  update: function (t, dt) {
+    var x = this._dragOverX;
+    if (x !== null) {
+      var node = this.refs.scrollcontainer.getDOMNode();
+      var w = node.clientWidth;
+      var border = 10;
+      var normDist = w / 4;
+      var speed = 2;
+      var dx = - scrollSpeed(x, border, normDist, speed) + scrollSpeed(x, w-border, normDist, speed);
+      node.scrollLeft += dx * dt;
+    }
+  },
+
   render: function () {
     var diaporama = this.props.diaporama;
     var timeline = diaporama.timeline;
@@ -165,7 +227,7 @@ var Timeline = React.createClass({
 
     var timeScale = this.state.timeScale;
 
-    var imageDropState = this.getDropState(DragItems.IMAGE);
+    var anyDropState = this.getAnyDropState();
 
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
@@ -189,7 +251,7 @@ var Timeline = React.createClass({
       height: lineHeight+"px",
       zIndex: 2,
       opacity:
-        (imageDropState.isHovering ? 0.9 : 1.0)
+        (anyDropState.isHovering ? 0.9 : 1.0)
     };
 
     var lineContainerStyle = {
