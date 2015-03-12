@@ -193,12 +193,14 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
     if (t <= time && time <= t + duration) {
       if (time <= t + duration/2) {
         return {
-          before: item.id
+          id: item.id,
+          before: true
         };
       }
       else {
         return {
-          after: item.id
+          id: item.id,
+          after: true
         };
       }
     }
@@ -214,7 +216,7 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
       t += tnextDuration;
     }
   }
-  return {};
+  return null;
 };
 
 Diaporama.setTimelineElement = function (diaporama, id, element) {
@@ -243,16 +245,16 @@ Diaporama.bootstrapImage = function (diaporama, src, place) {
   // vvv  TODO not supported diaporama.maker.defaultImage  vvv
   var obj = genTimelineElementDefault(src);
   obj.id = newId();
-  if ("after" in place) {
-    var index = Diaporama.timelineIndexOfId(clone, place.after) + 1;
-    clone.timeline.splice(index, 0, obj);
-  }
-  else if ("before" in place) {
-    var index = Diaporama.timelineIndexOfId(clone, place.before);
-    clone.timeline.splice(index, 0, obj);
-  }
-  else {
+  if (!place) {
     clone.timeline.push(obj);
+  }
+  else if (place.after) {
+    var afterIndex = Diaporama.timelineIndexOfId(clone, place.id) + 1;
+    clone.timeline.splice(afterIndex, 0, obj);
+  }
+  else if (place.before) {
+    var beforeIndex = Diaporama.timelineIndexOfId(clone, place.id);
+    clone.timeline.splice(beforeIndex, 0, obj);
   }
 
   return {
@@ -313,6 +315,14 @@ Diaporama.timelineMoveItemRight = function (diaporama, item) {
   var clone = _.cloneDeep(diaporama);
   Diaporama._swapTimelineItemTransitions(clone, index, index + 1);
   if (!item.transition) Diaporama._swapTimelineItem(clone, index, index + 1);
+  return clone;
+};
+
+Diaporama.timelineSwapItem = function (diaporama, a, b) {
+  var indexA = Diaporama.timelineIndexOfId(diaporama, a);
+  var indexB = Diaporama.timelineIndexOfId(diaporama, b);
+  var clone = _.cloneDeep(diaporama);
+  Diaporama._swapTimelineItem(clone, indexA, indexB);
   return clone;
 };
 

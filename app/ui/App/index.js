@@ -125,6 +125,12 @@ var App = React.createClass({
     };
   },
 
+  onSlideSwap: function (a, b) {
+    this.saveDiaporama(
+      Diaporama.timelineSwapItem(this.state.diaporama, a, b)
+    );
+  },
+
   onImageDrop: function (img, place) {
     this.saveDiaporama(
       Diaporama.bootstrapImage(this.state.diaporama, img, place).diaporama
@@ -248,6 +254,10 @@ var App = React.createClass({
     if (selectedItem) {
       this.saveDiaporama( Diaporama.timelineMoveItemRight(this.state.diaporama, selectedItem) );
     }
+  },
+
+  onSlideDropped: function (item) {
+    this.saveDiaporama( Diaporama.timelineRemoveItem(this.state.diaporama, item) );
   },
 
   onSelectionRemove: function () {
@@ -418,7 +428,7 @@ var App = React.createClass({
         onSelectedImageEdit={this.onSelectedImageEdit}
         onSelectedTransitionEdit={this.onSelectedTransitionEdit}
         onSelectionRemove={this.onSelectionRemove}
-        onLibraryDragStart={this.fromLibraryDragStart}
+        onSlideDropped={this.onSlideDropped}
       />
 
       <Viewer
@@ -442,6 +452,7 @@ var App = React.createClass({
         onSelectionMoveRight={this.onSelectionMoveRight}
         onAddTransition={this.onAddTransition}
         onImageDrop={this.onImageDrop}
+        onSlideSwap={this.onSlideSwap}
       />
 
     </div>;

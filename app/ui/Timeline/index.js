@@ -18,6 +18,19 @@ var Timeline = React.createClass({
 
   statics: {
     configureDragDrop: function (register, context) {
+      register(DragItems.SLIDE, {
+        dropTarget: {
+          acceptDrop: function (component, item) {
+            var initial = context.getInitialOffsetFromClient();
+            var delta = context.getCurrentOffsetDelta();
+            var time = component.timeForClientX(initial.x + delta.x);
+            var other = Diaporama.lookupSegment(component.props.diaporama, time);
+            if (other && other.id !== item.id) {
+              component.props.onSlideSwap(item.id, other.id);
+            }
+          }
+        }
+      });
       register(DragItems.IMAGE, {
         dropTarget: {
           acceptDrop: function (component, item) {
@@ -311,7 +324,7 @@ var Timeline = React.createClass({
     lineStyle.width = gridWidth+"px";
 
     return <div className="timeline" style={style}
-      {...this.dropTargetFor(DragItems.IMAGE)}
+      {...this.dropTargetFor(DragItems.IMAGE, DragItems.SLIDE)}
       onClick={this.onClick}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}

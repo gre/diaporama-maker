@@ -9,6 +9,8 @@ var Qajax = require("qajax");
 var isImage = require("../../../common/isImage");
 var toProjectUrl = require("../../core/toProjectUrl");
 var LibraryImage = require("../LibraryImage");
+var DragItems = require("../../constants").DragItems;
+var DragDropMixin = require('react-dnd').DragDropMixin;
 
 var thumbnailWidth = 120;
 var thumbnailHeight = 80;
@@ -31,6 +33,20 @@ function filesToItems (files) {
 }
 
 var Library = React.createClass({
+  
+  mixins: [DragDropMixin],
+
+  statics: {
+    configureDragDrop: function (register, context) {
+      register(DragItems.SLIDE, {
+        dropTarget: {
+          acceptDrop: function (component, item) {
+            component.props.onSlideDropped(item);
+          }
+        }
+      });
+    }
+  },
 
   getInitialState: function () {
     return {
@@ -86,7 +102,10 @@ var Library = React.createClass({
           return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO
       });
 
-    return <div className="library" style={{ width: width+"px", height: height+"px" }}>
+    return <div
+      {...this.dropTargetFor(DragItems.SLIDE)}
+      className="library"
+      style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>
       <div className="body" style={{ overflow: "auto", padding: "1px 5px", height: contentHeight+"px" }}>
         {items}

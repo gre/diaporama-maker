@@ -13,7 +13,8 @@ var TimelineCursor = React.createClass({
       top: 0,
       width: "2px",
       height: "100%",
-      background: "rgba(0,0,0,0.3)"
+      background: "rgba(0,0,0,0.3)",
+      pointerEvents: "none"
     };
     var headerStyle = {
       position: "absolute",
