@@ -64,6 +64,12 @@ var Timeline = React.createClass({
           leave: track.leave,
           over: track.over,
 
+          /*
+          getDropEffect: function () {
+            return "copy";
+          },
+          */
+
           acceptDrop: function (component, item) {
             track.acceptDrop(component);
             var initial = context.getInitialOffsetFromClient();

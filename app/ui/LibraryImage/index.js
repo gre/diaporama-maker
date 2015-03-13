@@ -3,6 +3,7 @@ var _ = require("lodash");
 var Thumbnail = require("../Thumbnail");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
+var transparentGif = require("../../core/transparent.gif");
 
 var LibraryImage = React.createClass({
 
@@ -14,7 +15,8 @@ var LibraryImage = React.createClass({
         dragSource: {
           beginDrag: function (component) {
             return {
-              item: component.props.item
+              item: component.props.item,
+              dragPreview: transparentGif
             };
           }
         }
@@ -71,11 +73,13 @@ var LibraryImage = React.createClass({
       textOverflow: "ellipsis"
     };
     
+    var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGE);
+
     return <div
       className="library-image item"
       title={item.file}
       style={style}
-      {...this.dragSourceFor(DragItems.IMAGE)}
+      {...maybeDragSource}
     >
       { !used ? undefined :
         <span style={countUsageStyle}>

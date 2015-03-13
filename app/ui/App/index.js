@@ -3,6 +3,7 @@ var _ = require("lodash");
 var raf = require("raf");
 var isUndo = require('is-undo-redo').undo;
 var isRedo = require('is-undo-redo').redo;
+var DragLayerMixin = require("react-dnd").DragLayerMixin;
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
@@ -10,6 +11,9 @@ var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 var Bootstrap = require("../Bootstrap");
+var DragItems = require("../../constants").DragItems;
+var translateStyle = require("../../core/translateStyle");
+var LibraryImage = require("../LibraryImage");
 
 var DEFAULT_PANEL = "library";
 
@@ -19,6 +23,35 @@ function getWidth () {
 function getHeight () {
   return Math.max(500, window.innerHeight);
 }
+
+var DragLayer = React.createClass({
+  mixins: [ DragLayerMixin ],
+
+  render: function () {
+    var state = this.getDragLayerState();
+    if (state.isDragging) {
+      var x = state.currentOffset.x;
+      var y = state.currentOffset.y;
+      switch (state.draggedItemType) {
+        case DragItems.IMAGE:
+          var style = _.extend({
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 9999,
+            pointerEvents: "none"
+          }, translateStyle(x ,y));
+          return <LibraryImage
+            style={style}
+            width={120}
+            height={80}
+            item={state.draggedItem}
+            dragging={true} />;
+      }
+    }
+    return <div />;
+  }
+});
 
 var App = React.createClass({
 
@@ -428,6 +461,8 @@ var App = React.createClass({
     };
 
     return <div>
+
+      <DragLayer />
 
       <MainPanel
         bound={mainPanelBound}
