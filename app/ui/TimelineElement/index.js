@@ -4,6 +4,7 @@ var toProjectUrl = require("../../core/toProjectUrl");
 var Thumbnail = require("../Thumbnail");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
+var transparentGif = require("../../core/transparent.gif");
 
 var TimelineElement = React.createClass({
 
@@ -14,7 +15,9 @@ var TimelineElement = React.createClass({
         dragSource: {
           beginDrag: function (component) {
             return {
-              item: component.props.item
+              item: component.props.item,
+              dragPreview: transparentGif,
+              effectsAllowed: ["none", "move"]
             };
           }
         }

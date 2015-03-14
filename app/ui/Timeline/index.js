@@ -11,6 +11,7 @@ var Icon = require("../Icon");
 var TimelineCursor = require("./TimelineCursor");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
+var transparentGif = require("../../core/transparent.gif");
 
 function scrollSpeed (x, xtarget, normDist, speed) {
   var dist = Math.abs(x - xtarget) / normDist;
@@ -33,6 +34,85 @@ var trackDragOverX = function (context) {
   };
 };
 
+var TimelineSelection = React.createClass({
+  mixins: [ DragDropMixin ],
+  propTypes: {
+    isTransition: React.PropTypes.bool,
+    item: React.PropTypes.object,
+    x: React.PropTypes.number,
+    width: React.PropTypes.number,
+    height: React.PropTypes.number,
+    onSelectionMoveLeft: React.PropTypes.func,
+    onSelectionMoveRight: React.PropTypes.func
+  },
+  statics: {
+    configureDragDrop: function (register) {
+      register(DragItems.SLIDE, {
+        dragSource: {
+          beginDrag: function (component) {
+            return {
+              item: component.props.item,
+              dragPreview: transparentGif,
+              effectsAllowed: ["none", "move"]
+            };
+          }
+        }
+      });
+    }
+  },
+  render: function () {
+    var isTransition = this.props.isTransition;
+    var x = this.props.x;
+    var width = this.props.width;
+    var height = this.props.height;
+
+    var selectedStyle = _.extend({
+      zIndex: 50,
+      backgroundColor: "rgba(200, 130, 0, 0.2)",
+      border: "2px solid #fc0"
+    }, boundToStyle({ x: x, y: 0, width: width, height: height }));
+
+    var selectedContent = [];
+    if (!isTransition) {
+      var leftStyle = {
+        position: "absolute",
+        bottom: "4px",
+        left: "8px"
+      };
+      selectedContent.push(
+        <Icon
+          style={leftStyle}
+          key="left"
+          size={32}
+          name="arrow-circle-o-left"
+          color="#fff"
+          onClick={this.props.onSelectionMoveLeft} />
+      );
+
+      var rightStyle = {
+        position: "absolute",
+        bottom: "4px",
+        right: "8px"
+      };
+      selectedContent.push(
+        <Icon
+          style={rightStyle}
+          key="right"
+          size={32}
+          name="arrow-circle-o-right"
+          color="#fff"
+          onClick={this.props.onSelectionMoveRight} />
+      );
+    }
+
+    return <div
+      style={selectedStyle}
+      {...this.dragSourceFor(DragItems.SLIDE)}>
+      {selectedContent}
+    </div>;
+  }
+});
+
 var Timeline = React.createClass({
 
   mixins: [ PromiseMixin, DragDropMixin ],
@@ -45,6 +125,10 @@ var Timeline = React.createClass({
           enter: track.enter,
           leave: track.leave,
           over: track.over,
+
+          getDropEffect: function () {
+            return "move";
+          },
 
           acceptDrop: function (component, item) {
             track.acceptDrop(component);
@@ -64,11 +148,9 @@ var Timeline = React.createClass({
           leave: track.leave,
           over: track.over,
 
-          /*
           getDropEffect: function () {
             return "copy";
           },
-          */
 
           acceptDrop: function (component, item) {
             track.acceptDrop(component);
@@ -214,6 +296,7 @@ var Timeline = React.createClass({
   update: function (t, dt) {
     var x = this._dragOverX;
     if (x !== null) {
+      // TODO FIXME: this is only good for Library -> Timeline d&d, for slide d&d, use relative offset only
       var node = this.refs.scrollcontainer.getDOMNode();
       var w = node.clientWidth;
       var border = 10;
@@ -288,48 +371,17 @@ var Timeline = React.createClass({
         var isTransition = selectedItem.transition;
         var sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
         var sw = isTransition ? transitionw : onlyImageW;
-        var selectedStyle = _.extend({
-          zIndex: 50,
-          backgroundColor: "rgba(200, 130, 0, 0.2)",
-          border: "2px solid #fc0"
-        }, boundToStyle({ x: sx, y: 0, width: sw, height: lineHeight }));
 
-        var selectedContent = [];
-        if (!isTransition) {
-          var leftStyle = {
-            position: "absolute",
-            bottom: "4px",
-            left: "8px"
-          };
-          selectedContent.push(
-            <Icon
-              style={leftStyle}
-              key="left"
-              size={32}
-              name="arrow-circle-o-left"
-              color="#fff"
-              onClick={this.props.onSelectionMoveLeft} />
-          );
-
-          var rightStyle = {
-            position: "absolute",
-            bottom: "4px",
-            right: "8px"
-          };
-          selectedContent.push(
-            <Icon
-              style={rightStyle}
-              key="right"
-              size={32}
-              name="arrow-circle-o-right"
-              color="#fff"
-              onClick={this.props.onSelectionMoveRight} />
-          );
-        }
-
-        selectedOverlay = <div key="selectionOverlay" style={selectedStyle}>
-          {selectedContent}
-        </div>;
+        selectedOverlay = <TimelineSelection
+          key="tl-selection"
+          isTransition={selectedItem.transition}
+          item={item}
+          x={sx}
+          width={sw}
+          height={lineHeight}
+          onSelectionMoveLeft={this.props.onSelectionMoveLeft}
+          onSelectionMoveRight={this.props.onSelectionMoveRight}
+        />;
       }
 
       lineContent.push(

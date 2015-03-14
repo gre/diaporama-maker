@@ -13,6 +13,7 @@ var Timeline = require("../Timeline");
 var Bootstrap = require("../Bootstrap");
 var DragItems = require("../../constants").DragItems;
 var translateStyle = require("../../core/translateStyle");
+var toProjectUrl = require("../../core/toProjectUrl");
 var LibraryImage = require("../LibraryImage");
 
 var DEFAULT_PANEL = "library";
@@ -29,18 +30,33 @@ var DragLayer = React.createClass({
 
   render: function () {
     var state = this.getDragLayerState();
+
     if (state.isDragging) {
-      var x = state.currentOffset.x;
-      var y = state.currentOffset.y;
+      var style = {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        zIndex: 9999,
+        pointerEvents: "none"
+      };
+
       switch (state.draggedItemType) {
+        case DragItems.SLIDE:
+          _.extend(style, translateStyle(
+            state.currentOffsetFromClient.x - 100,
+            state.currentOffsetFromClient.y - 75
+          ));
+          // Hack: for now use LibraryImage
+          return <LibraryImage
+            style={style}
+            width={200}
+            height={150}
+            item={{ url: toProjectUrl(state.draggedItem.image), file: state.draggedItem.image }}
+            dragging={true}
+          />;
+
         case DragItems.IMAGE:
-          var style = _.extend({
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 9999,
-            pointerEvents: "none"
-          }, translateStyle(x ,y));
+          _.extend(style, translateStyle(state.currentOffset.x, state.currentOffset.y));
           return <LibraryImage
             style={style}
             width={120}

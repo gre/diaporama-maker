@@ -40,6 +40,9 @@ var Library = React.createClass({
     configureDragDrop: function (register, context) {
       register(DragItems.SLIDE, {
         dropTarget: {
+          getDropEffect: function () {
+            return "move";
+          },
           acceptDrop: function (component, item) {
             component.props.onSlideDropped(item);
           }

@@ -210,7 +210,8 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
     if (tnext) {
       if (t <= time && time <= t + tnextDuration) {
         return {
-          after: item.id
+          id: item.id,
+          after: true
         };
       }
       t += tnextDuration;

@@ -16,7 +16,8 @@ var LibraryImage = React.createClass({
           beginDrag: function (component) {
             return {
               item: component.props.item,
-              dragPreview: transparentGif
+              dragPreview: transparentGif,
+              effectsAllowed: ["none", "copy"]
             };
           }
         }

@@ -47,7 +47,7 @@
     "qretry": "^0.3.0",
     "raf": "^2.0.4",
     "react": "0.12.x",
-    "react-dnd": "^0.9.5",
+    "react-dnd": "git://github.com/gre/react-dnd#486328a5d34f2b856bb2f8b9ae9df2e5506624c8",
     "reactify": "^1.0.0",
     "rect-clamp": "0.0.0",
     "rect-crop": "0.0.0",
