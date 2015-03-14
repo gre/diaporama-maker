@@ -75,20 +75,21 @@ var TimelineTransition = React.createClass({
 
 
     var titleStyle = {
-      whiteSpace: "nowrap",
-      font: "monospace 9px #fff"
+      marginTop: "4px",
+      font: "normal 12px monospace",
+      color: "#fff"
     };
 
     return <div style={style}>
       <div style={containerStyle}>
 
-        <div>
-          <div style={titleStyle}>
+        <div style={titleStyle}>
+          <p>
             {transition.name || "fade"}
-          </div>
-          <div style={titleStyle}>
+          </p>
+          <p>
             {(transition.duration/1000)+"s"}
-          </div>
+          </p>
         </div>
 
       </div>
