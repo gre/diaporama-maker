@@ -11,6 +11,7 @@ var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
 var DiaporamaRecorderServer = require("diaporama-recorder/server");
+var Thumbnail = require("./Thumbnail");
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -100,7 +101,7 @@ module.exports = function server (diaporama, port) {
       .done();
   });
 
-  app.use("/preview", serverStatic('.'));
+  Thumbnail(app, "preview", ".");
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 
