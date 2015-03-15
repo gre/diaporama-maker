@@ -417,11 +417,18 @@ var actions = {
     return clone;
   },
 
-  moveItem: function (diaporama, a, b) {
-    var indexA = Diaporama.timelineIndexOfId(diaporama, a.id);
-    var indexB = Diaporama.timelineIndexOfId(diaporama, b.id);
+  moveItem: function (diaporama, itemPointer, place) {
+    if (!place) return;
     var clone = _.cloneDeep(diaporama);
-    swapTimelineSlide(clone, indexA, indexB);
+    var indexFrom = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
+    var indexTo = Diaporama.timelineIndexOfId(diaporama, place.id);
+    if (indexFrom === -1 || indexTo === -1) return;
+    if (indexTo === indexFrom) return;
+    var item = clone.timeline[indexFrom];
+    if (indexTo < indexFrom) indexTo ++;
+    if (place.before) indexTo --;
+    clone.timeline.splice(indexFrom, 1);
+    clone.timeline.splice(indexTo, 0, item);
     return clone;
   }
 

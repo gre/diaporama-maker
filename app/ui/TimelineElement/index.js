@@ -1,4 +1,5 @@
 var React = require("react");
+var _ = require("lodash");
 var translateStyle = require("../../core/translateStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
 var Thumbnail = require("../Thumbnail");
@@ -31,7 +32,11 @@ var TimelineElement = React.createClass({
     var height = this.props.height;
     var item = this.props.item;
 
-    var style = translateStyle(x, 0);
+    var dragState = this.getDragState(DragItems.SLIDE);
+
+    var style = _.extend({
+      opacity: dragState.isDragging ? 0.5 : 1
+    }, translateStyle(x, 0));
 
     return <div className="timeline-element"
       style={style}

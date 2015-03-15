@@ -22,14 +22,20 @@ var trackDragOverX = function (context) {
   return {
     leave: function (component) {
       component._dragOverX = null;
+      component.setState({ hoverPlace: null });
     },
     over: function (component) {
       var initial = context.getInitialOffsetFromClient();
       var delta = context.getCurrentOffsetDelta();
       component._dragOverX = initial.x + delta.x;
+      var time = component.timeForClientX(initial.x + delta.x);
+      var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+      if (!_.isEqual(component.state.place, place))
+        component.setState({ hoverPlace: place });
     },
     acceptDrop: function (component) {
       component._dragOverX = null;
+      component.setState({ hoverPlace: null });
     },
   };
 };
@@ -63,10 +69,8 @@ var Timeline = React.createClass({
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
-            var other = Diaporama.lookupSegment(component.props.diaporama, time);
-            if (other && other.id !== item.id) {
-              component.props.alterDiaporama("moveItem", item, other);
-            }
+            var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+            component.props.alterDiaporama("moveItem", item, place);
           }
         }
       });
@@ -110,6 +114,7 @@ var Timeline = React.createClass({
 
   getInitialState: function () {
     return {
+      hoverPlace: null,
       mouseDown: null,
       timeScale: 0.1 // pixels per milliseconds
     };
@@ -204,19 +209,6 @@ var Timeline = React.createClass({
     }
   },
 
-  getAnyDropState: function () {
-    return _.reduce([
-      this.getDropState(DragItems.IMAGE),
-      this.getDropState(DragItems.SLIDE)
-    ], function (acc, state) {
-      if (state.isDragging)
-        acc.isDragging = true;
-      if (state.isHovering)
-        acc.isHovering = true;
-      return acc;
-    }, { isDragging: false, isHovering: false });
-  },
-
   update: function (t, dt) {
     var x = this._dragOverX;
     if (x !== null) {
@@ -237,16 +229,14 @@ var Timeline = React.createClass({
     var bound = this.props.bound;
     var time = this.props.time;
     var selectedItemPointer = this.props.selectedItemPointer;
-
+    var hoverPlace = this.state.hoverPlace;
     var timeScale = this.state.timeScale;
-
-    var anyDropState = this.getAnyDropState();
 
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
     var gridTop = bound.height-gridHeight;
     var lineTop = 16;
-    var lineHeight = gridHeight - lineTop;
+    var lineHeight = gridHeight - lineTop - 2;
 
     var style = _.extend({
       background: "#fcfcfc"
@@ -262,9 +252,7 @@ var Timeline = React.createClass({
       position: "relative",
       top: lineTop+"px",
       height: lineHeight+"px",
-      zIndex: 2,
-      opacity:
-        (anyDropState.isHovering ? 0.9 : 1.0)
+      zIndex: 2
     };
 
     var lineContainerStyle = {
@@ -284,6 +272,11 @@ var Timeline = React.createClass({
     var prevTransitionWidth = 0;
     for (var i=0; i<timeline.length; ++i) {
       var item = timeline[i];
+      var next = timeline[i+1];
+      var spaceAfter = hoverPlace && (
+        hoverPlace.after && item.id === hoverPlace.id ||
+        hoverPlace.before && next && next.id === hoverPlace.id
+      );
       var transitionw = item.transitionNext && item.transitionNext.duration ? Math.round(timeScale * item.transitionNext.duration) : 0;
 
       var onlyImageW = Math.round(timeScale * item.duration);
@@ -353,12 +346,39 @@ var Timeline = React.createClass({
             name="magic"
             color="#fff"
             size={editSize}
-            onClick={this.props.alterDiaporama.bind(null, "bootstrapTransition", item.id)} />
+            onClick={this.props.alterDiaporama.bind(null, "bootstrapTransition", item.id)}
+          />
         );
       }
 
       prevTransitionWidth = transitionw;
       x += thumbw;
+
+      if (spaceAfter) {
+        var pad = 2;
+        var top = 6;
+        var cursorStyle = {
+          background: "#fc0",
+          position: "absolute",
+          top: "-"+top+"px",
+          left: Math.round(x-pad)+"px",
+          height: (lineHeight+top)+"px",
+          width: (2*pad)+"px",
+          zIndex: 52
+        };
+        var cursorIconStyle = {
+          position: "absolute",
+          top: "-14px",
+          left: (-10+pad)+"px",
+          color: "#fc0",
+          fontSize: 20
+        };
+        lineContent.push(
+          <div key="cursor" style={cursorStyle}>
+            <Icon style={cursorIconStyle} name="chevron-down" />
+          </div>
+        );
+      }
     }
     x += prevTransitionWidth/2;
 
