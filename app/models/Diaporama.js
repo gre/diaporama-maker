@@ -125,13 +125,13 @@ Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
     t += el.duration + (el.transitionNext && el.transitionNext.duration || 0);
   }
 };
-Diaporama.timelineTimeIntervalForItem = function (diaporama, item) {
+Diaporama.timelineTimeIntervalForItem = function (diaporama, itemPointer) {
   // TODO: ^ this should be the only method
-  if (item.transition) {
-    return Diaporama.timelineTimeIntervalForTransitionId(diaporama, item.id);
+  if (itemPointer.transition) {
+    return Diaporama.timelineTimeIntervalForTransitionId(diaporama, itemPointer.id);
   }
   else {
-    return Diaporama.timelineTimeIntervalForId(diaporama, item.id);
+    return Diaporama.timelineTimeIntervalForId(diaporama, itemPointer.id);
   }
 };
 
@@ -218,6 +218,56 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
     }
   }
   return null;
+};
+
+function roundDuration (d) {
+  return Math.round(d/100) * 100;
+}
+
+var minTransitionDuration = 100;
+var minSlideDuration = 100;
+
+// TODO: refactor all Diaporama.* alteration calls to this
+var actions = {
+  resizeRight: function (diaporama, itemPointer, dt) {
+    var i = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
+    if (i === -1) return diaporama;
+    var clone = _.cloneDeep(diaporama);
+    var item = clone.timeline[i];
+    if (itemPointer.transition)
+      item.transitionNext.duration = roundDuration(Math.max(minTransitionDuration, item.transitionNext.duration+dt));
+    else
+      item.duration = roundDuration(Math.max(minSlideDuration, item.duration+dt));
+    return clone;
+  },
+
+  resizeLeft: function (diaporama, itemPointer, dt) {
+    var i = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
+    if (i === -1) return diaporama;
+    if (i === 0 && !itemPointer.transition) return diaporama;
+    var clone = _.cloneDeep(diaporama);
+    var item = clone.timeline[i];
+    if (itemPointer.transition) {
+      dt = Math.max(minSlideDuration, item.duration + dt) - item.duration;
+      dt = item.transitionNext.duration - Math.max(minTransitionDuration, item.transitionNext.duration - dt);
+      item.duration = roundDuration(item.duration + dt);
+      item.transitionNext.duration = roundDuration(item.transitionNext.duration - dt);
+    }
+    else {
+      var prev = clone.timeline[i-1];
+      dt = Math.max(minTransitionDuration, prev.transitionNext.duration + dt) - prev.transitionNext.duration;
+      dt = item.duration - Math.max(minSlideDuration, item.duration - dt);
+      prev.transitionNext.duration = roundDuration(prev.transitionNext.duration + dt);
+      item.duration = roundDuration(item.duration - dt);
+    }
+    return clone;
+  }
+};
+
+Diaporama.alterDiaporama = function (diaporama, action, arg1, arg2) {
+  var f = actions[action];
+  if (!f) throw new Error("Action '"+action+"' not found.");
+  return f(diaporama, arg1, arg2);
 };
 
 Diaporama.setTimelineElement = function (diaporama, id, element) {

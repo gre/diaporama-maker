@@ -80,7 +80,7 @@ var TimelineTransition = React.createClass({
       color: "#fff"
     };
 
-    return <div style={style}>
+    return <div style={style} onClick={this.props.onClick}>
       <div style={containerStyle}>
 
         <div style={titleStyle}>

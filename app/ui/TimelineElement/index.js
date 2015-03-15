@@ -35,6 +35,7 @@ var TimelineElement = React.createClass({
 
     return <div className="timeline-element"
       style={style}
+      onClick={this.props.onClick}
       {...this.dragSourceFor(DragItems.SLIDE)}>
       <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
     </div>;

@@ -6,12 +6,12 @@ var TimelineGrid = require("../TimelineGrid");
 var TimelineElement = require("../TimelineElement");
 var TimelineZoomControls = require("../TimelineZoomControls");
 var TimelineTransition = require("../TimelineTransition");
+var TimelineSelection = require("./TimelineSelection");
 var Diaporama = require("../../models/Diaporama");
 var Icon = require("../Icon");
 var TimelineCursor = require("./TimelineCursor");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
-var transparentGif = require("../../core/transparent.gif");
 
 function scrollSpeed (x, xtarget, normDist, speed) {
   var dist = Math.abs(x - xtarget) / normDist;
@@ -34,88 +34,16 @@ var trackDragOverX = function (context) {
   };
 };
 
-var TimelineSelection = React.createClass({
-  mixins: [ DragDropMixin ],
-  propTypes: {
-    isTransition: React.PropTypes.bool,
-    item: React.PropTypes.object,
-    x: React.PropTypes.number,
-    width: React.PropTypes.number,
-    height: React.PropTypes.number,
-    onSelectionMoveLeft: React.PropTypes.func,
-    onSelectionMoveRight: React.PropTypes.func
-  },
-  statics: {
-    configureDragDrop: function (register) {
-      register(DragItems.SLIDE, {
-        dragSource: {
-          beginDrag: function (component) {
-            return {
-              item: component.props.item,
-              dragPreview: transparentGif,
-              effectsAllowed: ["none", "move"]
-            };
-          }
-        }
-      });
-    }
-  },
-  render: function () {
-    var isTransition = this.props.isTransition;
-    var x = this.props.x;
-    var width = this.props.width;
-    var height = this.props.height;
-
-    var selectedStyle = _.extend({
-      zIndex: 50,
-      backgroundColor: "rgba(200, 130, 0, 0.2)",
-      border: "2px solid #fc0"
-    }, boundToStyle({ x: x, y: 0, width: width, height: height }));
-
-    var selectedContent = [];
-    if (!isTransition) {
-      var leftStyle = {
-        position: "absolute",
-        bottom: "4px",
-        left: "8px"
-      };
-      selectedContent.push(
-        <Icon
-          style={leftStyle}
-          key="left"
-          size={32}
-          name="arrow-circle-o-left"
-          color="#fff"
-          onClick={this.props.onSelectionMoveLeft} />
-      );
-
-      var rightStyle = {
-        position: "absolute",
-        bottom: "4px",
-        right: "8px"
-      };
-      selectedContent.push(
-        <Icon
-          style={rightStyle}
-          key="right"
-          size={32}
-          name="arrow-circle-o-right"
-          color="#fff"
-          onClick={this.props.onSelectionMoveRight} />
-      );
-    }
-
-    return <div
-      style={selectedStyle}
-      {...this.dragSourceFor(DragItems.SLIDE)}>
-      {selectedContent}
-    </div>;
-  }
-});
 
 var Timeline = React.createClass({
 
   mixins: [ PromiseMixin, DragDropMixin ],
+
+  propTypes: {
+    diaporama: React.PropTypes.object.isRequired,
+    alterDiaporama: React.PropTypes.func.isRequired,
+    selectedItemPointer: React.PropTypes.object
+  },
 
   statics: {
     configureDragDrop: function (register, context) {
@@ -163,10 +91,6 @@ var Timeline = React.createClass({
         }
       });
     }
-  },
-
-  propTypes: {
-    diaporama: React.PropTypes.object.isRequired
   },
 
   // Exposed Methods
@@ -240,11 +164,11 @@ var Timeline = React.createClass({
   },
 
   onClick: function (e) {
-    if (e.target.nodeName === "I") return;
+    // TODO: the 'lookup' can be pass in instead of re-determined
     var pos = this.getEventPosition(e);
     var lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
     if (lookup) {
-      if (_.isEqual(lookup, this.props.selectedItem))
+      if (_.isEqual(lookup, this.props.selectedItemPointer))
         this.props.onSelect(null);
       else
         this.props.onSelect(lookup);
@@ -257,8 +181,8 @@ var Timeline = React.createClass({
 
   componentWillReceiveProps: function (newProps) {
     var props = this.props;
-    if (newProps.selectedItem && 
-        (!_.isEqual(props.selectedItem, newProps.selectedItem) ||
+    if (newProps.selectedItemPointer && 
+        (!_.isEqual(props.selectedItemPointer, newProps.selectedItemPointer) ||
          this.props.diaporama !== newProps.diaporama)) {
       var node = this.refs.scrollcontainer.getDOMNode();
       var timeScale = this.state.timeScale;
@@ -267,7 +191,7 @@ var Timeline = React.createClass({
       var scrollDuration = width / timeScale;
       var timeFrom = scrollLeft / timeScale;
       var timeTo = timeFrom + scrollDuration;
-      var interval = Diaporama.timelineTimeIntervalForItem(newProps.diaporama, newProps.selectedItem);
+      var interval = Diaporama.timelineTimeIntervalForItem(newProps.diaporama, newProps.selectedItemPointer);
       if (interval) {
         // Fix the scrolling by "window of width"
         if (interval.end < timeFrom) {
@@ -312,7 +236,7 @@ var Timeline = React.createClass({
     var timeline = diaporama.timeline;
     var bound = this.props.bound;
     var time = this.props.time;
-    var selectedItem = this.props.selectedItem;
+    var selectedItemPointer = this.props.selectedItemPointer;
 
     var timeScale = this.state.timeScale;
 
@@ -365,33 +289,35 @@ var Timeline = React.createClass({
       var onlyImageW = Math.round(timeScale * item.duration);
       var thumbw = transitionw/2 + prevTransitionWidth/2 + onlyImageW;
 
-      var currentSelected = selectedItem && selectedItem.id === item.id;
+      var currentSelected = selectedItemPointer && selectedItemPointer.id === item.id;
 
       if (currentSelected) {
-        var isTransition = selectedItem.transition;
+        var isTransition = selectedItemPointer.transition;
         var sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
         var sw = isTransition ? transitionw : onlyImageW;
 
         selectedOverlay = <TimelineSelection
           key="tl-selection"
-          isTransition={selectedItem.transition}
+          itemPointer={selectedItemPointer}
           item={item}
           x={sx}
           width={sw}
           height={lineHeight}
-          onSelectionMoveLeft={this.props.onSelectionMoveLeft}
-          onSelectionMoveRight={this.props.onSelectionMoveRight}
+          onClick={this.onClick}
+          timeScale={timeScale}
+          alterDiaporama={this.props.alterDiaporama}
         />;
       }
 
       lineContent.push(
         <TimelineElement
-          selected={currentSelected && !selectedItem.transition}
+          selected={currentSelected && !selectedItemPointer.transition}
           x={x}
           width={thumbw}
           height={lineHeight}
           item={item}
           key={item.id}
+          onClick={this.onClick}
         />
       );
 
@@ -399,11 +325,12 @@ var Timeline = React.createClass({
         lineContent.push(
           <TimelineTransition
             key={item.id+"@t"}
-            selected={currentSelected && selectedItem.transition}
+            selected={currentSelected && selectedItemPointer.transition}
             xcenter={x + thumbw}
             width={transitionw}
             height={lineHeight}
             transition={item.transitionNext}
+            onClick={this.onClick}
           />
         );
       }
@@ -445,7 +372,6 @@ var Timeline = React.createClass({
 
     return <div className="timeline" style={style}
       {...this.dropTargetFor(DragItems.IMAGE, DragItems.SLIDE)}
-      onClick={this.onClick}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>

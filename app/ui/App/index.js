@@ -91,7 +91,7 @@ var App = React.createClass({
       panel: DEFAULT_PANEL,
       hoverTimeline: false,
       windowFocus: true,
-      selectedItem: null,
+      selectedItemPointer: null,
       time: 0
     };
   },
@@ -273,35 +273,42 @@ var App = React.createClass({
   },
 
   onSelectionLeft: function () {
-    var selectedItem = this.state.selectedItem;
-    if (selectedItem) {
-      var index = Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) - 1;
+    var selectedItemPointer = this.state.selectedItemPointer;
+    if (selectedItemPointer) {
+      var index = Diaporama.timelineIndexOfId(this.state.diaporama, selectedItemPointer.id) - 1;
       var item = this.state.diaporama.timeline[index];
       if (item) {
-        this.timelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+        this.timelineSelect(_.defaults({ id: item.id }, selectedItemPointer||{}));
       }
     }
   },
 
   onSelectionRight: function () {
-    var selectedItem = this.state.selectedItem;
-    var index = !selectedItem ? 0 : Diaporama.timelineIndexOfId(this.state.diaporama, selectedItem.id) + 1;
+    var selectedItemPointer = this.state.selectedItemPointer;
+    var index = !selectedItemPointer ? 0 : Diaporama.timelineIndexOfId(this.state.diaporama, selectedItemPointer.id) + 1;
     var item = this.state.diaporama.timeline[index];
     if (item) {
-      this.timelineSelect(_.defaults({ id: item.id }, selectedItem||{}));
+      this.timelineSelect(_.defaults({ id: item.id }, selectedItemPointer||{}));
     }
   },
 
   onSelectionMoveLeft: function () {
-    var selectedItem = this.state.selectedItem;
-    if (selectedItem) {
-      this.saveDiaporama( Diaporama.timelineMoveItemLeft(this.state.diaporama, selectedItem) );
+    var selectedItemPointer = this.state.selectedItemPointer;
+    if (selectedItemPointer) {
+      this.saveDiaporama( Diaporama.timelineMoveItemLeft(this.state.diaporama, selectedItemPointer) );
     }
   },
   onSelectionMoveRight: function () {
-    var selectedItem = this.state.selectedItem;
-    if (selectedItem) {
-      this.saveDiaporama( Diaporama.timelineMoveItemRight(this.state.diaporama, selectedItem) );
+    var selectedItemPointer = this.state.selectedItemPointer;
+    if (selectedItemPointer) {
+      this.saveDiaporama( Diaporama.timelineMoveItemRight(this.state.diaporama, selectedItemPointer) );
+    }
+  },
+
+  alterDiaporama: function (action, arg1, arg2) {
+    var newDiaporama = Diaporama.alterDiaporama(this.state.diaporama, action, arg1, arg2);
+    if (newDiaporama) {
+      this.saveDiaporama(newDiaporama);
     }
   },
 
@@ -310,10 +317,10 @@ var App = React.createClass({
   },
 
   onSelectionRemove: function () {
-    var selectedItem = this.state.selectedItem;
-    if (selectedItem) {
-      this.saveDiaporama( Diaporama.timelineRemoveItem(this.state.diaporama, selectedItem) );
+    var selectedItemPointer = this.state.selectedItemPointer;
+    if (selectedItemPointer) {
       this.timelineSelect(null);
+      this.saveDiaporama( Diaporama.timelineRemoveItem(this.state.diaporama, selectedItemPointer) );
     }
   },
 
@@ -339,7 +346,7 @@ var App = React.createClass({
     this.saveDiaporama( Diaporama.bootstrapTransition(this.state.diaporama, id) );
     this.setState({
       panel: "editTransition",
-      selectedItem: { id: id, transition: true }
+      selectedItemPointer: { id: id, transition: true }
     });
   },
 
@@ -352,7 +359,7 @@ var App = React.createClass({
       panel: selection ?
         (preservePanel ? this.state.panel : (selection.transition ? "editTransition" : "editImage")) :
         (this.state.panel === "editTransition" || this.state.panel === "editImage" ? DEFAULT_PANEL : this.state.panel),
-      selectedItem: selection
+      selectedItemPointer: selection
     });
   },
 
@@ -384,7 +391,7 @@ var App = React.createClass({
       if (!self.state.windowFocus) return;
 
       var panel = self.state.panel;
-      var selectedItem = self.state.selectedItem;
+      var selectedItemPointer = self.state.selectedItemPointer;
       var diaporama = self.state.diaporama;
       var hoverTimeline = self.state.hoverTimeline;
 
@@ -393,25 +400,26 @@ var App = React.createClass({
 
       // Animate time when not hover and one of the edit panels
       if (!hoverTimeline) {
+        var time, interval, duration;
         if (panel === "editTransition") {
-          var interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItem.id);
+          interval = Diaporama.timelineTimeIntervalForTransitionId(diaporama, selectedItemPointer.id);
           if (interval) {
-            var duration = interval.end - interval.start;
+            duration = interval.end - interval.start;
             p = (p + dt / duration) % 1;
-            var t = interval.start + duration * p;
+            time = interval.start + duration * p;
             self.setState({
-              time: t
+              time: time
             });
           }
         }
         else if (panel === "editImage") {
-          var interval = Diaporama.timelineTimeIntervalForId(diaporama, selectedItem.id);
+          interval = Diaporama.timelineTimeIntervalForId(diaporama, selectedItemPointer.id);
           if (interval) {
-            var duration = interval.end - interval.start;
+            duration = interval.end - interval.start;
             p = ((duration * p + dt) / duration) % 1;
-            var t = interval.start + duration * p;
+            time = interval.start + duration * p;
             self.setState({
-              time: t
+              time: time
             });
           }
         }
@@ -420,14 +428,14 @@ var App = React.createClass({
   },
 
   onSelectedImageEdit: function (element) {
-    var id = this.state.selectedItem.id;
+    var id = this.state.selectedItemPointer.id;
     this.saveDiaporama(
       Diaporama.setTimelineElement(this.state.diaporama, id, element)
     );
   },
 
   onSelectedTransitionEdit: function (transitionNext) {
-    var id = this.state.selectedItem.id;
+    var id = this.state.selectedItemPointer.id;
     this.saveDiaporama(
       Diaporama.setTransition(this.state.diaporama, id, transitionNext)
     );
@@ -439,7 +447,7 @@ var App = React.createClass({
     var diaporama = this.state.diaporama;
     var diaporamaLocalized = this.state.diaporamaLocalized;
     var panel = this.state.panel;
-    var selectedItem = this.state.selectedItem;
+    var selectedItemPointer = this.state.selectedItemPointer;
     var time = this.state.time;
     var hoverTimeline = this.state.hoverTimeline;
 
@@ -483,7 +491,7 @@ var App = React.createClass({
       <MainPanel
         bound={mainPanelBound}
         panel={panel}
-        selectedItem={selectedItem}
+        selectedItemPointer={selectedItemPointer}
         diaporama={diaporama}
         onNav={this.onNav}
         onSelectedImageEdit={this.onSelectedImageEdit}
@@ -506,7 +514,7 @@ var App = React.createClass({
         hover={hoverTimeline}
         bound={timelineBound}
         diaporama={diaporama}
-        selectedItem={selectedItem}
+        selectedItemPointer={selectedItemPointer}
         onSelect={this.timelineSelect}
         onSelectionRemove={this.onSelectionRemove}
         onSelectionMoveLeft={this.onSelectionMoveLeft}
@@ -514,6 +522,8 @@ var App = React.createClass({
         onAddTransition={this.onAddTransition}
         onImageDrop={this.onImageDrop}
         onSlideSwap={this.onSlideSwap}
+
+        alterDiaporama={this.alterDiaporama}
       />
 
     </div>;

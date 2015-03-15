@@ -45,7 +45,7 @@ var panels = {
     icon: "picture-o",
     title: "Edit Image",
     render: function (innerWidth) {
-      var id = this.props.selectedItem.id;
+      var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
       if (!element) return <div>No Slide Selected.</div>;
@@ -62,7 +62,7 @@ var panels = {
     icon: "magic",
     title: "Edit Transition",
     render: function (innerWidth) {
-      var id = this.props.selectedItem.id;
+      var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
       if (!transitionInfos.transitionNext) return <div>No Transition Selected.</div>;
