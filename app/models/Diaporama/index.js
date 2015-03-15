@@ -1,11 +1,12 @@
 
 var _ = require("lodash");
+var Q = require("q");
 var Qajax = require("qajax");
-var transitions = require("./transitions");
+var transitions = require("../transitions");
 
-var toProjectUrl = require("../core/toProjectUrl");
-var network = require("../core/network");
-var genTimelineElementDefault = require("../../common/genTimelineElementDefault");
+var toProjectUrl = require("../../core/toProjectUrl");
+var network = require("../../core/network");
+var genTimelineElementDefault = require("../../../common/genTimelineElementDefault");
 
 var recorderClient = require("diaporama-recorder/client")(network);
 
@@ -22,9 +23,11 @@ function assignIds (json) {
   return json;
 }
 
-recorderClient.getFormats().subscribe(function (formats) {
-  console.log(formats);
-});
+var formatsD = Q.defer();
+recorderClient.getFormats().subscribe(formatsD.resolve, formatsD.reject);
+Diaporama.getFormats = function () {
+  return formatsD.promise;
+};
 
 Diaporama.generateVideo = function (diaporama, options) {
   recorderClient.generateVideo(Diaporama.localize(diaporama, true), options);
@@ -231,34 +234,46 @@ var minSlideDuration = 100;
 var actions = {
   resizeRight: function (diaporama, itemPointer, dt) {
     var i = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
-    if (i === -1) return diaporama;
+    if (i === -1) return;
     var clone = _.cloneDeep(diaporama);
     var item = clone.timeline[i];
-    if (itemPointer.transition)
-      item.transitionNext.duration = roundDuration(Math.max(minTransitionDuration, item.transitionNext.duration+dt));
-    else
-      item.duration = roundDuration(Math.max(minSlideDuration, item.duration+dt));
+    if (itemPointer.transition) {
+      var a = roundDuration(Math.max(minTransitionDuration, item.transitionNext.duration+dt));
+      if (item.transitionNext.duration === a) return;
+      item.transitionNext.duration = a;
+    }
+    else {
+      var b = roundDuration(Math.max(minSlideDuration, item.duration+dt));
+      if (item.duration === b) return;
+      item.duration = b;
+    }
     return clone;
   },
 
   resizeLeft: function (diaporama, itemPointer, dt) {
     var i = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
-    if (i === -1) return diaporama;
-    if (i === 0 && !itemPointer.transition) return diaporama;
+    if (i === -1) return;
+    if (i === 0 && !itemPointer.transition) return;
     var clone = _.cloneDeep(diaporama);
     var item = clone.timeline[i];
     if (itemPointer.transition) {
       dt = Math.max(minSlideDuration, item.duration + dt) - item.duration;
       dt = item.transitionNext.duration - Math.max(minTransitionDuration, item.transitionNext.duration - dt);
-      item.duration = roundDuration(item.duration + dt);
-      item.transitionNext.duration = roundDuration(item.transitionNext.duration - dt);
+      var a = roundDuration(item.duration + dt);
+      var b = roundDuration(item.transitionNext.duration - dt);
+      if (item.duration === a && item.transitionNext.duration === b) return;
+      item.duration = a;
+      item.transitionNext.duration = b;
     }
     else {
       var prev = clone.timeline[i-1];
       dt = Math.max(minTransitionDuration, prev.transitionNext.duration + dt) - prev.transitionNext.duration;
       dt = item.duration - Math.max(minSlideDuration, item.duration - dt);
-      prev.transitionNext.duration = roundDuration(prev.transitionNext.duration + dt);
-      item.duration = roundDuration(item.duration - dt);
+      var c = roundDuration(prev.transitionNext.duration + dt);
+      var d = roundDuration(item.duration - dt);
+      if (prev.transitionNext.duration === c && item.duration === d) return;
+      prev.transitionNext.duration = c;
+      item.duration = d;
     }
     return clone;
   }

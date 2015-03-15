@@ -216,7 +216,7 @@ var App = React.createClass({
       diaporama: newDiaporama,
       diaporamaLocalized: Diaporama.localize(newDiaporama)
     });
-    // TODO debounce it a bit ?
+    // TODO debounce it a bit
     // TODO better feedback on failure cases ?
     Diaporama.save(newDiaporama).done();
   },

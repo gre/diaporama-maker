@@ -42,11 +42,11 @@ var TimelineSelection = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
 
-    var handleWidth = 30;
+    var handleWidth = 20;
 
     var style = _.extend({
       zIndex: 50,
-      backgroundColor: "rgba(200, 130, 0, 0.2)",
+      backgroundColor: "rgba(200, 130, 0, 0.3)",
       border: "2px solid #fc0"
     }, boundToStyle({ x: x, y: 0, width: width, height: height }));
 
