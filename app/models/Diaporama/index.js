@@ -346,10 +346,12 @@ var actions = {
     var id = itemPointer.id;
     if (itemPointer.transition) {
       var el = Diaporama.timelineForId(clone, id);
+      if (value.duration < minTransitionDuration) value.duration = minTransitionDuration;
       el.transitionNext = value;
     }
     else {
       var index = Diaporama.timelineIndexOfId(clone, id);
+      if (value.duration < minSlideDuration) value.duration = minSlideDuration;
       clone.timeline[index] = value;
     }
     return clone;
