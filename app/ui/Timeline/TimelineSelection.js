@@ -54,6 +54,16 @@ var TimelineSelection = React.createClass({
       zIndex: 51
     }, boundToStyle({ x: handleWidth, y: 0, width: width-2*handleWidth, height: height }));
 
+    var durationStyle = {
+      textAlign: "center",
+      position: "absolute",
+      bottom: "6px",
+      width: (width-2*handleWidth)+"px",
+      font: "normal 12px monospace",
+      color: "#fc0",
+      textShadow: "0px 0px 1px rgba(0,0,0,1)"
+    };
+
     return <div style={style}>
       <TimelineSelectionResizeHandle
         left={true}
@@ -63,7 +73,11 @@ var TimelineSelection = React.createClass({
         referenceValue={itemPointer.transition ? item.duration : -item.duration}
         timeScale={timeScale}
       />
-      <div style={bodyStyle} onClick={this.props.onClick} {...this.dragSourceFor(DragItems.SLIDE)} />
+      <div style={bodyStyle} onClick={this.props.onClick} {...this.dragSourceFor(DragItems.SLIDE)}>
+      { itemPointer.transition ? undefined :
+        <span style={durationStyle}>{item.duration / 1000}s</span>
+      }
+      </div>
       <TimelineSelectionResizeHandle
         left={false}
         width={handleWidth}
