@@ -320,22 +320,26 @@ var actions = {
     var clone = _.cloneDeep(diaporama);
     var item = clone.timeline[i];
     if (itemPointer.transition) {
-      dt = Math.max(minSlideDuration, item.duration + dt) - item.duration;
-      dt = item.transitionNext.duration - Math.max(minTransitionDuration, item.transitionNext.duration - dt);
-      var a = roundDuration(item.duration + dt);
-      var b = roundDuration(item.transitionNext.duration - dt);
+      dt = Math.max(minSlideDuration, roundDuration(item.duration + dt)) - item.duration;
+      dt = item.transitionNext.duration - Math.max(minTransitionDuration, roundDuration(item.transitionNext.duration - dt));
+      var a = item.duration + dt;
+      var b = item.transitionNext.duration - dt;
       if (item.duration === a && item.transitionNext.duration === b) return;
       item.duration = a;
       item.transitionNext.duration = b;
     }
     else {
       var prev = clone.timeline[i-1];
-      dt = Math.max(minTransitionDuration, prev.transitionNext.duration + dt) - prev.transitionNext.duration;
-      dt = item.duration - Math.max(minSlideDuration, item.duration - dt);
-      var c = roundDuration(prev.transitionNext.duration + dt);
-      var d = roundDuration(item.duration - dt);
-      if (prev.transitionNext.duration === c && item.duration === d) return;
-      prev.transitionNext.duration = c;
+      var prevDur = prev.transitionNext ? prev.transitionNext.duration : prev.duration;
+      dt = Math.max(minTransitionDuration, roundDuration(prevDur + dt)) - prevDur;
+      dt = item.duration - Math.max(minSlideDuration, roundDuration(item.duration - dt));
+      var c = prevDur + dt;
+      var d = item.duration - dt;
+      if (prevDur === c && item.duration === d) return;
+      if (prev.transitionNext)
+        prev.transitionNext.duration = c;
+      else
+        prev.duration = c;
       item.duration = d;
     }
     return clone;
