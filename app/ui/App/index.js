@@ -157,6 +157,8 @@ var App = React.createClass({
   // Global Events
 
   onKeyDown: function (e) {
+    if (["INPUT", "SELECT", "BUTTON", "TEXTAREA"].indexOf(e.target.nodeName) !== -1)
+      return;
     if (isUndo(e)) {
       e.preventDefault();
       this.undo();
