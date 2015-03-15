@@ -35,8 +35,7 @@ var panels = {
         width={innerWidth}
         height={innerHeight}
         usedImages={_.pluck(diaporama.timeline, "image")}
-        onAddToTimeline={this.props.onAddToTimeline}
-        onSlideDropped={this.props.onSlideDropped}
+        alterDiaporama={this.props.alterDiaporama}
       />;
     }
   },
@@ -51,9 +50,9 @@ var panels = {
       if (!element) return <div>No Slide Selected.</div>;
       return <ImageCustomizer
         value={element}
-        onChange={this.props.onSelectedImageEdit}
+        onChange={this.props.alterSelection.bind(null, "setItem")}
         width={innerWidth}
-        onSelectionRemove={this.props.onSelectionRemove}
+        onRemove={this.props.alterSelection.bind(null, "removeItem")}
       />;
     }
   },
@@ -68,11 +67,11 @@ var panels = {
       if (!transitionInfos.transitionNext) return <div>No Transition Selected.</div>;
       return <TransitionCustomizer
         value={transitionInfos.transitionNext}
-        onChange={this.props.onSelectedTransitionEdit}
+        onChange={this.props.alterSelection.bind(null, "setItem")}
         width={innerWidth}
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
         animated={false}
-        onSelectionRemove={this.props.onSelectionRemove}
+        onRemove={this.props.alterSelection.bind(null, "removeItem")}
       />;
     }
   }

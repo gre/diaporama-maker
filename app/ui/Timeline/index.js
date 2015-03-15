@@ -65,7 +65,7 @@ var Timeline = React.createClass({
             var time = component.timeForClientX(initial.x + delta.x);
             var other = Diaporama.lookupSegment(component.props.diaporama, time);
             if (other && other.id !== item.id) {
-              component.props.onSlideSwap(item.id, other.id);
+              component.props.alterDiaporama("moveItem", item, other);
             }
           }
         }
@@ -86,7 +86,7 @@ var Timeline = React.createClass({
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
             var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
-            component.props.onImageDrop(item.file, place);
+            component.props.alterDiaporama("bootstrapImage", item.file, place);
           }
         }
       });
@@ -191,7 +191,7 @@ var Timeline = React.createClass({
       var scrollDuration = width / timeScale;
       var timeFrom = scrollLeft / timeScale;
       var timeTo = timeFrom + scrollDuration;
-      var interval = Diaporama.timelineTimeIntervalForItem(newProps.diaporama, newProps.selectedItemPointer);
+      var interval = Diaporama.timelineTimeIntervalForItemPointer(newProps.diaporama, newProps.selectedItemPointer);
       if (interval) {
         // Fix the scrolling by "window of width"
         if (interval.end < timeFrom) {
@@ -353,7 +353,7 @@ var Timeline = React.createClass({
             name="magic"
             color="#fff"
             size={editSize}
-            onClick={this.props.onAddTransition.bind(null, item.id)} />
+            onClick={this.props.alterDiaporama.bind(null, "bootstrapTransition", item.id)} />
         );
       }
 

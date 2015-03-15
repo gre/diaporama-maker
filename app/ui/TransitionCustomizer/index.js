@@ -47,9 +47,9 @@ var TransitionCustomizer = React.createClass({
     this.props.onChange(_.defaults({ uniforms: uniforms }, this.props.value));
   },
 
-  onSelectionRemove: function (e) {
+  onRemove: function (e) {
     e.preventDefault();
-    this.props.onSelectionRemove();
+    this.props.onRemove();
   },
 
   render: function () {
@@ -78,7 +78,7 @@ var TransitionCustomizer = React.createClass({
 
 
     return <div className="transition-customizer">
-      <a href="#" onClick={this.onSelectionRemove} style={deleteIconStyle}>
+      <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
       <div style={previewStyle}>

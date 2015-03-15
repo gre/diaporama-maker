@@ -14,6 +14,8 @@ var Diaporama = {};
 
 var newId = (function (i) { return function () { return ++i; }; }(0));
 
+// Mutating private utilities
+
 function assignIds (json) {
   if (json.timeline) {
     for (var i = 0; i < json.timeline.length; ++i) {
@@ -22,6 +24,34 @@ function assignIds (json) {
   }
   return json;
 }
+
+function swapTimelineSlideTransitions (clone, i, j) {
+  var a = clone.timeline[i];
+  var b = clone.timeline[j];
+  var tmp = b.transitionNext;
+  if (a.transitionNext) {
+    b.transitionNext = a.transitionNext;
+  }
+  else {
+    delete b.transitionNext;
+  }
+  if (tmp) {
+    a.transitionNext = tmp;
+  }
+  else {
+    delete a.transitionNext;
+  }
+  return clone;
+}
+
+function swapTimelineSlide (clone, i, j) {
+  var tmp = clone.timeline[i];
+  clone.timeline[i] = clone.timeline[j];
+  clone.timeline[j] = tmp;
+  return clone;
+}
+
+// Diaporama network actions
 
 var formatsD = Q.defer();
 recorderClient.getFormats().subscribe(formatsD.resolve, formatsD.reject);
@@ -79,6 +109,8 @@ Diaporama.fetch = function () {
   });
 };
 
+// Diaporama General Transformation Pass
+
 Diaporama.clean = function (diaporama) {
   var copy = Diaporama.inlineTransitions(_.cloneDeep(diaporama));
   if (copy.timeline) {
@@ -89,6 +121,33 @@ Diaporama.clean = function (diaporama) {
   return copy;
 };
 
+Diaporama.inlineTransitions = function (diaporama) {
+  var copy = _.clone(diaporama);
+  var keys = {};
+  for (var i = 0; i < copy.timeline.length; ++i) {
+    var obj = copy.timeline[i];
+    if (obj.transitionNext && obj.transitionNext.name) {
+      keys[obj.transitionNext.name] = 1;
+    }
+  }
+  copy.transitions = _.map(_.keys(keys), function (name) {
+    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
+  });
+  return copy;
+};
+
+Diaporama.localize = function (diaporama, fullSize) {
+  if (!diaporama) return null;
+  var clone = _.cloneDeep(diaporama);
+  clone.timeline.forEach(function (item) {
+    item.image = toProjectUrl(item.image, fullSize);
+  });
+  return clone;
+};
+
+
+// Query methods
+
 Diaporama.timelineIndexOfId = function (diaporama, id) {
   var tl = diaporama.timeline;
   for (var i=0; i < tl.length; ++i)
@@ -97,7 +156,7 @@ Diaporama.timelineIndexOfId = function (diaporama, id) {
   return -1;
 };
 
-Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
+function timelineTimeIntervalForTransitionId (diaporama, id) {
   var tl = diaporama.timeline;
   var t = 0;
   for (var i=0; i < tl.length; ++i) {
@@ -113,8 +172,9 @@ Diaporama.timelineTimeIntervalForTransitionId = function (diaporama, id) {
     }
     t += tnextDuration;
   }
-};
-Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
+}
+
+function timelineTimeIntervalForId (diaporama, id) {
   var tl = diaporama.timeline;
   var t = 0;
   for (var i=0; i < tl.length; ++i) {
@@ -127,14 +187,15 @@ Diaporama.timelineTimeIntervalForId = function (diaporama, id) {
     }
     t += el.duration + (el.transitionNext && el.transitionNext.duration || 0);
   }
-};
-Diaporama.timelineTimeIntervalForItem = function (diaporama, itemPointer) {
+}
+
+Diaporama.timelineTimeIntervalForItemPointer = function (diaporama, itemPointer) {
   // TODO: ^ this should be the only method
   if (itemPointer.transition) {
-    return Diaporama.timelineTimeIntervalForTransitionId(diaporama, itemPointer.id);
+    return timelineTimeIntervalForTransitionId(diaporama, itemPointer.id);
   }
   else {
-    return Diaporama.timelineTimeIntervalForId(diaporama, itemPointer.id);
+    return timelineTimeIntervalForId(diaporama, itemPointer.id);
   }
 };
 
@@ -223,6 +284,8 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
   return null;
 };
 
+// Alterations
+
 function roundDuration (d) {
   return Math.round(d/100) * 100;
 }
@@ -276,7 +339,86 @@ var actions = {
       item.duration = d;
     }
     return clone;
+  },
+
+  setItem: function (diaporama, itemPointer, value) {
+    var clone = _.cloneDeep(diaporama);
+    var id = itemPointer.id;
+    if (itemPointer.transition) {
+      var el = Diaporama.timelineForId(clone, id);
+      el.transitionNext = value;
+    }
+    else {
+      var index = Diaporama.timelineIndexOfId(clone, id);
+      clone.timeline[index] = value;
+    }
+    return clone;
+  },
+
+  bootstrapTransition: function (diaporama, id) {
+                                                  // vvv  TODO not supported diaporama.maker.defaultTransition  vvv
+    return actions.setItem(diaporama, { id: id, transition: true }, diaporama.maker && diaporama.maker.defaultTransition || {
+      duration: 1000
+    });
+  },
+
+  bootstrapImage: function (diaporama, src, place) {
+    var clone = _.cloneDeep(diaporama);
+    // vvv  TODO not supported diaporama.maker.defaultImage  vvv
+    var obj = genTimelineElementDefault(src);
+    obj.id = newId();
+    if (!place) {
+      clone.timeline.push(obj);
+    }
+    else if (place.after) {
+      var afterIndex = Diaporama.timelineIndexOfId(clone, place.id) + 1;
+      clone.timeline.splice(afterIndex, 0, obj);
+    }
+    else if (place.before) {
+      var beforeIndex = Diaporama.timelineIndexOfId(clone, place.id);
+      clone.timeline.splice(beforeIndex, 0, obj);
+    }
+
+    return clone;
+  },
+
+  removeItem: function (diaporama, itemPointer) {
+    var index = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
+    if (index === -1) return;
+    var clone = _.cloneDeep(diaporama);
+    if (itemPointer.transition)
+      delete clone.timeline[index].transitionNext;
+    else
+      clone.timeline.splice(index, 1);
+    return clone;
+  },
+
+  moveItemLeft: function (diaporama, item) {
+    var index = Diaporama.timelineIndexOfId(diaporama, item.id);
+    if (index === 0) return;
+    var clone = _.cloneDeep(diaporama);
+    swapTimelineSlideTransitions(clone, index, index - 1);
+    if (!item.transition) swapTimelineSlide(clone, index, index - 1);
+    return clone;
+  },
+
+  moveItemRight: function (diaporama, item) {
+    var index = Diaporama.timelineIndexOfId(diaporama, item.id);
+    if (index === diaporama.timeline.length-1) return;
+    var clone = _.cloneDeep(diaporama);
+    swapTimelineSlideTransitions(clone, index, index + 1);
+    if (!item.transition) swapTimelineSlide(clone, index, index + 1);
+    return clone;
+  },
+
+  moveItem: function (diaporama, a, b) {
+    var indexA = Diaporama.timelineIndexOfId(diaporama, a.id);
+    var indexB = Diaporama.timelineIndexOfId(diaporama, b.id);
+    var clone = _.cloneDeep(diaporama);
+    swapTimelineSlide(clone, indexA, indexB);
+    return clone;
   }
+
 };
 
 Diaporama.alterDiaporama = function (diaporama, action, arg1, arg2) {
@@ -285,135 +427,5 @@ Diaporama.alterDiaporama = function (diaporama, action, arg1, arg2) {
   return f(diaporama, arg1, arg2);
 };
 
-Diaporama.setTimelineElement = function (diaporama, id, element) {
-  var clone = _.cloneDeep(diaporama);
-  var index = Diaporama.timelineIndexOfId(clone, id);
-  clone.timeline[index] = element;
-  return clone;
-};
-
-Diaporama.setTransition = function (diaporama, id, transition) {
-  var clone = _.cloneDeep(diaporama);
-  var el = Diaporama.timelineForId(clone, id);
-  el.transitionNext = transition;
-  return clone;
-};
-
-Diaporama.bootstrapTransition = function (diaporama, id) {
-                                                // vvv  TODO not supported diaporama.maker.defaultTransition  vvv
-  return Diaporama.setTransition(diaporama, id, diaporama.maker && diaporama.maker.defaultTransition || {
-    duration: 1000
-  });
-};
-
-Diaporama.bootstrapImage = function (diaporama, src, place) {
-  var clone = _.cloneDeep(diaporama);
-  // vvv  TODO not supported diaporama.maker.defaultImage  vvv
-  var obj = genTimelineElementDefault(src);
-  obj.id = newId();
-  if (!place) {
-    clone.timeline.push(obj);
-  }
-  else if (place.after) {
-    var afterIndex = Diaporama.timelineIndexOfId(clone, place.id) + 1;
-    clone.timeline.splice(afterIndex, 0, obj);
-  }
-  else if (place.before) {
-    var beforeIndex = Diaporama.timelineIndexOfId(clone, place.id);
-    clone.timeline.splice(beforeIndex, 0, obj);
-  }
-
-  return {
-    newItem: obj,
-    diaporama: clone
-  };
-};
-
-
-Diaporama._swapTimelineItemTransitions = function (clone, i, j) {
-  var a = clone.timeline[i];
-  var b = clone.timeline[j];
-  var tmp = b.transitionNext;
-  if (a.transitionNext) {
-    b.transitionNext = a.transitionNext;
-  }
-  else {
-    delete b.transitionNext;
-  }
-  if (tmp) {
-    a.transitionNext = tmp;
-  }
-  else {
-    delete a.transitionNext;
-  }
-  return clone;
-};
-Diaporama._swapTimelineItem = function (clone, i, j) {
-  var tmp = clone.timeline[i];
-  clone.timeline[i] = clone.timeline[j];
-  clone.timeline[j] = tmp;
-  return clone;
-};
-
-Diaporama.timelineRemoveItem = function (diaporama, item) {
-  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
-  if (index === -1) return;
-  var clone = _.cloneDeep(diaporama);
-  if (item.transition)
-    delete clone.timeline[index].transitionNext;
-  else
-    clone.timeline.splice(index, 1);
-  return clone;
-};
-
-Diaporama.timelineMoveItemLeft = function (diaporama, item) {
-  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
-  if (index === 0) return;
-  var clone = _.cloneDeep(diaporama);
-  Diaporama._swapTimelineItemTransitions(clone, index, index - 1);
-  if (!item.transition) Diaporama._swapTimelineItem(clone, index, index - 1);
-  return clone;
-};
-
-Diaporama.timelineMoveItemRight = function (diaporama, item) {
-  var index = Diaporama.timelineIndexOfId(diaporama, item.id);
-  if (index === diaporama.timeline.length-1) return;
-  var clone = _.cloneDeep(diaporama);
-  Diaporama._swapTimelineItemTransitions(clone, index, index + 1);
-  if (!item.transition) Diaporama._swapTimelineItem(clone, index, index + 1);
-  return clone;
-};
-
-Diaporama.timelineSwapItem = function (diaporama, a, b) {
-  var indexA = Diaporama.timelineIndexOfId(diaporama, a);
-  var indexB = Diaporama.timelineIndexOfId(diaporama, b);
-  var clone = _.cloneDeep(diaporama);
-  Diaporama._swapTimelineItem(clone, indexA, indexB);
-  return clone;
-};
-
-Diaporama.inlineTransitions = function (diaporama) {
-  var copy = _.clone(diaporama);
-  var keys = {};
-  for (var i = 0; i < copy.timeline.length; ++i) {
-    var obj = copy.timeline[i];
-    if (obj.transitionNext && obj.transitionNext.name) {
-      keys[obj.transitionNext.name] = 1;
-    }
-  }
-  copy.transitions = _.map(_.keys(keys), function (name) {
-    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
-  });
-  return copy;
-};
-
-Diaporama.localize = function (diaporama, fullSize) {
-  if (!diaporama) return null;
-  var clone = _.cloneDeep(diaporama);
-  clone.timeline.forEach(function (item) {
-    item.image = toProjectUrl(item.image, fullSize);
-  });
-  return clone;
-};
 
 module.exports = Diaporama;

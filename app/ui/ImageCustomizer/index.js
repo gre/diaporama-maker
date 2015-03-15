@@ -90,9 +90,9 @@ var ImageCustomizer = React.createClass({
     this.props.onChange(clone);
   },
 
-  onSelectionRemove: function (e) {
+  onRemove: function (e) {
     e.preventDefault();
-    this.props.onSelectionRemove();
+    this.props.onRemove();
   },
 
   render: function () {
@@ -117,7 +117,7 @@ var ImageCustomizer = React.createClass({
     };
 
     return <div className="image-customizer">
-      <a href="#" onClick={this.onSelectionRemove} style={deleteIconStyle}>
+      <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
       <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} width={width} />

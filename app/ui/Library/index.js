@@ -37,14 +37,14 @@ var Library = React.createClass({
   mixins: [DragDropMixin],
 
   statics: {
-    configureDragDrop: function (register, context) {
+    configureDragDrop: function (register) {
       register(DragItems.SLIDE, {
         dropTarget: {
           getDropEffect: function () {
             return "move";
           },
-          acceptDrop: function (component, item) {
-            component.props.onSlideDropped(item);
+          acceptDrop: function (component, itemPointer) {
+            component.props.alterDiaporama("removeItem", itemPointer);
           }
         }
       });
