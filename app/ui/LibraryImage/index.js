@@ -4,6 +4,7 @@ var Thumbnail = require("../Thumbnail");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
 var transparentGif = require("../../core/transparent.gif");
+var cssCursor = require("css-cursor");
 
 var LibraryImage = React.createClass({
 
@@ -43,7 +44,8 @@ var LibraryImage = React.createClass({
     }, this.props.style||{});
     
     var thumbnailStyle = {
-      opacity: !used ? 1 : 0.5
+      opacity: !used ? 1 : 0.5,
+      cursor: dragging ? cssCursor("grabbing") : cssCursor("grab")
     };
 
     var border = dragging ? 1 : 2;

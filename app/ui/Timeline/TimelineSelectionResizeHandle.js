@@ -55,7 +55,8 @@ var TimelineSelectionResizeHandle = React.createClass({
       top: 0,
       width: width+"px",
       height: height+"px",
-      padding: "0px "+padding+"px"
+      padding: "0px "+padding+"px",
+      cursor: "ew-resize"
     };
     if (left) {
       style.left = - padding;
