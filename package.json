@@ -1,6 +1,6 @@
 {
   "name": "diaporama-maker",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "A CLI tool to make a web diaporama from a directory of images.",
   "browser": "app/index.js",
   "main": "server/index.js",
