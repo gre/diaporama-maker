@@ -1,3 +1,4 @@
+var watchify = require('watchify');
 var browserify = require('browserify');
 var stylus = require("stylus");
 var express = require("express");
@@ -24,11 +25,16 @@ module.exports = function server (diaporama, port) {
 
   app.use(bodyParser.json());
 
+  var b = browserify(watchify.args);
+  b.transform(require("reactify"));
+  b.add(path.join(__dirname, '../app/index.js'));
+  var w = watchify(b);
+  w.on('update', function () {
+    w.bundle();
+  });
+
   app.get('/index.js', function (req, res) {
-    var b = browserify();
-    b.transform(require("reactify"));
-    b.add(path.join(__dirname, '../app/index.js'));
-    b.bundle().pipe(res.type("js"));
+    w.bundle().pipe(res.type("js"));
   });
 
   app.get('/index.css', function (req, res) {

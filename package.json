@@ -63,6 +63,7 @@
     "stylus": "^0.50.0",
     "tmp": "0.0.25",
     "uglify-stream": "^1.1.0",
-    "vendor-prefix": "^0.1.0"
+    "vendor-prefix": "^0.1.0",
+    "watchify": "^2.4.0"
   }
 }
