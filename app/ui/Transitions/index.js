@@ -78,6 +78,32 @@ var Transitions = React.createClass({
     var nbPages = Math.ceil(coll.length / perPage);
     coll = coll.slice(page * perPage, (page+1) * perPage);
 
+    var navStyle = {
+      position: "absolute",
+      top: "0px",
+      right: "10px",
+      padding: "4px",
+      fontSize: "1.2em"
+    };
+
+    var typeaheadStyle = {
+      position: "absolute",
+      left: "180px",
+      top: "4px",
+      fontSize: "1.2em",
+      padding: "2px"
+    };
+
+    var headerStyle = {
+      position: "relative"
+    };
+
+    var bodyStyle = {
+      overflow: "auto",
+      padding: "1px 5px",
+      height: contentHeight+"px"
+    };
+
     var self = this;
     var items = _.map(coll, function (t) {
       function onClick () {
@@ -99,10 +125,10 @@ var Transitions = React.createClass({
     });
 
     return <div className="transitions" style={{ width: width+"px", height: height+"px" }}>
-      <header>
+      <header style={headerStyle}>
         <h2>Transitions</h2>
-        <input className="typeahead" type="search" placeholder="Search..." value={q} onChange={this.onTypeahead} />
-        <nav>
+        <input style={typeaheadStyle} type="search" placeholder="Search..." value={q} onChange={this.onTypeahead} />
+        <nav style={navStyle}>
           <Icon name="caret-square-o-left" onClick={this.prevPage.bind(this, nbPages)} />
           &nbsp;
           {page+1} / {nbPages}
@@ -110,7 +136,7 @@ var Transitions = React.createClass({
           <Icon name="caret-square-o-right" onClick={this.nextPage.bind(this, nbPages)} />
         </nav>
       </header>
-      <div className="body" style={{ height: contentHeight+"px" }}>
+      <div style={bodyStyle}>
         {items}
       </div>
     </div>;

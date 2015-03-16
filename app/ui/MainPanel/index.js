@@ -91,6 +91,20 @@ var MainPanel = React.createClass({
     var panel = panels[mode];
     var panelDom = panel && panel.render && panel.render.call(this, innerWidth, innerHeight);
 
+    var style = _.extend({
+      borderTop: "1px solid #ccc",
+      borderBottom: "1px solid #eee"
+    }, boundToStyle(bound));
+
+    var bodyStyle = _.extend({
+      overflow: "auto"
+    }, boundToStyle({ x: navWidth, y: 0, width: innerWidth, height: innerHeight }));
+
+    var navStyle = _.extend({
+      padding: "8px",
+      fontSize: "24px"
+    }, boundToStyle({ x: 0, y: 0, width: navWidth, height: bound.height }));
+
     var navs = _.map(panels, function (panel, panelMode) {
       return <Icon
         title={panel.title}
@@ -101,11 +115,11 @@ var MainPanel = React.createClass({
       />;
     }, this);
 
-    return <div className="main-panel" style={boundToStyle(bound)}>
-      <nav style={boundToStyle({ x: 0, y: 0, width: navWidth, height: bound.height })}>
+    return <div style={style}>
+      <nav style={navStyle}>
         {navs}
       </nav>
-      <div className="body" style={boundToStyle({ x: navWidth, y: 0, width: innerWidth, height: innerHeight })}>
+      <div style={bodyStyle}>
       {panelDom}
       </div>
     </div>;

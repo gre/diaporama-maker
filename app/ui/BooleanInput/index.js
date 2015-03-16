@@ -5,9 +5,13 @@ var BooleanInput = React.createClass({
     if (this.props.onChange) this.props.onChange(input.target.checked);
   },
   render: function () {
-    return <p>
+    var inputStyle = {
+      verticalAlign: "bottom",
+      marginRight: "4px"
+    };
+    return <p style={this.props.style}>
       <label>
-        <input type="checkbox" onChange={this.onChange} checked={this.props.value} />
+        <input style={inputStyle} type="checkbox" onChange={this.onChange} checked={this.props.value} />
         {this.props.title}
         {this.props.children}
       </label>

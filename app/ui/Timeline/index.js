@@ -390,7 +390,7 @@ var Timeline = React.createClass({
 
     lineStyle.width = gridWidth+"px";
 
-    return <div className="timeline" style={style}
+    return <div style={style}
       {...this.dropTargetFor(DragItems.IMAGE, DragItems.SLIDE)}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
@@ -402,7 +402,7 @@ var Timeline = React.createClass({
         </div>
       </header>
       <div style={lineContainerStyle} ref="scrollcontainer">
-        <div className="line" style={lineStyle}>{lineContent}</div>
+        <div style={lineStyle}>{lineContent}</div>
         <TimelineGrid timeScale={timeScale} width={gridWidth} height={gridHeight} />
         <TimelineCursor time={time} timeScale={timeScale} />
       </div>

@@ -1,0 +1,409 @@
+.vignette {
+  position: relative;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: 1px solid #000;
+}
+.vignette.mode-hover:hover,
+.vignette.swiping {
+  outline: 1px solid #fc6;
+}
+.vignette.mode-hover:hover .overlay,
+.vignette.swiping .overlay,
+.vignette.mode-hover:hover .overlay .cursor,
+.vignette.swiping .overlay .cursor {
+  display: block;
+}
+.vignette canvas {
+  background: #000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.vignette .overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 2;
+}
+.vignette .overlay .cursor {
+  display: none;
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 2px;
+  background: #fc6;
+  -webkit-box-shadow: 0px 0px 4px #ff9650;
+  box-shadow: 0px 0px 4px #ff9650;
+}
+.vignette .overlay a {
+  text-decoration: none;
+  color: #eee;
+  z-index: 2;
+}
+.vignette .overlay a:hover {
+  color: #fff;
+}
+.vignette a.transition-comments {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 5px;
+  z-index: 4;
+}
+.vignette:hover .transition-expand {
+  display: block;
+}
+.vignette .transition-expand {
+  display: none;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  z-index: 3;
+}
+.vignette .transition-star {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: rgba(0,0,0,0);
+  z-index: 3;
+  cursor: pointer;
+}
+.vignette .transition-star i {
+  margin-left: 2px;
+}
+.vignette .title {
+  position: absolute;
+  bottom: 2px;
+  left: 6px;
+  color: #eee;
+  font-size: 0.8em;
+  width: 99%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.bezier-editor {
+  background: #fff;
+}
+.bezier-editor .grid .bg {
+  fill: #fff;
+}
+.bezier-editor .grid .tenth {
+  stroke: #eee;
+  stroke-width: 1px;
+}
+.bezier-editor .grid .half {
+  stroke: #ccc;
+  stroke-width: 1px;
+}
+.bezier-editor .axis .legend {
+  font-family: sans-serif;
+  font-size: 8px;
+}
+.bezier-editor .axis.bottom .legend {
+  dominant-baseline: text-before-edge;
+  text-anchor: end;
+}
+.bezier-editor .axis.left .legend {
+  text-anchor: start;
+}
+.bezier-editor .axis .ticks {
+  stroke: #333;
+  stroke-width: 1px;
+}
+.bezier-editor .bezierPath {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.bezier-editor .handle circle {
+  fill: #f00;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.bezier-editor .handle.active circle {
+  stroke: #f00;
+}
+.bezier-editor .handle line {
+  stroke: #c00;
+  stroke-width: 1px;
+}
+.uniforms-editor-no-uniforms {
+  font-style: italic;
+  opacity: 0.3;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+  filter: alpha(opacity=30);
+  padding: 5px;
+  font-weight: 300;
+}
+.uniforms-editor-no-uniforms p {
+  padding: 5px 0;
+}
+.uniform-editor {
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+.uniform-editor > label {
+  line-height: 30px;
+  position: absolute;
+  right: 260px;
+  font-size: 0.8em;
+}
+.uniform-editor .inputs {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 5px;
+  margin-bottom: 6px;
+}
+.uniform-editor .inputs label {
+  display: inline-block;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 3px;
+  position: relative;
+}
+.uniform-editor .inputs label:hover > span {
+  display: block;
+}
+.uniform-editor .inputs label > span {
+  display: none;
+  position: absolute;
+  color: #aaa;
+  bottom: -9px;
+  left: 10px;
+  font-size: 9px;
+}
+.uniform-editor .inputs.inputs-1 {
+  padding: 0 10px;
+}
+.uniform-editor .inputs.inputs-2 label {
+  width: 50%;
+}
+.uniform-editor .inputs.inputs-3 label {
+  width: 33.333333%;
+}
+.uniform-editor .inputs.inputs-4 label {
+  width: 25%;
+}
+.texture-picker {
+  vertical-align: middle;
+  position: relative;
+}
+.texture-picker .picker {
+  position: absolute;
+  left: 100%;
+  top: -75px;
+  width: 250px;
+  height: 150px;
+  color: #222;
+  background: #fff;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.texture-picker .picker:not(.visible) {
+  display: none;
+}
+.texture-picker .picker:before {
+  content: " ";
+  position: absolute;
+  top: 67px;
+  left: -32px;
+  border: 16px solid;
+  border-color: transparent #fff transparent transparent;
+}
+.texture-picker .picker .picker-container {
+  height: inherit;
+  overflow: auto;
+}
+.texture-picker .picker .textures {
+  overflow: auto;
+}
+.texture-picker .picker .textures .texture.current img {
+  outline: 2px solid #000;
+}
+.texture-picker .picker .textures img {
+  float: left;
+  margin: 5px 0 0 5px;
+  border: 1px solid transparent;
+}
+.texture-picker .picker .url.invalid input {
+  border-color: #f00;
+}
+.texture-picker .picker .url input {
+  width: 80%;
+  font-size: 0.7em;
+  border: 1px solid #aaa;
+}
+.texture-picker .picker .url .button {
+  text-align: center;
+  width: 20%;
+  display: inline-block;
+  color: #aaa;
+}
+.texture-picker .picker .url .button:hover {
+  color: #333;
+}
+.texture-picker .picker-input {
+  width: 80%;
+  background: #fff;
+  color: #000;
+  display: inline-block;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  line-height: 20px;
+  font-size: 0.6em;
+  padding: 1px 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+.texture-picker .overview {
+  width: 20%;
+  display: inline-block;
+}
+.texture-picker .overview img {
+  margin-left: 8px;
+}
+input.uniform-component-input {
+  width: 100%;
+  border: none;
+  padding: 0px 5px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  line-height: 20px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+input.uniform-component-input[type=range] {
+  -webkit-appearance: none;
+  -webkit-box-shadow: inset 0px 4px 10px rgba(0,0,0,0.5), 0px 2px 1px rgba(255,255,255,0.2);
+  margin: 8px 0;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  height: 20px;
+  opacity: 0.9;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+  filter: alpha(opacity=90);
+}
+input.uniform-component-input[type="range"]:hover {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+input.uniform-component-input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -webkit-box-shadow: inset 0px 2px 6px #fff;
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0.48, #ddd), color-stop(0.5, #aaa), color-stop(0.52, #ddd));
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0.48, #ddd), color-stop(0.5, #aaa), color-stop(0.52, #ddd));
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0.48, #ddd), color-stop(0.5, #aaa), color-stop(0.52, #ddd));
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0.48, #ddd), color-stop(0.5, #aaa), color-stop(0.52, #ddd));
+  background-image: -webkit-gradient(linear, left top, right top, color-stop(0.48, #ddd), color-stop(0.5, #aaa), color-stop(0.52, #ddd));
+  border: 1px solid #aaa;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  width: 40px;
+  height: 26px;
+}
+.transition-customizer .uniforms-editor {
+  margin-top: 20px;
+}
+.transition-customizer .uniform-editor label {
+  line-height: normal;
+  right: 100%;
+  top: 0px;
+}
+.transition-customizer input.uniform-component-input {
+  border: 1px solid #ccc;
+}
+.transitions .vignette {
+  margin: 2px;
+  float: left;
+}
+.vignette span.tname {
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: 400;
+  text-shadow: 0px 0.5px 1px #000;
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  overflow: hidden;
+  width: 99%;
+  white-space: nowrap;
+}
+.vignette span.tauthor {
+  font-weight: 300;
+  font-size: 0.7em;
+  color: #fff;
+  text-shadow: 0px 0px 1px #000;
+  position: absolute;
+  bottom: 2px;
+  left: 0px;
+  text-align: center;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.vignette:hover .actions {
+  -webkit-transition: opacity 0.4s;
+  -moz-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  -ms-transition: opacity 0.4s;
+  transition: opacity 0.4s;
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
+}
+.vignette .actions {
+  z-index: 3;
+  opacity: 0.1;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
+  filter: alpha(opacity=10);
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+  width: 100%;
+  font-size: 2em;
+  text-shadow: 0px 0.5px 1px #000;
+}
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+h1 {
+  padding: 2px 5px;
+  margin: 0;
+  font-size: 1.6em;
+}
+h2 {
+  padding: 2px 5px;
+  margin: 0;
+  font-size: 1.4em;
+  font-weight: 400;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}

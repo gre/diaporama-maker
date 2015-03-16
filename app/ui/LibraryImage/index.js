@@ -8,7 +8,7 @@ var cssCursor = require("css-cursor");
 
 var LibraryImage = React.createClass({
 
-  mixins: [DragDropMixin],
+  mixins: [ DragDropMixin ],
 
   statics: {
     configureDragDrop: function (register) {
@@ -40,6 +40,7 @@ var LibraryImage = React.createClass({
     var dragging = this.props.dragging;
 
     var style = _.extend({
+      position: "relative",
       width: width+"px"
     }, this.props.style||{});
     
@@ -79,7 +80,6 @@ var LibraryImage = React.createClass({
     var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGE);
 
     return <div
-      className="library-image item"
       title={item.file}
       style={style}
       {...maybeDragSource}

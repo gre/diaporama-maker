@@ -6,6 +6,7 @@ var images = require("../../resource/images");
 var DurationInput = require("../DurationInput");
 var KenBurnsEditor = require("../KenBurnsEditor");
 var Icon = require("../Icon");
+var Button = require("../Button");
 var toProjectUrl = require("../../core/toProjectUrl");
 
 var croppingModes = {
@@ -54,7 +55,10 @@ var croppingModes = {
   }
 };
 
+var croppingModesKeys = Object.keys(croppingModes);
+
 var ImageCustomizer = React.createClass({
+
   propTypes: {
     value: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func.isRequired,
@@ -101,9 +105,27 @@ var ImageCustomizer = React.createClass({
     var modeId = "kenburns" in value ? "kenburns" : "fitcenter";
 
     var modes = [];
+    var i=0;
     for (var k in croppingModes) {
       var m = croppingModes[k];
-      var mode = <a key={k} href="#" className={k===modeId ? "selected" : ""} onClick={this.selectMode.bind(this, k)}><Icon name="crop" />&nbsp;{m.title}</a>;
+      var selected = k===modeId;
+      var first = i===0;
+      var last = (++i)===croppingModesKeys.length;
+      var lb = first ? "4px" : "0px";
+      var rb = last ? "4px" : "0px";
+      var style = {
+        borderRadius: lb+" "+rb+" "+rb+" "+lb
+      };
+      var mode = <Button
+        key={k}
+        color={selected ? "#fff" : "#000"}
+        bg={selected ? "#000" : "#aaa"}
+        bgHover={selected ? "#000" : "#ddd"}
+        onClick={this.selectMode.bind(null, k)}
+        style={style}
+      >
+        <Icon name="crop" />&nbsp;{m.title}
+      </Button>;
       modes.push(mode);
     }
 
@@ -116,12 +138,12 @@ var ImageCustomizer = React.createClass({
       color: "#F00"
     };
 
-    return <div className="image-customizer">
+    return <div>
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
       <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} width={width} />
-      <div className="mode-select">{modes}</div>
+      <div>{modes}</div>
       {!render ? undefined : render.call(this)}
     </div>;
   }

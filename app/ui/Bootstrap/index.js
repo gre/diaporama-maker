@@ -7,6 +7,7 @@ var ImageCustomizer = require("../ImageCustomizer");
 var TransitionCustomizer = require("../TransitionCustomizer");
 var DiaporamaElement = require("../DiaporamaElement");
 var Icon = require("../Icon");
+var Button = require("../Button");
 
 var Bootstrap = React.createClass({
   componentDidMount: function () {
@@ -102,35 +103,85 @@ var Bootstrap = React.createClass({
     var transitionSkeleton = this.state.transitionSkeleton;
     var width = 600;
 
-    return <div className="bootstrap" style={{ margin: "10px auto", width: width+"px" }}>
+    var h1Style = {
+      fontSize: "2em",
+      marginLeft: "-40px"
+    };
 
-      <h1>Bootstrap a new Diaporama</h1>
-      <blockquote>
+    var h2SectionStyle = {
+      margin: "50px 0 10px -40px"
+    };
+
+    var h3Style = {
+      position: "absolute",
+      top: "5px",
+      right: "10px",
+      color: "#fff",
+      opacity: 0.6,
+      padding: 0,
+      margin: 0
+    };
+
+    var fieldStyle = {
+      marginTop: "20px 0 0 0"
+    };
+
+    var subOptionsStyle = {
+      marginLeft: "20px"
+    };
+
+    var settingsPreviewStyle = {
+      position: "relative",
+      marginTop: "20px"
+    };
+
+    var blockquoteStyle = {
+      fontStyle: "italic",
+      position: "relative",
+      margin: "0.8em 0",
+      color: "#999",
+      fontSize: "1em",
+      lineHeight: "1.5em",
+      paddingLeft: "1em",
+      borderLeft: "4px solid #ddd"
+    };
+
+    var buttonsStyle = {
+      textAlign: "center",
+      position: "absolute",
+      width: "100%",
+      top: "45%"
+    };
+
+    return <div style={{ margin: "10px auto", width: width+"px" }}>
+
+      <h1 style={h1Style}>Bootstrap a new Diaporama</h1>
+      <blockquote style={blockquoteStyle}>
         <strong>Welcome to Diaporama Maker!</strong>
         This first step will help you bootstrapping a first version of the diaporama from the current folder.<br/>
       </blockquote>
 
-      <h2 className="section"><Icon name="folder-open" />Bootstrap Library</h2>
+      <h2 style={h2SectionStyle}><Icon name="folder-open" />&nbsp;Bootstrap Library</h2>
 
-      <blockquote>
+      <blockquote style={blockquoteStyle}>
         Import images from local directory.
       </blockquote>
 
-      <BooleanInput title="Pick all images from folder and sub-folders..." value={this.state.pickAllImages} onChange={this.onChangePickAllImages} />
+      <BooleanInput style={fieldStyle} title="Pick all images from folder and sub-folders..." value={this.state.pickAllImages} onChange={this.onChangePickAllImages} />
 
       <div style={{ display: this.state.pickAllImages ? "block" : "none" }}>
 
-        <div className="sub-options">
-          <BooleanInput title="Initially shuffle images" value={this.state.shuffle} onChange={this.onChangeShuffle} />
+        <div style={subOptionsStyle}>
+          <BooleanInput style={fieldStyle} title="Initially shuffle images" value={this.state.shuffle} onChange={this.onChangeShuffle} />
         </div>
 
-        <h2 className="section"><Icon name="picture-o" />Bootstrap Images</h2>
+        <h2 style={h2SectionStyle}><Icon name="picture-o" />&nbsp;Bootstrap Images</h2>
 
-        <blockquote>
+        <blockquote style={blockquoteStyle}>
           Configure the Image settings for all images.
         </blockquote>
 
-        <div className="image-properties">
+        <div>
 
           <ImageCustomizer
             value={imageSkeleton}
@@ -139,14 +190,14 @@ var Bootstrap = React.createClass({
           />
 
 
-          <h2 className="section"><Icon name="magic" />Bootstrap Transitions</h2>
+          <h2 style={h2SectionStyle}><Icon name="magic" />&nbsp;Bootstrap Transitions</h2>
 
-          <blockquote>
+          <blockquote style={blockquoteStyle}>
             Configure the Transition settings for all images.
           </blockquote>
 
-          <BooleanInput title={"Enable transitions between all images."} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
-          <div className="transition-properties" style={{ display: this.state.withTransition ? "block": "none" }}>
+          <BooleanInput style={fieldStyle} title={"Enable transitions between all images."} value={this.state.withTransition} onChange={this.onChangeWithTransition} />
+          <div style={{ display: this.state.withTransition ? "block": "none" }}>
             <TransitionCustomizer
               value={transitionSkeleton}
               onChange={this.onChangeTransitionSkeleton}
@@ -158,22 +209,22 @@ var Bootstrap = React.createClass({
 
       </div>
 
-      <h2 className="section"><Icon name="cogs" />Bootstrap the Diaporama</h2>
+      <h2 style={h2SectionStyle}><Icon name="cogs" />&nbsp;Bootstrap the Diaporama</h2>
 
       { !this.state.pickAllImages ?
-        <div className="buttons">
-          <a href="#" onClick={this.submit}>
+        <div>
+          <Button onClick={this.submit} fontSize="1.4em" color="#fff" bgHover="#000" bg="#222">
             <Icon name="gears" />
             &nbsp;
-            ...or just Generate an empty project
-          </a>
+            Generate an empty project
+          </Button>
         </div>
 
         :
         <div>
 
-          <div className="settings-preview">
-            <h3>Settings Preview</h3>
+          <div style={settingsPreviewStyle}>
+            <h3 style={h3Style}>Settings Preview</h3>
             <DiaporamaElement
               GlslTransitions={GlslTransitions}
               width={width}
@@ -182,12 +233,12 @@ var Bootstrap = React.createClass({
               autoplay={true}
               loop={true}
             />
-            <div className="buttons">
-              <a href="#" onClick={this.submit}>
+            <div style={buttonsStyle}>
+              <Button onClick={this.submit} fontSize="3em" colorHover="#000" color="#333" bgHover="#fff">
                 <Icon name="gears" />
                 &nbsp;
                 Generate
-              </a>
+              </Button>
             </div>
           </div>
         </div>

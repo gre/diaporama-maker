@@ -35,6 +35,10 @@ var TimelineElement = React.createClass({
     var dragState = this.getDragState(DragItems.SLIDE);
 
     var style = _.extend({
+      position: "absolute",
+      top: 0,
+      left: 0,
+      zIndex: 1,
       opacity: dragState.isDragging ? 0.5 : 1
     }, translateStyle(x, 0));
 

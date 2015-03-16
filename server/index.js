@@ -1,13 +1,10 @@
 var watchify = require('watchify');
 var browserify = require('browserify');
-var stylus = require("stylus");
 var express = require("express");
-var nib = require("nib");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Q = require('q');
-var qfs = require('q-io/fs');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
@@ -35,25 +32,6 @@ module.exports = function server (diaporama, port) {
 
   app.get('/index.js', function (req, res) {
     w.bundle().pipe(res.type("js"));
-  });
-
-  app.get('/index.css', function (req, res) {
-    qfs.read(path.join(__dirname, '../app/index.styl'))
-      .then(function (styl) {
-        return stylus(styl)
-          .set('paths', [
-            path.join(__dirname, '../node_modules'),
-            path.join(__dirname, '../app')
-            ])
-          .use(nib()).import('nib');
-      })
-      .ninvoke("render")
-      .then(function (css) {
-        res.type("css").send(css);
-      }, function (e) {
-        console.error(e);
-        res.status(400).send(e.message);
-      });
   });
 
   app.get('/listfiles', function (req, res) {
