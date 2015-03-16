@@ -15,6 +15,7 @@ var GenerateScreen = React.createClass({
 
   render: function () {
     return <div>
+      <h2>N.B. These features are WIP</h2>
       <p>
         Generate a standalone index.html to run the diaporama.
         <button onClick={this.generateHTML}>Generate</button>
