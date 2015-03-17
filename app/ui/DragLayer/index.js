@@ -31,18 +31,21 @@ var DragLayer = React.createClass({
           return <LibraryImage
             style={style}
             width={200}
-            height={150}
+            height={160}
             item={{ url: toProjectUrl(state.draggedItem.image), file: state.draggedItem.image }}
             dragging={true}
           />;
 
-        case DragItems.IMAGE:
+        case DragItems.IMAGES:
+          var primary = state.draggedItem.primary;
+          var all = state.draggedItem.all;
           _.extend(style, translateStyle(state.currentOffset.x, state.currentOffset.y));
           return <LibraryImage
             style={style}
             width={120}
-            height={80}
-            item={state.draggedItem}
+            height={100}
+            item={primary}
+            stackSize={all.length}
             dragging={true} />;
       }
     }

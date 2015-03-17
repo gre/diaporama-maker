@@ -74,7 +74,7 @@ var Timeline = React.createClass({
           }
         }
       });
-      register(DragItems.IMAGE, {
+      register(DragItems.IMAGES, {
         dropTarget: {
           enter: track.enter,
           leave: track.leave,
@@ -84,7 +84,8 @@ var Timeline = React.createClass({
             return "copy";
           },
 
-          acceptDrop: function (component, item) {
+          acceptDrop: function (component, items) {
+            var item = items.primary; // FIXME
             track.acceptDrop(component);
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
@@ -391,7 +392,7 @@ var Timeline = React.createClass({
     lineStyle.width = gridWidth+"px";
 
     return <div style={style}
-      {...this.dropTargetFor(DragItems.IMAGE, DragItems.SLIDE)}
+      {...this.dropTargetFor(DragItems.IMAGES, DragItems.SLIDE)}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>

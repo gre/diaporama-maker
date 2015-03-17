@@ -1,7 +1,7 @@
 module.exports = {
   MIN_DRAG_THRESHOLD: 10,
   DragItems: {
-    IMAGE: 'image',
+    IMAGES: 'images',
     SLIDE: 'slide'
   }
 };

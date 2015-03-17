@@ -6,20 +6,25 @@ var DragDropMixin = require('react-dnd').DragDropMixin;
 var transparentGif = require("../../core/transparent.gif");
 var cssCursor = require("css-cursor");
 
+// FIXME: LibraryImage should not anymore be used for DragLayer
 var LibraryImage = React.createClass({
 
   mixins: [ DragDropMixin ],
 
   statics: {
     configureDragDrop: function (register) {
-      register(DragItems.IMAGE, {
+      register(DragItems.IMAGES, {
         dragSource: {
           beginDrag: function (component) {
+            var items = component.props.getDragItems(component.props.item);
             return {
-              item: component.props.item,
+              item: items,
               dragPreview: transparentGif,
               effectsAllowed: ["none", "copy"]
             };
+          },
+          endDrag: function (component) {
+            component.props.onDropped();
           }
         }
       });
@@ -38,22 +43,29 @@ var LibraryImage = React.createClass({
     var item = this.props.item;
     var used = this.props.used;
     var dragging = this.props.dragging;
+    var stackSize = this.props.stackSize || 1;
+    var selected = this.props.selected;
 
     var style = _.extend({
       position: "relative",
-      width: width+"px"
+      zIndex: 1,
+      width: width+"px",
+      height: height+"px"
     }, this.props.style||{});
     
     var thumbnailStyle = {
-      opacity: !used ? 1 : 0.5,
+      opacity: selected ? 0.5 : (!used ? 1 : 0.5),
       cursor: dragging ? cssCursor("grabbing") : cssCursor("grab")
     };
 
     var border = dragging ? 1 : 2;
+
+    border += (stackSize-1); // FIXME
+
     var thumbnailContainerStyle = {
-      backgroundColor: "#000",
+      backgroundColor: !selected ? "#000" : "#FC0",
       border: border+"px solid",
-      borderColor: dragging||used ? "#000" : "#FC0",
+      borderColor: !selected ? "#000" : "#FC0",
       boxShadow: !dragging ? "" : "0px 1px 12px rgba(0,0,0,1)"
     };
 
@@ -69,19 +81,21 @@ var LibraryImage = React.createClass({
     var titleStyle = {
       display: "inline-block",
       width: "100%",
+      height: "20px",
       fontSize: "0.8em",
       fontWeight: 300,
-      color: used ? "#666" : "#d80",
+      color: !selected ? "#666" : "#d80",
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis"
     };
     
-    var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGE);
+    var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGES);
 
     return <div
       title={item.file}
       style={style}
+      onClick={this.props.onClick}
       {...maybeDragSource}
     >
       { !used ? undefined :
@@ -90,7 +104,7 @@ var LibraryImage = React.createClass({
           ×
         </span>}
       <div style={thumbnailContainerStyle}>
-        <Thumbnail style={thumbnailStyle} width={width-2*border} height={height-2*border} image={item.url} />
+        <Thumbnail style={thumbnailStyle} width={width-2*border} height={height-2*border-20} image={item.url} />
       </div>
       { dragging ? undefined :
       <span style={titleStyle}>{item.file}</span>

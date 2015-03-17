@@ -1,8 +1,7 @@
 var React = require("react");
 var _ = require("lodash");
 var raf = require("raf");
-var isUndo = require('is-undo-redo').undo;
-var isRedo = require('is-undo-redo').redo;
+var Combokeys = require("combokeys");
 
 var PromiseMixin = require("../../mixins/PromiseMixin");
 var Diaporama = require("../../models/Diaporama");
@@ -58,18 +57,51 @@ var App = React.createClass({
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("resize", this.onResize);
-    document.body.addEventListener("keydown", this.onKeyDown);
-    document.body.addEventListener("keyup", this.onKeyUp);
     this.sync(Diaporama.fetch()).done();
     this.startMainLoop();
+    var ck = this.combokeys = new Combokeys(document);
+
+    ck.bind('command+z', function () {
+      this.undo();
+      return false;
+    }.bind(this));
+
+    ck.bind('command+shift+z', function () {
+      this.redo();
+      return false;
+    }.bind(this));
+
+    ck.bind(['backspace', 'del'], function () {
+      this.alterSelection("removeItem");
+      return false;
+    }.bind(this));
+
+    ck.bind(['left'], function () {
+      this.onSelectionLeft();
+      return false;
+    }.bind(this));
+
+    ck.bind(['command+left'], function () {
+      this.alterSelection("moveItemLeft");
+      return false;
+    }.bind(this));
+
+    ck.bind(['right'], function () {
+      this.onSelectionRight();
+      return false;
+    }.bind(this));
+
+    ck.bind(['command+right'], function () {
+      this.alterSelection("moveItemRight");
+      return false;
+    }.bind(this));
   },
 
   componentWillUnmount: function () {
     window.removeEventListener("blur", this.onBlur);
     window.removeEventListener("focus", this.onFocus);
     window.removeEventListener("resize", this.onResize);
-    document.body.removeEventListener("keydown", this.onKeyDown);
-    document.body.removeEventListener("keyup", this.onKeyUp);
+    this.combokeys.reset();
     this.stopMainLoop();
   },
 
@@ -155,45 +187,6 @@ var App = React.createClass({
   },
 
   // Global Events
-
-  onKeyDown: function (e) {
-    if (["INPUT", "SELECT", "BUTTON", "TEXTAREA"].indexOf(e.target.nodeName) !== -1)
-      return;
-    if (isUndo(e)) {
-      e.preventDefault();
-      this.undo();
-    }
-    else if (isRedo(e)) {
-      e.preventDefault();
-      this.redo();
-    }
-    else switch (e.which) {
-      case 13: // ENTER
-        break;
-      case 46: // DELETE
-      case 8: // BACKSPACE
-        e.preventDefault();
-        this.alterSelection("removeItem");
-        break;
-      case 37: // LEFT
-        e.preventDefault();
-        if (e.metaKey || e.ctrlKey)
-          this.alterSelection("moveItemLeft");
-        else
-          this.onSelectionLeft();
-        break;
-      case 39: // RIGHT
-        e.preventDefault();
-        if (e.metaKey || e.ctrlKey)
-          this.alterSelection("moveItemRight");
-        else
-          this.onSelectionRight();
-        break;
-    }
-  },
-
-  onKeyUp: function () {
-  },
 
   onFocus: function () {
     if (!this.state.windowFocus)
