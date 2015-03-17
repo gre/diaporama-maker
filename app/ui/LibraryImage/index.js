@@ -48,12 +48,13 @@ var LibraryImage = React.createClass({
 
     var style = _.extend({
       position: "relative",
-      zIndex: 1,
       width: width+"px",
       height: height+"px"
     }, this.props.style||{});
     
     var thumbnailStyle = {
+      position: "relative",
+      zIndex: 3,
       opacity: selected ? 0.5 : (!used ? 1 : 0.5),
       cursor: dragging ? cssCursor("grabbing") : cssCursor("grab")
     };
@@ -95,15 +96,13 @@ var LibraryImage = React.createClass({
     return <div
       title={item.file}
       style={style}
-      onClick={this.props.onClick}
-      {...maybeDragSource}
-    >
+      onClick={this.props.onClick}>
       { !used ? undefined :
         <span style={countUsageStyle}>
           {used}
           ×
         </span>}
-      <div style={thumbnailContainerStyle}>
+      <div style={thumbnailContainerStyle} {...maybeDragSource}>
         <Thumbnail style={thumbnailStyle} width={width-2*border} height={height-2*border-20} image={item.url} />
       </div>
       { dragging ? undefined :
