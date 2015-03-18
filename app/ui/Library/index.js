@@ -75,7 +75,9 @@ var Library = React.createClass({
   },
 
   getDragItems: function (primaryItem) {
-    var all = (primaryItem ? [ primaryItem ] : []).concat(this.state.selected);
+    var all = _.uniq((primaryItem ? [ primaryItem ] : []).concat(this.state.selected), function (i) {
+      return i.file;
+    });
     return {
       primary: primaryItem,
       all: all

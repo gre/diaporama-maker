@@ -85,13 +85,13 @@ var Timeline = React.createClass({
           },
 
           acceptDrop: function (component, items) {
-            var item = items.primary; // FIXME
+            var all = items.all;
             track.acceptDrop(component);
             var initial = context.getInitialOffsetFromClient();
             var delta = context.getCurrentOffsetDelta();
             var time = component.timeForClientX(initial.x + delta.x);
             var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
-            component.props.alterDiaporama("bootstrapImage", item.file, place);
+            component.props.alterDiaporama("bootstrapImages", _.pluck(all, "file"), place);
           }
         }
       });

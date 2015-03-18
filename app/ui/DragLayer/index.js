@@ -45,7 +45,7 @@ var DragLayer = React.createClass({
             width={120}
             height={100}
             item={primary}
-            stackSize={all.length}
+            stack={all}
             dragging={true} />;
       }
     }

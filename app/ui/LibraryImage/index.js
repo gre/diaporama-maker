@@ -4,6 +4,7 @@ var Thumbnail = require("../Thumbnail");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
 var transparentGif = require("../../core/transparent.gif");
+var centeredRotate = require("../../core/centeredRotate");
 var cssCursor = require("css-cursor");
 
 // FIXME: LibraryImage should not anymore be used for DragLayer
@@ -43,8 +44,12 @@ var LibraryImage = React.createClass({
     var item = this.props.item;
     var used = this.props.used;
     var dragging = this.props.dragging;
-    var stackSize = this.props.stackSize || 1;
+    var stack = this.props.stack;
     var selected = this.props.selected;
+
+    var border = dragging ? 1 : 2;
+    var titleH = 20;
+    var thumbH = height-2*border-titleH;
 
     var style = _.extend({
       position: "relative",
@@ -59,15 +64,11 @@ var LibraryImage = React.createClass({
       cursor: dragging ? cssCursor("grabbing") : cssCursor("grab")
     };
 
-    var border = dragging ? 1 : 2;
-
-    border += (stackSize-1); // FIXME
-
     var thumbnailContainerStyle = {
       backgroundColor: !selected ? "#000" : "#FC0",
       border: border+"px solid",
-      borderColor: !selected ? "#000" : "#FC0",
-      boxShadow: !dragging ? "" : "0px 1px 12px rgba(0,0,0,1)"
+      borderColor: !selected ? "#000" : "#FC0"
+      // boxShadow: !dragging ? "" : "0px 0px 10px rgba(0,0,0,1)"
     };
 
     var countUsageStyle = {
@@ -75,14 +76,16 @@ var LibraryImage = React.createClass({
       bottom: "22px",
       right: "6px",
       color: "#fff",
-      zIndex: 2,
+      zIndex: 3,
       fontSize: "0.8em"
     };
 
     var titleStyle = {
+      position: "relative",
+      zIndex: 2,
       display: "inline-block",
       width: "100%",
-      height: "20px",
+      height: titleH+"px",
       fontSize: "0.8em",
       fontWeight: 300,
       color: !selected ? "#666" : "#d80",
@@ -92,6 +95,38 @@ var LibraryImage = React.createClass({
     };
     
     var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGES);
+
+    var stackElements = [];
+
+    if (stack) {
+      for (var i = 0; i < stack.length; ++i) {
+        var url = stack[i].url;
+        if (item.url === url) continue;
+        var stackElementStyle = _.extend({
+          zIndex: -1,
+          position: "absolute",
+          border: "1px solid #000",
+          left: "0px",
+          top: "0px",
+          opacity: 0.6
+        }, centeredRotate(
+          Math.round(((i*101) % 19) - 10),
+          1 + 0.01 * (Math.round(((i*383) % 11)))
+        ));
+        stackElements.push(
+          <div
+              key={"stack-"+i}
+              style={stackElementStyle}
+            >
+            <Thumbnail
+              width={width-2*border}
+              height={thumbH}
+              image={url}
+            />
+          </div>
+        );
+      }
+    }
 
     return <div
       title={item.file}
@@ -103,8 +138,9 @@ var LibraryImage = React.createClass({
           ×
         </span>}
       <div style={thumbnailContainerStyle} {...maybeDragSource}>
-        <Thumbnail style={thumbnailStyle} width={width-2*border} height={height-2*border-20} image={item.url} />
+        <Thumbnail style={thumbnailStyle} width={width-2*border} height={thumbH} image={item.url} />
       </div>
+      {stackElements}
       { dragging ? undefined :
       <span style={titleStyle}>{item.file}</span>
       }

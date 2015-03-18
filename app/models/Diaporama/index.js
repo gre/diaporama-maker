@@ -369,22 +369,28 @@ var actions = {
   },
 
   bootstrapImage: function (diaporama, src, place) {
+    return actions.bootstrapImages(diaporama, [ src ], place);
+  },
+
+  bootstrapImages: function (diaporama, srcs, place) {
     var clone = _.cloneDeep(diaporama);
     // vvv  TODO not supported diaporama.maker.defaultImage  vvv
-    var obj = genTimelineElementDefault(src);
-    obj.id = newId();
+    var objs = srcs.map(function (src) {
+      var obj = genTimelineElementDefault(src);
+      obj.id = newId();
+      return obj;
+    });
     if (!place) {
-      clone.timeline.push(obj);
+      clone.timeline = clone.timeline.concat(objs);
     }
     else if (place.after) {
       var afterIndex = Diaporama.timelineIndexOfId(clone, place.id) + 1;
-      clone.timeline.splice(afterIndex, 0, obj);
+      Array.prototype.splice.apply(clone.timeline, [ afterIndex, 0 ].concat(objs));
     }
     else if (place.before) {
       var beforeIndex = Diaporama.timelineIndexOfId(clone, place.id);
-      clone.timeline.splice(beforeIndex, 0, obj);
+      Array.prototype.splice.apply(clone.timeline, [ beforeIndex, 0 ].concat(objs));
     }
-
     return clone;
   },
 
