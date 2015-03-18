@@ -33,7 +33,7 @@ module.exports = function (app, slug, root) {
 
   app.use("/"+slug, function (req, res, next) {
     var url = parseurl(req);
-    var pathname = url.pathname;
+    var pathname = decodeURIComponent(url.pathname);
 
     function fallback (e) {
       if (e) console.error("Thumbnail: Fallback:", e);
