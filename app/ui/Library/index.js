@@ -16,18 +16,17 @@ var DragDropMixin = require('react-dnd').DragDropMixin;
 
 var thumbnailWidth = 120;
 var thumbnailHeight = 100;
+var itemMarginW = 2;
+
+var GRID_LEFT = 7;
+var GRID_TOP = 31;
+var GRID_W = thumbnailWidth + 2 * itemMarginW;
+var GRID_H = thumbnailHeight;
 
 function indexOfSelected (selected, item) {
   return _.findIndex(selected, function (sel) {
     return sel.file === item.file;
   });
-}
-
-function intersect (a, b) {
-    return (a[0] <= b[0]+b[2] &&
-          b[0] <= a[0]+a[2] &&
-          a[1] <= b[1]+b[3] &&
-          b[1] <= a[1]+a[3]);
 }
 
 function filesToItems (files) {
@@ -137,48 +136,59 @@ var Library = React.createClass({
     return [ x, y ];
   },
 
-  onMouseDown: function (e) {
+  positionToGrid: function (p) {
+    return [
+      Math.floor((p[0]-GRID_LEFT)/GRID_W),
+      Math.floor((p[1]-GRID_TOP)/GRID_H)
+    ];
+  },
+
+  getGridWidth: function () {
+    return Math.floor((this.props.width-GRID_LEFT)/GRID_W);
+  },
+
+  selectionMouseDown: function (e) {
     this.setState({
       down: this.getEventPosition(e),
       selected: []
     });
   },
 
-  onMouseMove: function (e) {
+  selectionMouseMove: function (e) {
+    var items = this.state.items;
     var down = this.state.down;
     var move = this.getEventPosition(e);
-    var x = Math.min(down[0],move[0]);
-    var y = Math.min(down[1],move[1]);
-    var w = Math.abs(down[0]-move[0]);
-    var h = Math.abs(down[1]-move[1]);
-    var totalW = this.props.width;
-    var left = 7;
-    var top = 31;
-    var tw = 124;
-    var th = 100;
-    var cols = Math.floor((totalW-left)/tw);
-    var sel = [ x, y, w, h ];
-    console.log(sel);
-    var selected = _.filter(this.state.items, function (item, i) {
-      var col = i % cols;
-      var row = Math.floor(i / cols);
-      var bound = [ left + col * tw, top + row * th, tw, th ];
-      return intersect(bound, sel);
-    });
+    var downGrid = this.positionToGrid(down);
+    var moveGrid = this.positionToGrid(move);
+    var gridw = this.getGridWidth();
+    var x = Math.max(0, Math.min(downGrid[0], moveGrid[0]));
+    var y = Math.max(0, Math.min(downGrid[1], moveGrid[1]));
+    var w = Math.abs(downGrid[0] - moveGrid[0]);
+    var h = Math.abs(downGrid[1] - moveGrid[1]);
+    var x2 = Math.min(x + w, gridw - 1);
+    var y2 = y + h;
+    var selected = [];
+    for (var xi=x; xi<=x2; ++xi) {
+      for (var yi=y; yi<=y2; ++yi) {
+        var i = xi + yi * gridw;
+        var item = items[i];
+        if (item) selected.push(item);
+      }
+    }
     this.setState({
       move: move,
       selected: selected
     });
   },
 
-  onMouseUp: function () {
+  selectionMouseUp: function () {
     this.setState({
       down: null,
       move: null
     });
   },
 
-  onMouseLeave: function () {
+  selectionMouseLeave: function () {
     this.setState({
       down: null,
       move: null
@@ -209,7 +219,7 @@ var Library = React.createClass({
     var contentHeight = (height - headerHeight);
 
     var itemStyle = {
-      margin: "0 2px",
+      margin: "0 "+itemMarginW+"px",
       display: "inline-block"
     };
 
@@ -267,14 +277,14 @@ var Library = React.createClass({
     var mouseEvents;
     if (down) {
       mouseEvents = {
-        onMouseMove: this.onMouseMove,
-        onMouseUp: this.onMouseUp,
-        onMouseLeave: this.onMouseLeave
+        onMouseMove: this.selectionMouseMove,
+        onMouseUp: this.selectionMouseUp,
+        onMouseLeave: this.selectionMouseLeave
       };
     }
     else {
       mouseEvents = {
-        onMouseDown: this.onMouseDown
+        onMouseDown: this.selectionMouseDown
       };
     }
 
