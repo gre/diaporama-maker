@@ -1,4 +1,5 @@
-var React = require("react");
+var React = require("react/addons");
+var PureRenderMixin = React.addons.PureRenderMixin;
 var _ = require("lodash");
 var translateStyle = require("../../core/translateStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
@@ -9,7 +10,10 @@ var transparentGif = require("../../core/transparent.gif");
 
 var TimelineElement = React.createClass({
 
-  mixins: [ DragDropMixin ],
+  // FIXME: TimelineElement might not be 'pure' because of props.item
+  // we need to add a check on item.file for this
+
+  mixins: [ DragDropMixin, PureRenderMixin ],
   statics: {
     configureDragDrop: function (register) {
       register(DragItems.SLIDE, {

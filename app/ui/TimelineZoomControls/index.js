@@ -1,7 +1,9 @@
-var React = require("react");
+var React = require("react/addons");
+var PureRenderMixin = React.addons.PureRenderMixin;
 var Icon = require("../Icon");
 
 var TimelineZoomControls = React.createClass({
+  mixins: [ PureRenderMixin ],
 
   getDefaultProps: function () {
     return {

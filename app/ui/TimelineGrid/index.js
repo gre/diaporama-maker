@@ -1,4 +1,6 @@
-var React = require("react");
+var React = require("react/addons");
+var PureRenderMixin = React.addons.PureRenderMixin;
+
 
 var labellers = [
   function () {
@@ -41,6 +43,7 @@ function granularitiesForTimeScale (timeScale) {
 
 
 var TimelineGrid = React.createClass({
+  mixins: [PureRenderMixin],
 
   render: function () {
     var timeScale = this.props.timeScale;

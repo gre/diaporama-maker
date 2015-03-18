@@ -1,8 +1,11 @@
-var React = require("react");
+var React = require("react/addons");
+var PureRenderMixin = React.addons.PureRenderMixin;
 var _ = require("lodash");
 var boundToStyle = require("../../core/boundToStyle");
 
 var SvgCrossFadeBackground = React.createClass({
+  mixins: [ PureRenderMixin ],
+    
   render: function () {
     var width = this.props.width;
     var height = this.props.height;
@@ -33,6 +36,7 @@ var SvgCrossFadeBackground = React.createClass({
 });
 
 var TimelineTransition = React.createClass({
+  mixins: [ PureRenderMixin ],
 
   render: function () {
     var xcenter = this.props.xcenter;
