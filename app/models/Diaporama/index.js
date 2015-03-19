@@ -51,6 +51,68 @@ function swapTimelineSlide (clone, i, j) {
   return clone;
 }
 
+// /!\ This operation will destruct all previously existing transitions. only use for init time
+function inlineAllTransitions (copy) {
+  var keys = {};
+  for (var i = 0; i < copy.timeline.length; ++i) {
+    var obj = copy.timeline[i];
+    if (obj.transitionNext && obj.transitionNext.name) {
+      keys[obj.transitionNext.name] = 1;
+    }
+  }
+  copy.transitions = _.map(_.keys(keys), function (name) {
+    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
+  });
+  return copy;
+}
+
+function checkTransitionsAfterAdd (copy, name) {
+  if (!name) return;
+  if (!copy.transitions) copy.transitions=[];
+  var idx = _.findIndex(copy.transitions, function (obj) {
+    return obj.name === name;
+  });
+  if (idx !== -1) return;
+
+  var t = _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
+  if (t) copy.transitions.push(t);
+  return;
+}
+
+function checkTransitionsAfterDelete (copy, name) {
+  if (!name || !copy.transitions) return;
+  for (var i = 0; i < copy.timeline.length; ++i) {
+    var obj = copy.timeline[i];
+    if (obj.transitionNext && obj.transitionNext.name===name) {
+      return; // There is still someone who needs this transition
+    }
+  }
+  var idx = _.findIndex(copy.transitions, function (obj) {
+    return obj.name === name;
+  });
+  if (idx === -1) return;
+
+  copy.transitions.splice(idx, 1);
+}
+
+function checkTransitionsAfterTnameChange (copy, prevName, nextName) {
+  if (prevName === nextName) return;
+  checkTransitionsAfterDelete(copy, prevName);
+  checkTransitionsAfterAdd(copy, nextName);
+}
+
+function checkTransitionsAfterTransitionChange (copy, prevT, nextT) {
+  checkTransitionsAfterTnameChange(copy,
+      prevT && prevT.name,
+      nextT && nextT.name);
+}
+
+function checkTransitionsAfterSlideChange (copy, prevItem, nextItem) {
+  checkTransitionsAfterTransitionChange(copy,
+    prevItem && prevItem.transitionNext,
+    nextItem && nextItem.transitionNext);
+}
+
 // Diaporama network actions
 
 var formatsD = Q.defer();
@@ -79,6 +141,7 @@ Diaporama.bootstrap = function (options) {
   })
   .then(Qajax.filterSuccess)
   .then(Qajax.toJSON)
+  .then(inlineAllTransitions)
   .then(assignIds);
 };
 
@@ -87,7 +150,7 @@ Diaporama.save = function (diaporama) {
   return Qajax({
     method: "POST",
     url: "/diaporama.json",
-    data: Diaporama.inlineTransitions(Diaporama.clean(diaporama))
+    data: Diaporama.clean(diaporama)
   })
   .then(Qajax.filterSuccess)
   .then(Qajax.toJSON);
@@ -112,27 +175,12 @@ Diaporama.fetch = function () {
 // Diaporama General Transformation Pass
 
 Diaporama.clean = function (diaporama) {
-  var copy = Diaporama.inlineTransitions(_.cloneDeep(diaporama));
+  var copy = _.cloneDeep(diaporama);
   if (copy.timeline) {
     for (var i = 0; i < copy.timeline.length; ++i) {
       delete copy.timeline[i].id;
     }
   }
-  return copy;
-};
-
-Diaporama.inlineTransitions = function (diaporama) {
-  var copy = _.clone(diaporama);
-  var keys = {};
-  for (var i = 0; i < copy.timeline.length; ++i) {
-    var obj = copy.timeline[i];
-    if (obj.transitionNext && obj.transitionNext.name) {
-      keys[obj.transitionNext.name] = 1;
-    }
-  }
-  copy.transitions = _.map(_.keys(keys), function (name) {
-    return _.pick(transitions.byName(name), [ "glsl", "uniforms", "name" ]);
-  });
   return copy;
 };
 
@@ -351,12 +399,16 @@ var actions = {
     if (itemPointer.transition) {
       var el = Diaporama.timelineForId(clone, id);
       if (value.duration < minTransitionDuration) value.duration = minTransitionDuration;
+      var prevT = el.transitionNext;
       el.transitionNext = value;
+      checkTransitionsAfterTransitionChange(clone, prevT, value);
     }
     else {
       var index = Diaporama.timelineIndexOfId(clone, id);
       if (value.duration < minSlideDuration) value.duration = minSlideDuration;
+      var prevItem = clone.timeline[index];
       clone.timeline[index] = value;
+      checkTransitionsAfterSlideChange(clone, prevItem, value);
     }
     return clone;
   },
@@ -375,8 +427,13 @@ var actions = {
   bootstrapImages: function (diaporama, srcs, place) {
     var clone = _.cloneDeep(diaporama);
     // vvv  TODO not supported diaporama.maker.defaultImage  vvv
+    var tnames = [];
     var objs = srcs.map(function (src) {
       var obj = genTimelineElementDefault(src);
+      var tname = obj.transitionNext && obj.transitionNext.name;
+      if (tname && !_.contains(tnames, tname)) {
+        tnames.push(tname);
+      }
       obj.id = newId();
       return obj;
     });
@@ -391,6 +448,9 @@ var actions = {
       var beforeIndex = Diaporama.timelineIndexOfId(clone, place.id);
       Array.prototype.splice.apply(clone.timeline, [ beforeIndex, 0 ].concat(objs));
     }
+    tnames.forEach(function (name) {
+      checkTransitionsAfterAdd(clone, name);
+    });
     return clone;
   },
 
@@ -398,10 +458,13 @@ var actions = {
     var index = Diaporama.timelineIndexOfId(diaporama, itemPointer.id);
     if (index === -1) return;
     var clone = _.cloneDeep(diaporama);
+    var prev = clone.timeline[index];
+    var tname = prev.transitionNext && prev.transitionNext.name;
     if (itemPointer.transition)
       delete clone.timeline[index].transitionNext;
     else
       clone.timeline.splice(index, 1);
+    checkTransitionsAfterDelete(clone, tname);
     return clone;
   },
 

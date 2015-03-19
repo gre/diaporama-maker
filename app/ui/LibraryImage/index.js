@@ -99,7 +99,7 @@ var LibraryImage = React.createClass({
     var stackElements = [];
 
     if (stack) {
-      for (var i = 0; i < stack.length; ++i) {
+      for (var i = 0; i < stack.length && i < 6; ++i) {
         var url = stack[i].url;
         if (item.url === url) continue;
         var stackElementStyle = _.extend({
