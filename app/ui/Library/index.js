@@ -13,6 +13,7 @@ var toProjectUrl = require("../../core/toProjectUrl");
 var LibraryImage = require("../LibraryImage");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
+var PromiseMixin = require("../../mixins/PromiseMixin");
 
 var thumbnailWidth = 120;
 var thumbnailHeight = 100;
@@ -48,7 +49,7 @@ function filesToItems (files) {
 
 var Library = React.createClass({
   
-  mixins: [DragDropMixin],
+  mixins: [DragDropMixin, PromiseMixin],
 
   statics: {
     configureDragDrop: function (register) {
@@ -198,7 +199,6 @@ var Library = React.createClass({
   },
 
   sync: function () {
-    var self = this;
     Qajax({
       method: "GET",
       url: "/listfiles"
@@ -207,8 +207,10 @@ var Library = React.createClass({
     .then(Qajax.toJSON)
     .then(filesToItems)
     .then(function (items) {
-      self.setState({ items: items });
+      return { items: items };
     })
+    .then(this.setStateQ)
+    .fail(this.recoverUnmountedQ)
     .done();
   },
 

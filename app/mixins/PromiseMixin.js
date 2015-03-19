@@ -9,16 +9,28 @@ UnmountedComponentError.prototype.name = "UnmountedComponentError";
 
 var PromiseMixin = {
   UnmountedComponentError: UnmountedComponentError,
+  recoverUnmountedQ: function (e) {
+    if (e instanceof UnmountedComponentError)
+      return;
+    else
+      throw e;
+  },
   // Promified setState
   setStateQ: function (state) {
     var d = Q.defer();
-    this.setState(state, d.resolve);
+    if (this.isMounted())
+      this.setState(state, d.resolve);
+    else
+      d.reject(new UnmountedComponentError("setStateQ: Component is not mounted"));
     return d.promise;
   },
   // Promified replaceState
   replaceStateQ: function (nextState) {
     var d = Q.defer();
-    this.replaceState(nextState, d.resolve);
+    if (this.isMounted())
+      this.replaceState(nextState, d.resolve);
+    else
+      d.reject(new UnmountedComponentError("replaceStateQ: Component is not mounted"));
     return d.promise;
   },
   // Promified forceUpdate
@@ -27,7 +39,7 @@ var PromiseMixin = {
     if (this.isMounted())
       this.forceUpdate(d.resolve);
     else
-      d.reject(new UnmountedComponentError("Component is not mounted"));
+      d.reject(new UnmountedComponentError("forceUpdateQ: Component is not mounted"));
     return d.promise;
   },
   // When a Promise ends, force a rendering update
