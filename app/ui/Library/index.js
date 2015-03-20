@@ -218,21 +218,17 @@ var Library = React.createClass({
     var width = this.props.width;
     var height = this.props.height;
     var usedImages = this.props.usedImages;
+    var scrollTop = !this.refs.scrollcontainer ? 0 : this.refs.scrollcontainer.getDOMNode().scrollTop;
 
-    var headerHeight = 40;
+    var headerHeight = 32;
     var contentHeight = (height - headerHeight);
-
-    var itemStyle = {
-      margin: "0 "+itemMarginW+"px",
-      display: "inline-block"
-    };
 
     var down = this.state.down;
     var move = this.state.move;
     var selectionStyle;
     if (down && move) {
       var x = Math.min(down[0],move[0]);
-      var y = Math.min(down[1],move[1]);
+      var y = Math.min(down[1],move[1]) - scrollTop;
       var w = Math.abs(down[0]-move[0]);
       var h = Math.abs(down[1]-move[1]);
       selectionStyle = _.extend({
@@ -249,18 +245,37 @@ var Library = React.createClass({
       };
     }
 
+    var scrollContainerStyle = {
+      position: "relative",
+      overflow: "auto",
+      padding: "1px 5px",
+      height: contentHeight+"px",
+      width: width+"px",
+      background: "#fff"
+    };
+
     var bgMouseEventsStyle = {
       zIndex: down ? 101 : 0,
       position: "absolute",
       left: 0,
       top: 0,
-      width: "100%",
-      height: "100%"
+      width: width+"px",
+      height: height+"px"
     };
 
+    var gridW = this.getGridWidth();
+
     var items =
-      this.state.items.map(function (item) {
+      this.state.items.map(function (item, i) {
         if (item.type === "image") {
+          var xi = (i % gridW);
+          var yi = Math.floor(i / gridW);
+          var itemStyle = {
+            margin: "0 "+itemMarginW+"px",
+            position: "absolute",
+            top: (GRID_H * yi) + "px",
+            left: (GRID_W * xi) + "px"
+          };
           return <LibraryImage
             key={item.file}
             width={thumbnailWidth}
@@ -297,10 +312,10 @@ var Library = React.createClass({
       className="library"
       style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>
-      <div ref="scrollcontainer" className="body" style={{ overflow: "auto", padding: "1px 5px", height: contentHeight+"px" }}>
+      <div ref="scrollcontainer" style={scrollContainerStyle}>
         {items}
-        <div style={bgMouseEventsStyle} {...mouseEvents}></div>
       </div>
+      <div style={bgMouseEventsStyle} {...mouseEvents}></div>
       <div style={selectionStyle}></div>
     </div>;
   }

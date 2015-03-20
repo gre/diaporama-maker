@@ -52,7 +52,7 @@ Diaporama.generateHTML = function (dir) {
   var b = browserify();
   b.add(path.join(__dirname, "../bootstrap/index.js"));
   b.bundle()
-    .pipe(uglify({ compress: true, mangle: true }))
+    //.pipe(uglify({ compress: true, mangle: true })) // FIXME
     .pipe(fs.createWriteStream(path.join(dir, "build.js")))
     .on("error", buildjs.reject)
     .on("finish", buildjs.resolve);

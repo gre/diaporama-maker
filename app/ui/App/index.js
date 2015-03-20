@@ -129,6 +129,9 @@ var App = React.createClass({
       viewerW = Math.round(W / 2);
       viewerH = Math.round(viewerW * 3 / 4);
     }
+    viewerW = Math.max(W - 800, Math.min(300, viewerW));
+    viewerH = Math.max(H - 300, viewerH);
+
     var viewerBound = {
       x: W-viewerW,
       y: 0,
