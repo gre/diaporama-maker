@@ -48,7 +48,8 @@ var App = React.createClass({
       hoverTimeline: false,
       windowFocus: true,
       selectedItemPointer: null,
-      time: 0
+      time: 0,
+      playing: false
     };
   },
 
@@ -60,6 +61,16 @@ var App = React.createClass({
     this.sync(Diaporama.fetch()).done();
     this.startMainLoop();
     var ck = this.combokeys = new Combokeys(document);
+
+    ck.bind('space', function (e) {
+      e.preventDefault();
+      if (this.state.playing) {
+        this.onPause();
+      }
+      else {
+        this.onPlay();
+      }
+    }.bind(this));
 
     ck.bind('command+z', function () {
       this.undo();
@@ -169,6 +180,9 @@ var App = React.createClass({
         time={time}
         bound={viewerBound}
         diaporama={diaporamaLocalized}
+        onPause={this.onPause}
+        onPlay={this.onPlay}
+        playing={this.state.playing}
       />
 
       <Timeline
@@ -345,7 +359,7 @@ var App = React.createClass({
         self.refs.timeline.update(t, dt);
 
       // Animate time when not hover and one of the edit panels
-      if (!hoverTimeline) {
+      if (!hoverTimeline && self.state.playing) {
         var time, interval, duration;
         if (panel === "editTransition") {
           interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
@@ -368,6 +382,11 @@ var App = React.createClass({
               time: time
             });
           }
+        }
+        else {
+          self.setState({
+            time: (self.state.time+dt) % Diaporama.duration(diaporama)
+          });
         }
       }
     }());
@@ -416,6 +435,18 @@ var App = React.createClass({
   onNav: function (panel) {
     this.setState({
       panel: panel
+    });
+  },
+
+  onPause: function () {
+    this.setState({
+      playing: false
+    });
+  },
+
+  onPlay: function () {
+    this.setState({
+      playing: true
     });
   }
 

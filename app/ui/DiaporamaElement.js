@@ -1,1 +1,1 @@
-module.exports = require("diaporama-react").lib(require("react"));
+module.exports = require("diaporama-react");

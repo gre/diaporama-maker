@@ -12,9 +12,9 @@ var Viewer = React.createClass({
 
   render: function () {
     var bound = this.props.bound;
+    var playing = this.props.playing;
 
     var style = _.extend({
-      position: "relative",
       background: "#000",
       color: "#fff"
     }, boundToStyle(bound));
@@ -24,6 +24,13 @@ var Viewer = React.createClass({
       position: "absolute",
       top: 0,
       left: 0
+    };
+
+    var playPauseSize = 40;
+    var playPauseStyle = {
+      position: "absolute",
+      left: ((bound.width-playPauseSize)/2)+"px",
+      top: ((bound.height-playPauseSize)/2)+"px"
     };
 
     var hoverOverlayStyles = {
@@ -46,8 +53,7 @@ var Viewer = React.createClass({
       ]
     };
 
-    return <a style={style} href="/preview" target="_blank">
-      <h2 style={h2Style}>Viewer</h2>
+    return <div style={style}>
       <DiaporamaElement
         GlslTransitions={GlslTransitions} // TODO: inline the transitions
         width={bound.width}
@@ -59,9 +65,15 @@ var Viewer = React.createClass({
         {...this.getBrowserStateEvents()}
         style={this.buildStyles(hoverOverlayStyles)}
       >
-        <Icon name="external-link" color="#fff" size={64} style={{ paddingTop: ((bound.height-32)/2)+"px" }} />
+        <h2 style={h2Style}>Viewer</h2>
+
+      { playing ?
+        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPause} name="pause" colorHover="#fc0" color="#fff" />
+          :
+        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPlay} name="play" colorHover="#fc0" color="#fff" />
+      }
       </div>
-    </a>;
+    </div>;
   }
 
 });

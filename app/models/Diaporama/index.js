@@ -262,6 +262,19 @@ Diaporama.timelineTransitionForId = function (diaporama, id) {
   };
 };
 
+Diaporama.duration = function (diaporama) {
+  var tl = diaporama.timeline;
+  var t = 0;
+  for (var i=0; i < tl.length; ++i) {
+    var item = tl[i];
+    var duration = item.duration || 0;
+    var tnext = item.transitionNext;
+    var tnextDuration = tnext && tnext.duration || 0;
+    t += duration + tnextDuration;
+  }
+  return t;
+};
+
 Diaporama.lookupSegment = function (diaporama, time) {
   var tl = diaporama.timeline;
   var t = 0;
