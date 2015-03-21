@@ -4,6 +4,8 @@ var imagemagick = require("imagemagick-native");
 var fs = require("fs");
 var path = require("path");
 var serverStatic = require('serve-static');
+var etag = require('etag');
+var fresh = require('fresh');
 
 var isImage = require("../common/isImage");
 
@@ -18,15 +20,55 @@ module.exports = function (app, slug, root) {
     }
   };
 
-  function getThumbnail (pathname, format) {
-    return fs.createReadStream(path.join(root, pathname))
-      .pipe(imagemagick.streams.convert({
-        width: format.max,
-        height: format.max,
-        resizeStyle: "aspectfit",
-        format: format.ext,
-        quality: 100 * format.quality
-      }));
+  var maxAge = 60000;
+
+  function setHeaders (res, file, stat) {
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Date', new Date().toUTCString());
+    res.setHeader('Cache-Control', 'public, max-age='+maxAge);
+    res.setHeader('Last-Modified', stat.mtime.toUTCString());
+    res.setHeader('ETag', etag(stat));
+  }
+
+  function isFresh (req, res) {
+    return fresh(req.headers, res._headers);
+  }
+
+  function isConditionalGET (req) {
+    return req.headers['if-none-match'] || req.headers['if-modified-since'];
+  }
+
+  function sendThumbnail (pathname, format, req, res, fallback) {
+    var file = path.join(root, pathname);
+    fs.stat(file, function onstat(err, stat) {
+      if (err) {
+        return fallback(err);
+      }
+
+      setHeaders(res, file, stat);
+      res.setHeader("Content-Type", format.contentType);
+      if (isConditionalGET(req) && isFresh(req, res)) {
+        Object.keys(res._headers).forEach(function(field){
+          if (0 == field.indexOf('content')) {
+            res.removeHeader(field);
+          }
+        });
+        res.statusCode = 304;
+        res.end();
+        return;
+      }
+
+      fs.createReadStream(file)
+        .pipe(imagemagick.streams.convert({
+          width: format.max,
+          height: format.max,
+          resizeStyle: "aspectfit",
+          format: format.ext,
+          quality: 100 * format.quality
+        }))
+        .on("error", fallback)
+        .pipe(res);
+    });
   }
 
   var rootStatic = serverStatic(root);
@@ -46,8 +88,7 @@ module.exports = function (app, slug, root) {
       var query = querystring.parse(url.query);
       var format = formats[query.format];
       if (format) {
-        res.setHeader("Content-Type", format.contentType);
-        getThumbnail(pathname, format).on("error", fallback).pipe(res);
+        sendThumbnail(pathname, format, req, res, fallback);
         shouldFallback = false;
       }
     }
