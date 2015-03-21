@@ -359,7 +359,7 @@ var App = React.createClass({
         self.refs.timeline.update(t, dt);
 
       // Animate time when not hover and one of the edit panels
-      if (!hoverTimeline && self.state.playing) {
+      if (self.state.playing) {
         var time, interval, duration;
         if (panel === "editTransition") {
           interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
@@ -425,7 +425,7 @@ var App = React.createClass({
   },
 
   onTimelineHover: function (time) {
-    if (this.state.time !== time) {
+    if (!this.state.playing && this.state.time !== time) {
       this.setState({
         time: time
       });
