@@ -91,7 +91,8 @@ var LibraryImage = React.createClass({
       color: !selected ? "#666" : "#d80",
       whiteSpace: "nowrap",
       overflow: "hidden",
-      textOverflow: "ellipsis"
+      textOverflow: "ellipsis",
+      pointerEvents: "none"
     };
     
     var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGES);
