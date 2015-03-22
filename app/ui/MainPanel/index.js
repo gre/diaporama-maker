@@ -106,12 +106,15 @@ var MainPanel = React.createClass({
     }, boundToStyle({ x: 0, y: 0, width: navWidth, height: bound.height }));
 
     var navs = _.map(panels, function (panel, panelMode) {
+      var selected = panelMode === mode;
+      var onClick = panel.standalone ? this.props.onNav.bind(null, panelMode) : undefined;
+      if (!selected && !onClick) return undefined;
       return <Icon
         title={panel.title}
         key={panelMode}
         name={panel.icon}
-        color={panelMode === mode ? "#000" : "#999"}
-        onClick={panel.standalone ? this.props.onNav.bind(null, panelMode) : undefined}
+        color={selected ? "#000" : "#999"}
+        onClick={onClick}
       />;
     }, this);
 
