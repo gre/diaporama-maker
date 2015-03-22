@@ -19,7 +19,8 @@ var TransitionPicker = React.createClass({
     value: React.PropTypes.shape({
       name: React.PropTypes.string,
       glsl: React.PropTypes.string,
-      uniforms: React.PropTypes.object
+      uniforms: React.PropTypes.object,
+      id: React.PropTypes.string
     }).isRequired,
     onChange: React.PropTypes.func.isRequired,
     overlayBounds: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
@@ -71,6 +72,7 @@ var TransitionPicker = React.createClass({
   render: function () {
     var opened = this.state.opened;
     var t = this.props.value;
+    console.log(t);
     var vignetteWidth = this.props.width;
     var vignetteHeight = this.props.height;
     var vignetteButtonSize = vignetteHeight / 2;
@@ -91,8 +93,9 @@ var TransitionPicker = React.createClass({
       images={this.images}
       width={vignetteWidth}
       height={vignetteHeight}>
-      <span className="tname">{t.name}</span>
+      <a href={t.id ? ("https://glsl.io/transition/"+t.id) : undefined} target="_blank" className="tname">{t.name}</a>
       <Icon name="pencil-square" size={vignetteButtonSize} color="#fff" onClick={this.onTransitionOpenPicker} style={vignetteButtonStyle} />
+      <a href={"https://glsl.io/user/"+t.owner} target="_blank" className="tauthor">by <em>{t.owner}</em></a>
     </Vignette>;
     
     var bounds = this.props.overlayBounds;

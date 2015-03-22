@@ -116,11 +116,11 @@ var Transitions = React.createClass({
         images={[ fromImage, toImage ]}
         width={vignetteWidth}
         height={vignetteHeight}>
-        <span className="tname">{t.name}</span>
+        <a href={t.id ? ("https://glsl.io/transition/"+t.id) : undefined} target="_blank" className="tname">{t.name}</a>
         <div className="actions">
           <Icon name="check-square" color="#fff" size={buttonSize} onClick={onClick} style={{ position: "absolute", left: ((vignetteWidth-buttonSize)/2)+"px", top: ((vignetteHeight-buttonSize)/2)+"px" }} />
         </div>
-        <span className="tauthor">by <em>{t.owner}</em></span>
+        <a href={"https://glsl.io/user/"+t.owner} target="_blank" className="tauthor">by <em>{t.owner}</em></a>
       </Vignette>;
     });
 

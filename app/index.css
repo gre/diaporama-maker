@@ -334,7 +334,13 @@ input.uniform-component-input[type="range"]::-webkit-slider-thumb {
   margin: 2px;
   float: left;
 }
-.vignette span.tname {
+.vignette a {
+  text-decoration: none;
+}
+.vignette a:hover {
+  text-decoration: underline;
+}
+.vignette .tname {
   color: #fff;
   font-size: 0.8em;
   font-weight: 400;
@@ -346,7 +352,7 @@ input.uniform-component-input[type="range"]::-webkit-slider-thumb {
   width: 99%;
   white-space: nowrap;
 }
-.vignette span.tauthor {
+.vignette .tauthor {
   font-weight: 300;
   font-size: 0.7em;
   color: #fff;
