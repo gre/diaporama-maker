@@ -3,6 +3,7 @@ var _ = require("lodash");
 var Q = require("q");
 var Qajax = require("qajax");
 var transitions = require("../transitions");
+var url = require("url");
 
 var toProjectUrl = require("../../core/toProjectUrl");
 var network = require("../../core/network");
@@ -125,12 +126,11 @@ Diaporama.generateVideo = function (diaporama, options) {
   recorderClient.generateVideo(Diaporama.localize(diaporama, true), options);
 };
 
-Diaporama.generateHTML = function () {
-  return Qajax({
-    method: "POST",
-    url: "/diaporama/generate/html"
-  })
-  .then(Qajax.filterSuccess);
+Diaporama.downloadZipLink = function (options) {
+  return url.format({
+    query: options,
+    pathname: "/diaporama/generate/zip"
+  });
 };
 
 Diaporama.bootstrap = function (options) {

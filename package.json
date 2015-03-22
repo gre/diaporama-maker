@@ -23,6 +23,7 @@
     "slideshow"
   ],
   "dependencies": {
+    "archiver": "^0.14.3",
     "bezier-easing": "^0.4.4",
     "body-parser": "^1.10.2",
     "browserify": "^9.0.3",
@@ -30,10 +31,8 @@
     "css-cursor": "^1.0.0",
     "diaporama": "^1.1.14",
     "diaporama-react": "^1.1.1",
-    "diaporama-recorder": "^1.0.4",
     "etag": "^1.5.1",
     "express": "^4.12.2",
-    "fluent-ffmpeg": "^2.0.0-rc3",
     "fresh": "^0.2.4",
     "glsl-transition": "^0.7.0",
     "glsl-transition-fade": "^1.0.0",
@@ -63,7 +62,7 @@
     "socket.io-client": "^1.3.4",
     "stream-buffers": "^2.1.0",
     "tmp": "0.0.25",
-    "uglify-stream": "^1.1.0",
+    "uglifyify": "^3.0.1",
     "vendor-prefix": "^0.1.0",
     "watchify": "^2.4.0"
   }

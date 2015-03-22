@@ -44,10 +44,21 @@ var Button = React.createClass({
       ]
     }, this.props.style);
 
+    var onClick = this.props.onClick ? this.onClick : undefined;
+    var href = this.props.href;
+
+    var extra = {};
+    if (this.props.download) {
+      extra.download = true;
+    }
+
     return (
-      <a href="#" onClick={this.onClick}
+      <a
+        href={href}
+        onClick={onClick}
         {...this.getBrowserStateEvents()}
         style={this.buildStyles(styles)}
+        {...extra}
       >
         {this.props.children}
       </a>

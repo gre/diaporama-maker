@@ -2,7 +2,9 @@ var path = require("path");
 var _ = require("lodash");
 var Q = require("q");
 var browserify = require("browserify");
-var uglify = require("uglify-stream");
+var uglifyify = require("uglifyify");
+var archiver = require("archiver");
+var imagemagick = require("imagemagick-native");
 
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
@@ -46,31 +48,68 @@ Diaporama.genEmpty = function (dir) {
   return Diaporama(dir, null);
 };
 
-Diaporama.generateHTML = function (dir) {
-  console.log("Building browserify build.js bundle ...");
-  var buildjs = Q.defer();
-  var b = browserify();
-  b.add(path.join(__dirname, "../bootstrap/index.js"));
-  b.bundle()
-    //.pipe(uglify({ compress: true, mangle: true })) // FIXME
-    .pipe(fs.createWriteStream(path.join(dir, "build.js")))
-    .on("error", buildjs.reject)
-    .on("finish", buildjs.resolve);
-
-  console.log("Bootstrapping index.html ...");
-  var copyhtml = Q.defer();
-  fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"))
-    .pipe(fs.createWriteStream(path.join(dir, "index.html")))
-    .on("error", copyhtml.reject)
-    .on("finish", copyhtml.resolve);
-
-  return Q.all([
-    buildjs.promise,
-    copyhtml.promise
-  ]);
+var imagemagickFilters = {
+  low: {
+    max: 512,
+    contentType: "image/jpeg",
+    ext: "JPEG",
+    quality: 0.9
+  },
+  medium: {
+    max: 1024,
+    contentType: "image/jpeg",
+    ext: "JPEG",
+    quality: 0.9
+  },
+  high: {
+    max: 2048,
+    contentType: "image/jpeg",
+    ext: "JPEG",
+    quality: 0.95
+  },
+  original: null
 };
 
 Diaporama.prototype = {
+  zip: function (options) {
+    options = _.extend({
+      quality: "original"
+    }, options);
+    var root = this.dir;
+    var diaporama = this.json;
+    var images = _.compact(_.pluck(diaporama.timeline, "image"));
+    var archive = archiver("zip");
+    _.forEach(images, function (image) {
+      var file = path.join(root, image);
+      var stream = fs.createReadStream(file);;
+      var filter = imagemagickFilters[options.quality];
+      if (filter) {
+        stream = stream.pipe(imagemagick.streams.convert({
+          width: filter.max,
+          height: filter.max,
+          resizeStyle: "aspectfit",
+          quality: filter.ext,
+          quality: 100 * filter.quality
+        }));
+      }
+      archive.append(stream, { name: image });
+    });
+
+    var json = JSON.stringify(diaporama, null, 2);
+    archive.append(json, { name: "diaporama.json" });
+
+    var js = browserify()
+      .transform({ global: true }, uglifyify)
+      .add(path.join(__dirname, "../bootstrap/index.js"))
+      .bundle();
+    archive.append(js, { name: "build.js" });
+
+    var html = fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"));
+    archive.append(html, { name: "index.html" });
+
+    archive.finalize();
+    return archive;
+  },
   bootstrap: function (options) {
     var dir = this.dir;
     var json = Q.fcall(getInitialJson);

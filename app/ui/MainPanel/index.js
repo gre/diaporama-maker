@@ -13,7 +13,7 @@ var panels = {
 
   generate: {
     standalone: true,
-    icon: "cogs",
+    icon: "download",
     title: "Save / Generate",
     render: function (innerWidth, innerHeight) {
       var diaporama = this.props.diaporama;

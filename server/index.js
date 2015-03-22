@@ -8,7 +8,6 @@ var Q = require('q');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
-var DiaporamaRecorderServer = require("diaporama-recorder/server");
 var Thumbnail = require("./Thumbnail");
 
 module.exports = function server (diaporama, port) {
@@ -45,14 +44,17 @@ module.exports = function server (diaporama, port) {
       });
   });
 
-  app.post("/diaporama/generate/html", function (req, res) {
-    Diaporama.generateHTML(diaporama.dir)
-      .then(function () {
-        res.status(204).send();
-      }, function (e) {
-        console.error(e);
-        res.status(400).send(e.message);
-      });
+  app.get("/diaporama/generate/zip", function (req, res) {
+    var archive = diaporama.zip(req.query);
+    archive.on('error', function(err) {
+      res.status(500).send({error: err.message});
+    });
+    res.on('close', function() {
+      console.log('zip %d bytes', archive.pointer());
+      return res.status(200).send('OK').end();
+    });
+    res.attachment('diaporama.zip');
+    archive.pipe(res);
   });
 
   app.post("/diaporama/bootstrap", function (req, res) {
@@ -88,8 +90,6 @@ module.exports = function server (diaporama, port) {
   Thumbnail(app, "preview", ".");
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
-
-  DiaporamaRecorderServer(io);
 
   var defer = Q.defer();
   http.listen(port, function (err) {
