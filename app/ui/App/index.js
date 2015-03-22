@@ -48,12 +48,14 @@ var App = React.createClass({
       windowFocus: true,
       selectedItemPointer: null,
       time: 0,
-      playing: false
+      playing: false,
+      error: null
     };
   },
 
   componentDidMount: function () {
     this.historizeDebounced = _.debounce(this.historize, 300);
+    window.onerror = this.onError;
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("resize", this.onResize);
@@ -108,6 +110,7 @@ var App = React.createClass({
   },
 
   componentWillUnmount: function () {
+    window.onerror = null;
     window.removeEventListener("blur", this.onBlur);
     window.removeEventListener("focus", this.onFocus);
     window.removeEventListener("resize", this.onResize);
@@ -166,6 +169,7 @@ var App = React.createClass({
       <MainPanel
         bound={mainPanelBound}
         panel={panel}
+        error={this.state.error}
         selectedItemPointer={selectedItemPointer}
         diaporama={diaporama}
         alterSelection={this.alterSelection}
@@ -201,6 +205,13 @@ var App = React.createClass({
   },
 
   // Global Events
+
+  onError: function (e) {
+    this.setState({
+      panel: "error",
+      error: e
+    });
+  },
 
   onFocus: function () {
     if (!this.state.windowFocus)

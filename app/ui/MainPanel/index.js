@@ -10,8 +10,18 @@ var Icon = require("../Icon");
 var TransitionCustomizer = require("../TransitionCustomizer");
 var ImageCustomizer = require("../ImageCustomizer");
 var GenerateScreen = require("../GenerateScreen");
+var ErrorScreen = require("../ErrorScreen");
 
 var panels = {
+
+  error: {
+    standalone: false,
+    icon: "bug",
+    title: "Bug",
+    render: function (innerWidth, innerHeight) {
+      return <ErrorScreen error={this.props.error} />;
+    }
+  },
 
   library: {
     standalone: true,
