@@ -255,6 +255,7 @@ Diaporama.timelineForId = function (diaporama, id) {
 
 Diaporama.timelineTransitionForId = function (diaporama, id) {
   var i = Diaporama.timelineIndexOfId(diaporama, id);
+  if (i === -1) return;
   var from = diaporama.timeline[i];
   var to = diaporama.timeline[i+1 >= diaporama.timeline.length ? 0 : i+1];
   return {

@@ -1,5 +1,7 @@
 var React = require("react");
 var _ = require("lodash");
+var DragDropMixin = require('react-dnd').DragDropMixin;
+var DragItems = require("../../constants").DragItems;
 var Diaporama = require("../../models/Diaporama");
 var boundToStyle = require("../../core/boundToStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
@@ -10,20 +12,6 @@ var ImageCustomizer = require("../ImageCustomizer");
 var GenerateScreen = require("../GenerateScreen");
 
 var panels = {
-
-  generate: {
-    standalone: true,
-    icon: "download",
-    title: "Save / Generate",
-    render: function (innerWidth, innerHeight) {
-      var diaporama = this.props.diaporama;
-      return <GenerateScreen
-        width={innerWidth}
-        height={innerHeight}
-        diaporama={diaporama}
-      />;
-    }
-  },
 
   library: {
     standalone: true,
@@ -40,6 +28,20 @@ var panels = {
     }
   },
 
+  generate: {
+    standalone: true,
+    icon: "download",
+    title: "Save / Generate",
+    render: function (innerWidth, innerHeight) {
+      var diaporama = this.props.diaporama;
+      return <GenerateScreen
+        width={innerWidth}
+        height={innerHeight}
+        diaporama={diaporama}
+      />;
+    }
+  },
+
   editImage: {
     icon: "picture-o",
     title: "Edit Image",
@@ -47,7 +49,7 @@ var panels = {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
-      if (!element) return <div>No Slide Selected.</div>;
+      if (!element) return <div>Slide Removed.</div>;
       return <ImageCustomizer
         value={element}
         onChange={this.props.alterSelection.bind(null, "setItem")}
@@ -64,7 +66,7 @@ var panels = {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
-      if (!transitionInfos.transitionNext) return <div>No Transition Selected.</div>;
+      if (!transitionInfos || !transitionInfos.transitionNext) return <div>Transition Removed.</div>;
       return <TransitionCustomizer
         value={transitionInfos.transitionNext}
         onChange={this.props.alterSelection.bind(null, "setItem")}
@@ -79,6 +81,23 @@ var panels = {
 };
 
 var MainPanel = React.createClass({
+
+  mixins: [DragDropMixin],
+
+  statics: {
+    configureDragDrop: function (register) {
+      register(DragItems.SLIDE, {
+        dropTarget: {
+          getDropEffect: function () {
+            return "move";
+          },
+          acceptDrop: function (component, itemPointer) {
+            component.props.alterDiaporama("removeItem", itemPointer);
+          }
+        }
+      });
+    }
+  },
 
   render: function () {
     var bound = this.props.bound;
@@ -122,7 +141,9 @@ var MainPanel = React.createClass({
       <nav style={navStyle}>
         {navs}
       </nav>
-      <div style={bodyStyle}>
+      <div
+      {...this.dropTargetFor(DragItems.SLIDE)}
+      style={bodyStyle}>
       {panelDom}
       </div>
     </div>;

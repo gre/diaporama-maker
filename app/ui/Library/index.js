@@ -11,8 +11,6 @@ var boundToStyle = require("../../core/boundToStyle");
 var isImage = require("../../../common/isImage");
 var toProjectUrl = require("../../core/toProjectUrl");
 var LibraryImage = require("../LibraryImage");
-var DragItems = require("../../constants").DragItems;
-var DragDropMixin = require('react-dnd').DragDropMixin;
 var PromiseMixin = require("../../mixins/PromiseMixin");
 
 var thumbnailWidth = 120;
@@ -48,23 +46,8 @@ function filesToItems (files) {
 }
 
 var Library = React.createClass({
-  
-  mixins: [DragDropMixin, PromiseMixin],
 
-  statics: {
-    configureDragDrop: function (register) {
-      register(DragItems.SLIDE, {
-        dropTarget: {
-          getDropEffect: function () {
-            return "move";
-          },
-          acceptDrop: function (component, itemPointer) {
-            component.props.alterDiaporama("removeItem", itemPointer);
-          }
-        }
-      });
-    }
-  },
+  mixins: [PromiseMixin],
 
   getInitialState: function () {
     return {
@@ -308,7 +291,6 @@ var Library = React.createClass({
     }
 
     return <div
-      {...this.dropTargetFor(DragItems.SLIDE)}
       className="library"
       style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>
