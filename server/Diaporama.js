@@ -45,7 +45,7 @@ Diaporama.validate = function (json) {
 };
 
 Diaporama.genEmpty = function (dir) {
-  return Diaporama(dir, null);
+  return Diaporama(dir, getInitialJson());
 };
 
 var imagemagickFilters = {
@@ -109,32 +109,6 @@ Diaporama.prototype = {
 
     archive.finalize();
     return archive;
-  },
-  bootstrap: function (options) {
-    var dir = this.dir;
-    var json = Q.fcall(getInitialJson);
-
-    if (options.pickAllImages) {
-      json = Q.all([ json, findAllFiles(dir, isImage) ])
-      .spread(function (json, images) {
-        if (options.shuffle) {
-          images.sort(function () {
-            return Math.random() - 0.5;
-          });
-        }
-        json.timeline = images.map(function (image) {
-          return _.defaults({ image: image }, _.cloneDeep(options.timelineSkeleton));
-        });
-        return json;
-      });
-    }
-
-    var diaporama = this;
-    return json
-      .then(function (json) {
-        diaporama.json = json;
-        return diaporama;
-      });
   },
   save: function () {
     return fs.writeFile(

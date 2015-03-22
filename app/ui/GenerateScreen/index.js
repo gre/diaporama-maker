@@ -54,7 +54,7 @@ var GenerateScreen = React.createClass({
       <div style={formStyle}>
         <p>
           <label>
-            Quality:&nbsp;
+            Image Quality:&nbsp;
             <Select options={options} value={this.state.quality} onChange={this.onQualityChange} />
           </label>
         </p>

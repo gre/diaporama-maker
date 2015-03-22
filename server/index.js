@@ -1,5 +1,6 @@
 var watchify = require('watchify');
 var browserify = require('browserify');
+var uglifyify = require("uglifyify");
 var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
@@ -10,24 +11,32 @@ var isImage = require("../common/isImage");
 var Diaporama = require("./Diaporama");
 var Thumbnail = require("./Thumbnail");
 
+var isProd = process.env.NODE_ENV === "production";
+
 module.exports = function server (diaporama, port) {
   var app = express();
 
   var http = require('http').Server(app);
   var io = require('socket.io')(http);
 
-  // TODO: ports
+  // TODO: different ports when used
   if (!port) port = 9325;
 
-  app.use(bodyParser.json());
-
   var b = browserify(watchify.args);
+  /*
+  // FIXME is quite slow...
+  if (isProd) {
+    b.transform({ global: true }, uglifyify);
+  }
+  */
   b.transform(require("reactify"));
   b.add(path.join(__dirname, '../app/index.js'));
   var w = watchify(b);
   w.on('update', function () {
     w.bundle();
   });
+
+  app.use(bodyParser.json());
 
   app.get('/index.js', function (req, res) {
     w.bundle().pipe(res.type("js"));
@@ -55,17 +64,6 @@ module.exports = function server (diaporama, port) {
     });
     res.attachment('diaporama.zip');
     archive.pipe(res);
-  });
-
-  app.post("/diaporama/bootstrap", function (req, res) {
-    diaporama.bootstrap(req.body)
-      .then(function (diaporama) {
-        res.type("json").send(JSON.stringify(diaporama.json));
-      })
-      .fail(function (e) {
-        console.error(e);
-        res.status(400).send(e.message);
-      });
   });
 
   app.get('/diaporama.json', function(req, res) {

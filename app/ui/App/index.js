@@ -8,7 +8,6 @@ var Diaporama = require("../../models/Diaporama");
 var MainPanel = require("../MainPanel");
 var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
-var Bootstrap = require("../Bootstrap");
 var DragLayer = require("../DragLayer");
 
 var DEFAULT_PANEL = "library";
@@ -127,8 +126,6 @@ var App = React.createClass({
     var hoverTimeline = this.state.hoverTimeline;
 
     if (diaporama === undefined) return <div>Loading...</div>;
-
-    if (diaporama === null) return <Bootstrap onSubmit={this.bootstrap} />;
 
     // Bounds
     var viewerW, viewerH;

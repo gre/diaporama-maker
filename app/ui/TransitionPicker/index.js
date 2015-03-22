@@ -72,7 +72,6 @@ var TransitionPicker = React.createClass({
   render: function () {
     var opened = this.state.opened;
     var t = this.props.value;
-    console.log(t);
     var vignetteWidth = this.props.width;
     var vignetteHeight = this.props.height;
     var vignetteButtonSize = vignetteHeight / 2;
