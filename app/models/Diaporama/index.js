@@ -9,7 +9,7 @@ var toProjectUrl = require("../../core/toProjectUrl");
 var network = require("../../core/network");
 var genTimelineElementDefault = require("../../../common/genTimelineElementDefault");
 
-var recorderClient = require("diaporama-recorder/client")(network);
+// var recorderClient = require("diaporama-recorder/client")(network);
 
 var Diaporama = {};
 
@@ -116,6 +116,7 @@ function checkTransitionsAfterSlideChange (copy, prevItem, nextItem) {
 
 // Diaporama network actions
 
+/*
 var formatsD = Q.defer();
 recorderClient.getFormats().subscribe(formatsD.resolve, formatsD.reject);
 Diaporama.getFormats = function () {
@@ -125,6 +126,7 @@ Diaporama.getFormats = function () {
 Diaporama.generateVideo = function (diaporama, options) {
   recorderClient.generateVideo(Diaporama.localize(diaporama, true), options);
 };
+*/
 
 Diaporama.downloadZipLink = function (options) {
   return url.format({
