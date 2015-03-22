@@ -12,7 +12,7 @@ var vignetteWidthBase = 256;
 var vignetteHeightBase = 200;
 
 var cols = 3;
-var rows = 2;
+var rows = 1;
 var perPage = cols * rows;
 
 function queryMatch (q, text) {
