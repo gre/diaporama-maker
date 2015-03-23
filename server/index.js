@@ -85,7 +85,7 @@ module.exports = function server (diaporama, port) {
       .done();
   });
 
-  Thumbnail(app, "preview", ".");
+  Thumbnail(app, "preview", diaporama.dir);
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
 

@@ -13,33 +13,26 @@ function edit (diaporama) {
 }
 
 function help () {
-  console.error("To initialize / continue a diaporama run:");
-  console.error("diaporama");
+  console.error("Usage: diaporama <images directory>");
+  console.error("A diaporama.json will be created in that directory.");
   process.exit(1);
 }
 
 var args = process.argv.slice(2);
 
-if (args.length > 1 || args[0] === "-h" || args[0] === "--help") {
+if (args.length !== 1 || args[0] === "-h" || args[0] === "--help") {
   help();
 }
 
-var cwd = process.cwd();
+var dir = args[0];
 
-fs.readdir(cwd)
+fs.readdir(dir)
   .then(function (files) {
     if (!_.contains(files, Diaporama.jsonfile)) {
-
-      return edit(Diaporama.genEmpty(cwd));
-
-      /*
-      return Diaporama.bootstrapDirectory(cwd)
-        .post("save")
-        .then(edit);
-        */
+      return edit(Diaporama.genEmpty(dir));
     }
     else {
-      return Diaporama.fromDirectory(cwd)
+      return Diaporama.fromDirectory(dir)
         .then(edit);
     }
   })

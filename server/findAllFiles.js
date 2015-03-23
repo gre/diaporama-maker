@@ -12,7 +12,7 @@ function findAllFiles (fulldir, fileFilter, dir) {
   if (!dir) dir = "";
   return fs.readdir(fulldir).then(function (files) {
     return Q.all(files.map(function (file) {
-      return fs.stat(path.join(dir, file));
+      return fs.stat(path.join(fulldir, file));
     }))
     .then(function (stats) {
       var all = stats.map(function (stat, i) {
