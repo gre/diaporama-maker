@@ -12,7 +12,7 @@ npm install diaporama-maker
 Requirements
 -----------
 
-- imagemagick installed on your compute. You can check that `convert` command is working.
+- `imagemagick` installed on your computer. You can check that `convert` command is working.
 - A Web Browser with WebGL support.
 
 Running
