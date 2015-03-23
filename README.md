@@ -6,7 +6,7 @@ Installation
 ------------
 
 ```
-npm install diaporama-maker
+npm install -g diaporama-maker
 ```
 
 Requirements
