@@ -160,7 +160,7 @@ var App = React.createClass({
       x: 0,
       y: viewerH,
       width: W,
-      height: H-viewerH
+      height: H-viewerH-4 // FIXME please explain me why
     };
 
     return <div>
