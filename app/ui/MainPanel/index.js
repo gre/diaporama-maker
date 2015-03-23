@@ -11,14 +11,24 @@ var TransitionCustomizer = require("../TransitionCustomizer");
 var ImageCustomizer = require("../ImageCustomizer");
 var GenerateScreen = require("../GenerateScreen");
 var ErrorScreen = require("../ErrorScreen");
+var AboutScreen = require("../AboutScreen");
 
 var panels = {
+
+  about: {
+    standalone: false,
+    icon: "info-circle",
+    title: "About",
+    render: function () {
+      return <AboutScreen onDone={this.props.onNav.bind(null, "library")} />;
+    }
+  },
 
   error: {
     standalone: false,
     icon: "bug",
-    title: "Bug",
-    render: function (innerWidth, innerHeight) {
+    title: "Error",
+    render: function () {
       return <ErrorScreen error={this.props.error} />;
     }
   },

@@ -1,6 +1,7 @@
 var React = require("react/addons");
 var PureRenderMixin = React.addons.PureRenderMixin;
 var Icon = require("../Icon");
+var packageJson = require("../../../package.json");
 
 var ErrorScreen = React.createClass({
   mixins: [PureRenderMixin],
@@ -21,7 +22,7 @@ var ErrorScreen = React.createClass({
 
     var reportBugUrl = "https://github.com/gre/diaporama-maker/issues/new?"+
       "title="+encodeURIComponent("Crash Report: "+msg)+
-      "&body="+encodeURIComponent("<Provide any extra detail>\n\n**Log detail:**\n```\n"+(e && e.stack || (e+"\n"+msg))+"\n```");
+      "&body="+encodeURIComponent("<Provide any extra detail>\n\n**Version:**\n```\n"+packageJson.version+"\n```\n**Log detail:**\n```\n"+(e && e.stack || (e+"\n"+msg))+"\n```");
 
     return <div>
       <h2>
@@ -36,7 +37,7 @@ var ErrorScreen = React.createClass({
       </p>
   
       <p>
-        <a style={linkStyle} href={reportBugUrl}>
+        <a target="_blank" style={linkStyle} href={reportBugUrl}>
           <Icon name="heart" /> Report this Bug
         </a>
       </p>

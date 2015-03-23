@@ -10,6 +10,7 @@ var Viewer = require("../Viewer");
 var Timeline = require("../Timeline");
 var DragLayer = require("../DragLayer");
 
+var INITIAL_PANEL = "about";
 var DEFAULT_PANEL = "library";
 
 function getWidth () {
@@ -43,7 +44,7 @@ var App = React.createClass({
       diaporamaLocalized: null,
       history: [], // used for undo
       undoHistory: [], // used for redo
-      panel: DEFAULT_PANEL,
+      panel: INITIAL_PANEL,
       hoverTimeline: false,
       windowFocus: true,
       selectedItemPointer: null,

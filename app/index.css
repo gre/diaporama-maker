@@ -413,3 +413,9 @@ h2 {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+a {
+  color: #000;
+}
+a:hover {
+  color: #f90;
+}

@@ -13,7 +13,7 @@
     "url": "git@github.com:gre/diaporama-maker.git"
   },
   "author": "Gaëtan Renaudeau",
-  "license": "ISC",
+  "license": "GPL",
   "bugs": {
     "url": "https://github.com/gre/diaporama-maker/issues"
   },

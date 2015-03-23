@@ -48,9 +48,10 @@ var Button = React.createClass({
     var href = this.props.href;
 
     var extra = {};
-    if (this.props.download) {
+    if (this.props.download)
       extra.download = true;
-    }
+    if (this.props.target)
+      extra.target = this.props.target;
 
     return (
       <a
