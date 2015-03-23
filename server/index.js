@@ -17,7 +17,7 @@ module.exports = function server (diaporama, port) {
   var app = express();
 
   var http = require('http').Server(app);
-  var io = require('socket.io')(http);
+  // var io = require('socket.io')(http);
 
   // TODO: different ports when used
   if (!port) port = 9325;

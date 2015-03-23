@@ -1,7 +1,7 @@
 {
   "name": "diaporama-maker",
   "version": "0.2.3",
-  "description": "A CLI tool to make a web diaporama from a directory of images.",
+  "description": "An editor to make image slideshows performed with diaporama – including KenBurns effect and GLSL Transitions.",
   "browser": "app/index.js",
   "main": "server/index.js",
   "bin": {
@@ -58,8 +58,6 @@
     "rect-mix": "0.0.0",
     "send": "^0.12.1",
     "serve-static": "^1.8.1",
-    "socket.io": "^1.3.4",
-    "socket.io-client": "^1.3.4",
     "stream-buffers": "^2.1.0",
     "tmp": "0.0.25",
     "uglifyify": "^3.0.1",

@@ -1,7 +1,26 @@
 Diaporama Maker
 ===============
+An editor to make image slideshows performed with [`diaporama`](http://github.com/glslio/diaporama) – including KenBurns effect and GLSL Transitions.
 
-An editor to create image slideshows performed with [`diaporama`](http://github.com/glslio/diaporama).
+Installation
+------------
+
+```
+npm install diaporama-maker
+```
+
+Requirements
+-----------
+
+- imagemagick installed on your compute. You can check that `convert` command is working.
+- A Web Browser with WebGL support.
+
+Running
+-------
+
+```
+diaporama directory_with_images
+```
 
 Create your own Timeline
 ========================

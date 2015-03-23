@@ -6,7 +6,7 @@ var transitions = require("../transitions");
 var url = require("url");
 
 var toProjectUrl = require("../../core/toProjectUrl");
-var network = require("../../core/network");
+// var network = require("../../core/network");
 var genTimelineElementDefault = require("../../../common/genTimelineElementDefault");
 
 // var recorderClient = require("diaporama-recorder/client")(network);
