@@ -1,13 +1,14 @@
 var React = require("react");
 var _ = require("lodash");
 
-var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
+var BezierEditor = require("bezier-easing-editor");
 var images = require("../../resource/images");
 var DurationInput = require("../DurationInput");
-var KenBurnsEditor = require("../KenBurnsEditor");
 var Icon = require("../Icon");
 var Button = require("../Button");
 var toProjectUrl = require("../../core/toProjectUrl");
+
+import {KenburnsEditor} from "kenburns-editor";
 
 var croppingModes = {
   fitcenter: {
@@ -32,12 +33,13 @@ var croppingModes = {
       var paddingW = (w2 - h) / 2;
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
-        <KenBurnsEditor
+        <KenburnsEditor
           value={value.kenburns}
           onChange={this.onChangeKenburns}
           width={w1-interPadding}
           height={h}
           image={image}
+          background="#000"
         />
         </div>
         <div key="r" style={{ display: "inline-block" }}>
@@ -64,7 +66,7 @@ var ImageCustomizer = React.createClass({
     onChange: React.PropTypes.func.isRequired,
     width: React.PropTypes.number.isRequired
   },
-    
+
   onChangeKenburns: function (value) {
     var prev = this.props.value;
     this.props.onChange(_.defaults({ kenburns: _.extend({}, prev.kenburns, value) }, prev));
@@ -142,7 +144,11 @@ var ImageCustomizer = React.createClass({
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
-      <DurationInput title="Image Duration:" value={value.duration} onChange={this.onChangeDuration} width={width} />
+      <DurationInput
+        title="Image Duration:"
+        value={value.duration}
+        onChange={this.onChangeDuration}
+        width={width} />
       <div>{modes}</div>
       {!render ? undefined : render.call(this)}
     </div>;

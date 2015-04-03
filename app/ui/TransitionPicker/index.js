@@ -1,9 +1,6 @@
 var React = require("react");
-var Q = require("q");
-var Qimage = require("qimage");
 var Transitions = require("../Transitions");
-var Vignette = require("glsl.io-client/src/ui/Vignette");
-var images = require("../../resource/images");
+var Vignette = require("glsl-transition-vignette");
 var Icon = require("../Icon");
 
 function safeDuration (d) {
@@ -32,25 +29,12 @@ var TransitionPicker = React.createClass({
     animated: React.PropTypes.bool
   },
 
-  componentWillMount: function () {
-    this.images = [ images.fromImage, images.toImage ];
-    if (this.props.images) {
-      Q .all(this.props.images.map(Qimage.anonymously))
-        .then(function (images) {
-          this.images = images;
-          if (this.isMounted())
-            this.forceUpdate();
-        }.bind(this))
-        .done();
-    }
-  },
-
   getInitialState: function () {
     return {
       opened: false
     };
   },
-  
+
   onOverlayOutClick: function () {
     this.setState({
       opened: false
@@ -70,6 +54,7 @@ var TransitionPicker = React.createClass({
   },
 
   render: function () {
+    var images = this.props.images;
     var opened = this.state.opened;
     var t = this.props.value;
     var vignetteWidth = this.props.width;
@@ -86,17 +71,17 @@ var TransitionPicker = React.createClass({
       transitionDuration={safeDuration(this.props.transitionDuration)}
       transitionEasing={this.props.transitionEasing}
       autostart={!!this.props.animated}
-      controlsMode={"none"}
+      controlsMode="none"
       glsl={t.glsl}
       uniforms={this.props.transitionUniforms || t.uniforms}
-      images={this.images}
+      images={images}
       width={vignetteWidth}
       height={vignetteHeight}>
       <a href={t.id ? ("https://glsl.io/transition/"+t.id) : undefined} target="_blank" className="tname">{t.name}</a>
       <Icon name="pencil-square" size={vignetteButtonSize} color="#fff" onClick={this.onTransitionOpenPicker} style={vignetteButtonStyle} />
       <a href={"https://glsl.io/user/"+t.owner} target="_blank" className="tauthor">by <em>{t.owner}</em></a>
     </Vignette>;
-    
+
     var bounds = this.props.overlayBounds;
 
     var overlayStyle = {
@@ -125,6 +110,7 @@ var TransitionPicker = React.createClass({
           <Transitions
             width={bounds[2]}
             height={bounds[3]}
+            images={images}
             onTransitionSelected={this.onTransitionSelected}
           />
         </div>;

@@ -58,7 +58,7 @@ var TimelineGrid = React.createClass({
     var granularities = granularitiesForTimeScale(timeScale);
 
     var minGran = granularities[0];
-    
+
     var labels = [];
     var lines = [];
 
@@ -72,6 +72,8 @@ var TimelineGrid = React.createClass({
       var x = Math.round(t * timeScale);
       var y = 16-tickHeights[g];
 
+
+      // FIXME: perfs might be improvable using only one <path /> ?
       if (label) {
         labels.push(
           <text key={"t"+t} style={labelStyles[g]} x={x} y={y}>{label}</text>

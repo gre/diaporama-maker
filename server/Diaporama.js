@@ -6,9 +6,6 @@ var uglifyify = require("uglifyify");
 var archiver = require("archiver");
 var imagemagick = require("imagemagick-native");
 
-var findAllFiles = require("./findAllFiles");
-var isImage = require("../common/isImage");
-
 var package = require("../package.json");
 var fs = require("./fs"); // FIXME use q-io
 
@@ -81,14 +78,13 @@ Diaporama.prototype = {
     var archive = archiver("zip");
     _.forEach(images, function (image) {
       var file = path.join(root, image);
-      var stream = fs.createReadStream(file);;
+      var stream = fs.createReadStream(file);
       var filter = imagemagickFilters[options.quality];
       if (filter) {
         stream = stream.pipe(imagemagick.streams.convert({
           width: filter.max,
           height: filter.max,
           resizeStyle: "aspectfit",
-          quality: filter.ext,
           quality: 100 * filter.quality
         }));
       }

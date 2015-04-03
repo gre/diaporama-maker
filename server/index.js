@@ -1,6 +1,6 @@
 var watchify = require('watchify');
 var browserify = require('browserify');
-var uglifyify = require("uglifyify");
+// var uglifyify = require("uglifyify");
 var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
@@ -8,10 +8,9 @@ var path = require('path');
 var Q = require('q');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
-var Diaporama = require("./Diaporama");
 var Thumbnail = require("./Thumbnail");
 
-var isProd = process.env.NODE_ENV === "production";
+// var isProd = process.env.NODE_ENV === "production";
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -29,7 +28,9 @@ module.exports = function server (diaporama, port) {
     b.transform({ global: true }, uglifyify);
   }
   */
-  b.transform(require("reactify"));
+  b.transform(require("babelify").configure({
+    ignore: /.*.json/
+  }));
   b.add(path.join(__dirname, '../app/index.js'));
   var w = watchify(b);
   w.on('update', function () {

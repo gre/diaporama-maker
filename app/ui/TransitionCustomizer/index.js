@@ -4,8 +4,8 @@ var BezierEasing = require("bezier-easing");
 var DurationInput = require("../DurationInput");
 var transitions = require("../../models/transitions");
 var TransitionPicker = require("../TransitionPicker");
-var BezierEditor = require("glsl.io-client/src/ui/BezierEditor");
-var UniformsEditor = require("glsl.io-client/src/ui/UniformsEditor");
+var BezierEditor = require("bezier-easing-editor");
+var UniformsEditor = require("glsl-uniforms-editor");
 var Icon = require("../Icon");
 
 function printEasing (easing) {
@@ -120,9 +120,9 @@ var TransitionCustomizer = React.createClass({
         <strong style={{ position: "absolute", left: "0px", top: "10px" }}>Uniforms:</strong>
         <div style={{ marginLeft: (w)+"px" }}>
           <UniformsEditor
-            initialUniformValues={uniforms}
-            uniforms={transition.types}
-            onUniformsChange={this.onUniformsChange}
+            values={uniforms}
+            types={transition.types}
+            onChange={this.onUniformsChange}
           />
         </div>
       </div>

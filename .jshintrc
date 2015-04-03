@@ -17,6 +17,6 @@
     "forin": false,
     "browser": false,
     "globalstrict": false,
-    "esnext": false,
+    "esnext": true,
     "quotmark": false
 }
