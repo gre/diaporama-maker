@@ -2,6 +2,7 @@ var React = require("react");
 var Transitions = require("../Transitions");
 var Vignette = require("glsl-transition-vignette");
 var Icon = require("../Icon");
+import VignetteInnerInfos from "../Transitions/VignetteInnerInfos";
 
 function safeDuration (d) {
   if (isNaN(d)) return 100;
@@ -77,9 +78,13 @@ var TransitionPicker = React.createClass({
       images={images}
       width={vignetteWidth}
       height={vignetteHeight}>
-      <a href={t.id ? ("https://glsl.io/transition/"+t.id) : undefined} target="_blank" className="tname">{t.name}</a>
-      <Icon name="pencil-square" size={vignetteButtonSize} color="#fff" onClick={this.onTransitionOpenPicker} style={vignetteButtonStyle} />
-      <a href={"https://glsl.io/user/"+t.owner} target="_blank" className="tauthor">by <em>{t.owner}</em></a>
+      <VignetteInnerInfos {...t} />
+      <Icon
+        name="pencil-square"
+        size={vignetteButtonSize}
+        color="#fff"
+        onClick={this.onTransitionOpenPicker}
+        style={vignetteButtonStyle} />
     </Vignette>;
 
     var bounds = this.props.overlayBounds;

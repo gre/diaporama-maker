@@ -111,7 +111,7 @@ var Library = React.createClass({
       return false;
     }.bind(this));
   },
-  
+
   getEventPosition: function (e) {
     var bounds = this.getDOMNode().getBoundingClientRect();
     var node = this.refs.scrollcontainer.getDOMNode();
@@ -197,11 +197,15 @@ var Library = React.createClass({
     .done();
   },
 
+  componentWillUpdate: function () {
+    this.scrollTop = !this.refs.scrollcontainer ? 0 : this.refs.scrollcontainer.getDOMNode().scrollTop;
+  },
+
   render: function () {
     var width = this.props.width;
     var height = this.props.height;
     var usedImages = this.props.usedImages;
-    var scrollTop = !this.refs.scrollcontainer ? 0 : this.refs.scrollcontainer.getDOMNode().scrollTop;
+    var scrollTop = this.scrollTop;
 
     var headerHeight = 32;
     var contentHeight = (height - headerHeight);

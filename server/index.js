@@ -34,6 +34,7 @@ module.exports = function server (diaporama, port) {
   b.add(path.join(__dirname, '../app/index.js'));
   var w = watchify(b);
   w.on('update', function () {
+    console.log("Bundle.");
     w.bundle();
   });
 

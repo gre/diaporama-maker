@@ -1,16 +1,17 @@
-var React = require("react");
-var _ = require("lodash");
-var VignetteGrid = require("glsl-transition-vignette-grid");
-var Vignette = require("glsl-transition-vignette");
-var Icon = require("../Icon");
-var transitions = require("../../models/transitions");
+import React from "react";
+import _ from "lodash";
+import VignetteGrid from "glsl-transition-vignette-grid";
+import Vignette from "glsl-transition-vignette";
+import Icon from "../Icon";
+import transitions from "../../models/transitions";
+import VignetteInnerInfos from "./VignetteInnerInfos";
 
-var vignetteWidthBase = 256;
-var vignetteHeightBase = 200;
+const vignetteWidthBase = 256;
+const vignetteHeightBase = 200;
 
-var cols = 3;
-var rows = 2;
-var perPage = cols * rows;
+const cols = 3;
+const rows = 2;
+const perPage = cols * rows;
 
 function queryMatch (q, text) {
   q = q.toLowerCase();
@@ -26,7 +27,7 @@ function queryMatch (q, text) {
     .value();
 }
 
-var Transitions = React.createClass({
+const Transitions = React.createClass({
 
   getInitialState: function () {
     return {
@@ -36,14 +37,14 @@ var Transitions = React.createClass({
   },
 
   nextPage: function (nbPages) {
-    var next = Math.min(this.state.page + 1, nbPages-1);
+    const next = Math.min(this.state.page + 1, nbPages-1);
     if (this.state.page !== next) {
       this.setState({ page: next });
     }
   },
 
   prevPage: function () {
-    var prev = Math.max(0, this.state.page - 1);
+    const prev = Math.max(0, this.state.page - 1);
     if (this.state.page !== prev) {
       this.setState({ page: prev });
     }
@@ -68,20 +69,20 @@ var Transitions = React.createClass({
       q
     } = this.state;
 
-    var contentHeight = height - 30;
+    const contentHeight = height - 30;
 
-    var vignetteWidth = Math.min(Math.floor((width-2) / cols - 14), vignetteWidthBase);
-    var vignetteHeight = Math.floor(vignetteHeightBase * vignetteWidth/vignetteWidthBase);
+    const vignetteWidth = Math.min(Math.floor((width-2) / cols - 14), vignetteWidthBase);
+    const vignetteHeight = Math.floor(vignetteHeightBase * vignetteWidth/vignetteWidthBase);
 
-    var buttonSize = Math.floor(vignetteHeight / 2);
+    const buttonSize = Math.floor(vignetteHeight / 2);
 
-    var coll = _.filter(transitions.collection, function (t) {
+    const collection = _.filter(transitions.collection, function (t) {
       return queryMatch(q, t.owner) || queryMatch(q, t.name);
     });
-    var nbPages = Math.ceil(coll.length / perPage);
-    coll = coll.slice(page * perPage, (page+1) * perPage);
+    const nbPages = Math.ceil(collection.length / perPage);
+    const pageCollection = collection.slice(page * perPage, (page+1) * perPage);
 
-    var navStyle = {
+    const navStyle = {
       position: "absolute",
       top: "0px",
       right: "10px",
@@ -89,7 +90,7 @@ var Transitions = React.createClass({
       fontSize: "1.2em"
     };
 
-    var typeaheadStyle = {
+    const typeaheadStyle = {
       position: "absolute",
       left: "180px",
       top: "4px",
@@ -97,57 +98,45 @@ var Transitions = React.createClass({
       padding: "2px"
     };
 
-    var headerStyle = {
+    const headerStyle = {
       position: "relative"
     };
 
-    var bodyStyle = {
+    const bodyStyle = {
       overflow: "auto",
       padding: "1px 5px",
       height: contentHeight+"px"
     };
 
+    const vignetteButtonStyle = {
+      position: "absolute",
+      left: ((vignetteWidth-buttonSize)/2)+"px",
+      top: ((vignetteHeight-buttonSize)/2)+"px"
+    };
+
     const renderVignette = (props) => {
       const onClick = () => onTransitionSelected(props.name);
-      return <Vignette
-        {...props}>
-        <a href={props.id ? ("https://glsl.io/transition/"+props.id) : undefined} target="_blank" className="tname">{props.name}</a>
+      return <Vignette {...props}>
+      <VignetteInnerInfos {...props} />
         <div className="actions">
-          <Icon name="check-square" color="#fff" size={buttonSize} onClick={onClick} style={{ position: "absolute", left: ((vignetteWidth-buttonSize)/2)+"px", top: ((vignetteHeight-buttonSize)/2)+"px" }} />
+          <Icon
+            name="check-square"
+            color="#fff"
+            size={buttonSize}
+            onClick={onClick}
+            style={vignetteButtonStyle} />
         </div>
-        <a href={"https://glsl.io/user/"+props.owner} target="_blank" className="tauthor">by <em>{props.owner}</em></a>
       </Vignette>;
     };
 
-    var items = <VignetteGrid
-      transitions={coll}
+    const items = <VignetteGrid
+      transitions={pageCollection}
       images={images}
       vignetteWidth={vignetteWidth}
       vignetteHeight={vignetteHeight}
+      vignetteMargin={[ 4, 6 ]}
       renderVignette={renderVignette}
     />;
-
-    /*
-        var self = this;
-    var items = _.map(coll, function (t) {
-      function onClick () {
-        self.props.onTransitionSelected(t.name);
-      }
-      return <Vignette
-        key={t.name}
-        glsl={t.glsl}
-        uniforms={t.uniforms}
-        images={[ fromImage, toImage ]}
-        width={vignetteWidth}
-        height={vignetteHeight}>
-        <a href={t.id ? ("https://glsl.io/transition/"+t.id) : undefined} target="_blank" className="tname">{t.name}</a>
-        <div className="actions">
-          <Icon name="check-square" color="#fff" size={buttonSize} onClick={onClick} style={{ position: "absolute", left: ((vignetteWidth-buttonSize)/2)+"px", top: ((vignetteHeight-buttonSize)/2)+"px" }} />
-        </div>
-        <a href={"https://glsl.io/user/"+t.owner} target="_blank" className="tauthor">by <em>{t.owner}</em></a>
-      </Vignette>;
-    });
-    */
 
     return <div className="transitions" style={{ width: width+"px", height: height+"px" }}>
       <header style={headerStyle}>
