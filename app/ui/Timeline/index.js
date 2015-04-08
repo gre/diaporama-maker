@@ -187,7 +187,7 @@ var Timeline = React.createClass({
 
   componentWillReceiveProps: function (newProps) {
     var props = this.props;
-    if (newProps.selectedItemPointer && 
+    if (newProps.selectedItemPointer &&
         (!_.isEqual(props.selectedItemPointer, newProps.selectedItemPointer) ||
          this.props.diaporama !== newProps.diaporama)) {
       var node = this.refs.scrollcontainer.getDOMNode();
@@ -235,7 +235,7 @@ var Timeline = React.createClass({
 
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
-    var gridTop = bound.height-gridHeight;
+    var gridTop = bound.height - gridHeight;
     var lineTop = 16;
     var lineHeight = gridHeight - lineTop;
 
@@ -247,7 +247,7 @@ var Timeline = React.createClass({
       width: bound.width+"px",
       height: headerHeight+"px"
     };
-    
+
     var lineStyle = {
       background: "#333",
       position: "relative",

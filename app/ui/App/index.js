@@ -160,7 +160,7 @@ var App = React.createClass({
       x: 0,
       y: viewerH,
       width: W,
-      height: H-viewerH-4 // FIXME please explain me why
+      height: H-viewerH
     };
 
     return <div>
@@ -362,7 +362,6 @@ var App = React.createClass({
       var panel = self.state.panel;
       var selectedItemPointer = self.state.selectedItemPointer;
       var diaporama = self.state.diaporama;
-      var hoverTimeline = self.state.hoverTimeline;
 
       if (self.refs.timeline)
         self.refs.timeline.update(t, dt);
