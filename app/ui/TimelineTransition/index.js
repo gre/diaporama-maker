@@ -1,15 +1,33 @@
-var React = require("react/addons");
-var PureRenderMixin = React.addons.PureRenderMixin;
+var React = require("react");
 var _ = require("lodash");
 var boundToStyle = require("../../core/boundToStyle");
 
 var SvgCrossFadeBackground = React.createClass({
-  mixins: [ PureRenderMixin ],
-    
+  shouldComponentUpdate (props) {
+    const {
+      width,
+      height,
+      easing
+    } = this.props;
+    return (
+      width !== props.width ||
+      height !== props.height ||
+      !_.isEqual(easing, props.easing)
+    );
+  },
+
+  getDefaultProps() {
+    return {
+      easing: [0,0,1,1]
+    };
+  },
+
   render: function () {
-    var width = this.props.width;
-    var height = this.props.height;
-    var easing = this.props.easing || [ 0, 0, 1, 1 ];
+    const {
+      width,
+      height,
+      easing
+    } = this.props;
 
     var crossPathV = [
       "M", 0, height,
@@ -36,13 +54,33 @@ var SvgCrossFadeBackground = React.createClass({
 });
 
 var TimelineTransition = React.createClass({
-  mixins: [ PureRenderMixin ],
+  shouldComponentUpdate: function (props) {
+    const {
+      onClick,
+      xcenter,
+      width,
+      height,
+      transition
+    } = this.props;
+    return (
+      onClick !== props.onClick ||
+      xcenter !== props.xcenter ||
+      width !== props.width ||
+      height !== props.height ||
+      transition.name !== props.transition.name ||
+      transition.duration !== props.transition.duration ||
+      !_.isEqual(transition.easing, props.transition.easing)
+    );
+  },
 
   render: function () {
-    var xcenter = this.props.xcenter;
-    var width = this.props.width;
-    var height = this.props.height;
-    var transition = this.props.transition;
+    const {
+      xcenter,
+      width,
+      height,
+      transition,
+      onClick
+    } = this.props;
 
     var size = Math.min(100, height);
     var layerWidth = Math.max(size, width);
@@ -84,7 +122,7 @@ var TimelineTransition = React.createClass({
       color: "#fff"
     };
 
-    return <div style={style} onClick={this.props.onClick}>
+    return <div style={style} onClick={onClick}>
       <div style={containerStyle}>
 
         <div style={titleStyle}>

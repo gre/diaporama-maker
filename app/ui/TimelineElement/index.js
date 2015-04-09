@@ -1,5 +1,4 @@
-var React = require("react/addons");
-var PureRenderMixin = React.addons.PureRenderMixin;
+var React = require("react");
 var _ = require("lodash");
 var translateStyle = require("../../core/translateStyle");
 var toProjectUrl = require("../../core/toProjectUrl");
@@ -10,10 +9,7 @@ var transparentGif = require("../../core/transparent.gif");
 
 var TimelineElement = React.createClass({
 
-  // FIXME: TimelineElement might not be 'pure' because of props.item
-  // we need to add a check on item.file for this
-
-  mixins: [ DragDropMixin, PureRenderMixin ],
+  mixins: [ DragDropMixin ],
   statics: {
     configureDragDrop: function (register) {
       register(DragItems.SLIDE, {
@@ -30,11 +26,31 @@ var TimelineElement = React.createClass({
     }
   },
 
+  shouldComponentUpdate (props) {
+    const {
+      x,
+      width,
+      height,
+      item,
+      onClick
+    } = this.props;
+    return (
+      x !== props.x ||
+      width !== props.width ||
+      height !== props.height ||
+      onClick !== props.onClick ||
+      !_.isEqual(item, props.item)
+    );
+  },
+
   render: function () {
-    var x = this.props.x;
-    var width = this.props.width;
-    var height = this.props.height;
-    var item = this.props.item;
+    const {
+      x,
+      width,
+      height,
+      item,
+      onClick
+    } = this.props;
 
     var dragState = this.getDragState(DragItems.SLIDE);
 
@@ -48,7 +64,7 @@ var TimelineElement = React.createClass({
 
     return <div className="timeline-element"
       style={style}
-      onClick={this.props.onClick}
+      onClick={onClick}
       {...this.dragSourceFor(DragItems.SLIDE)}>
       <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
     </div>;
