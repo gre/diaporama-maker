@@ -37,5 +37,7 @@ Customize Transitions
 
 ![](http://i.imgur.com/hm0U7Vp.jpg)
 
+Download the Web Slideshow, ready to embed
+==========================================
 
-More documentation will come soon.
+![](https://cloud.githubusercontent.com/assets/211411/7062755/b55ac77c-dea0-11e4-8e2c-ff8567ae39c9.jpg)
