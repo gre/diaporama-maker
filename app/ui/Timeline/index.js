@@ -236,7 +236,7 @@ var Timeline = React.createClass({
     var headerHeight = 30;
     var gridHeight = bound.height - headerHeight;
     var gridTop = bound.height - gridHeight;
-    var lineTop = 16;
+    var lineTop = 20;
     var lineHeight = gridHeight - lineTop;
 
     var style = _.extend({

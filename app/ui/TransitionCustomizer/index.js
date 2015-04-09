@@ -77,7 +77,7 @@ var TransitionCustomizer = React.createClass({
     };
 
 
-    return <div className="transition-customizer">
+    return <div>
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>

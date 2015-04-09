@@ -46,9 +46,11 @@ var TimelineGrid = React.createClass({
   mixins: [PureRenderMixin],
 
   render: function () {
-    var timeScale = this.props.timeScale;
-    var width = this.props.width;
-    var height = this.props.height;
+    const {
+      timeScale,
+      width,
+      height
+    } = this.props;
     var style = {
       position: "absolute",
       top: 0,
