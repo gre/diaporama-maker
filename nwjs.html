@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title></title>
+  </head>
+  <body>
+    <input
+      style="display:none"
+      type="file"
+      id="ctrl"
+      nwdirectory
+    />
+
+    <script>
+    function onPickDir (dir) {
+      console.log(dir);
+
+      var Q = require("q");
+      var _ = require("lodash");
+      var fs = require("./server/fs");
+      var Diaporama = require("./server/Diaporama");
+      var server = require("./server");
+
+      function edit (diaporama) {
+        return Q.fcall(server, diaporama).then(function (href) {
+          window.location = href;
+        });
+      }
+
+      fs.readdir(dir)
+        .then(function (files) {
+          if (!_.contains(files, Diaporama.jsonfile)) {
+            return edit(Diaporama.genEmpty(dir));
+          }
+          else {
+            return Diaporama.fromDirectory(dir)
+              .then(edit);
+          }
+        })
+        .done();
+    }
+
+    ctrl.addEventListener("change", function (e) {
+      onPickDir(this.value);
+    });
+
+    ctrl.click();
+    </script>
+  </body>
+</html>
