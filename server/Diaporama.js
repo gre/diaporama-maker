@@ -6,12 +6,12 @@ var uglifyify = require("uglifyify");
 var archiver = require("archiver");
 var imagemagick = require("imagemagick-native");
 
-var package = require("../package.json");
-var fs = require("./fs"); // FIXME use q-io
+var pack = require("../package.json");
+var fs = require("./fs");
 
 function getInitialJson () {
   return {
-    generator: { version: package.version, url: package.homepage },
+    generator: { version: pack.version, url: pack.homepage },
     timeline: []
   };
 }
