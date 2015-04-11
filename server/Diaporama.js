@@ -4,7 +4,7 @@ var Q = require("q");
 var browserify = require("browserify");
 var uglifyify = require("uglifyify");
 var archiver = require("archiver");
-//var imagemagick = require("imagemagick-native");
+var imagemagick = require("imagemagick-native");
 
 var pack = require("../package.json");
 var fs = require("./fs");
@@ -83,14 +83,12 @@ Diaporama.prototype = {
       var stream = fs.createReadStream(file);
       var filter = imagemagickFilters[options.quality];
       if (filter) {
-        /*
         stream = stream.pipe(imagemagick.streams.convert({
           width: filter.max,
           height: filter.max,
           resizeStyle: "aspectfit",
           quality: 100 * filter.quality
         }));
-        */
       }
       archive.append(stream, { name: image });
     });

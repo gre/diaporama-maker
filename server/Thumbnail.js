@@ -1,6 +1,6 @@
 var parseurl = require("parseurl");
 var querystring = require("querystring");
-//var imagemagick = require("imagemagick-native");
+var imagemagick = require("imagemagick-native");
 var fs = require("fs");
 var path = require("path");
 var serverStatic = require('serve-static');
@@ -49,7 +49,7 @@ module.exports = function (app, slug, root) {
       res.setHeader("Content-Type", format.contentType);
       if (isConditionalGET(req) && isFresh(req, res)) {
         Object.keys(res._headers).forEach(function(field){
-          if (0 == field.indexOf('content')) {
+          if (0 === field.indexOf('content')) {
             res.removeHeader(field);
           }
         });
@@ -59,7 +59,6 @@ module.exports = function (app, slug, root) {
       }
 
       fs.createReadStream(file)
-        /*
         .pipe(imagemagick.streams.convert({
           width: format.max,
           height: format.max,
@@ -68,7 +67,6 @@ module.exports = function (app, slug, root) {
           quality: 100 * format.quality
         }))
         .on("error", fallback)
-        */
         .pipe(res);
     });
   }
