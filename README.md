@@ -7,10 +7,10 @@ Installation
 
 ### Native application (Windows, MacOS, Linux)
 
-**Coming Soon**
+**Coming Soon...**
 
 
-### From the commandline
+### From the command line
 
 ```
 # Requirement: imagemagick
