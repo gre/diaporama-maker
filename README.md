@@ -9,6 +9,10 @@ Installation
 npm install -g diaporama-maker
 ```
 
+### Native application (Windows, MacOS, Linux)
+
+**Coming Soon**
+
 Requirements
 -----------
 
