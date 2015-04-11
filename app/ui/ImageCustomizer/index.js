@@ -1,19 +1,17 @@
-var React = require("react");
-var _ = require("lodash");
-
-var BezierEditor = require("bezier-easing-editor");
-var images = require("../../resource/images");
-var DurationInput = require("../DurationInput");
-var Icon = require("../Icon");
-var Button = require("../Button");
-var toProjectUrl = require("../../core/toProjectUrl");
-
+import React from "react";
+import _ from "lodash";
+import BezierEditor from "bezier-easing-editor";
+import images from "../../resource/images";
+import DurationInput from "../DurationInput";
+import Icon from "../Icon";
+import Button from "../Button";
+import toProjectUrl from "../../core/toProjectUrl";
 import {KenburnsEditor} from "kenburns-editor";
 
-var croppingModes = {
+const croppingModes = {
   fitcenter: {
     title: "Fit Center",
-    render: function () {
+    render () {
       return <blockquote>
         <strong>Fit Center</strong> preserves the image ratio regardless of the diaporama resolution.
         It uses the biggest centered crop of the image.
@@ -22,15 +20,17 @@ var croppingModes = {
   },
   kenburns: {
     title: "KenBurns effect",
-    render: function () {
-      var value = this.props.value;
-      var width = this.props.width;
-      var image = value.image && toProjectUrl(value.image) || images.fromImage;
-      var interPadding = 10;
-      var w1 = Math.floor(width * 0.6);
-      var w2 = width - w1;
-      var h = Math.min(240, w2);
-      var paddingW = (w2 - h) / 2;
+    render () {
+      const {
+        value,
+        width
+      } = this.props;
+      const image = value.image && toProjectUrl(value.image) || images.fromImage;
+      const interPadding = 10;
+      const w1 = Math.floor(width * 0.6);
+      const w2 = width - w1;
+      const h = Math.min(240, w2);
+      const paddingW = (w2 - h) / 2;
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
         <KenburnsEditor
@@ -57,9 +57,9 @@ var croppingModes = {
   }
 };
 
-var croppingModesKeys = Object.keys(croppingModes);
+const croppingModesKeys = Object.keys(croppingModes);
 
-var ImageCustomizer = React.createClass({
+const ImageCustomizer = React.createClass({
 
   propTypes: {
     value: React.PropTypes.object.isRequired,
@@ -67,23 +67,23 @@ var ImageCustomizer = React.createClass({
     width: React.PropTypes.number.isRequired
   },
 
-  onChangeKenburns: function (value) {
-    var prev = this.props.value;
+  onChangeKenburns (value) {
+    const prev = this.props.value;
     this.props.onChange(_.defaults({ kenburns: _.extend({}, prev.kenburns, value) }, prev));
   },
 
-  onChangeKenburnsEasing: function (value) {
-    var prev = this.props.value;
+  onChangeKenburnsEasing (value) {
+    const prev = this.props.value;
     this.props.onChange(_.defaults({ kenburns: _.defaults({ easing: value }, prev.kenburns) }, prev));
   },
 
-  onChangeDuration: function (value) {
+  onChangeDuration (value) {
     this.props.onChange(_.defaults({ duration: value }, this.props.value));
   },
 
-  selectMode: function (mode, e) {
+  selectMode (mode, e) {
     e.preventDefault();
-    var clone = _.clone(this.props.value);
+    const clone = _.clone(this.props.value);
     if (mode === "kenburns") {
       clone.kenburns = {
         from: [ 1, [0.5, 0.5] ],
@@ -96,32 +96,32 @@ var ImageCustomizer = React.createClass({
     this.props.onChange(clone);
   },
 
-  onRemove: function (e) {
+  onRemove (e) {
     e.preventDefault();
     this.props.onRemove();
   },
 
-  render: function () {
+  render () {
     const {
       value,
       width,
       onRemove
     } = this.props;
-    var modeId = "kenburns" in value ? "kenburns" : "fitcenter";
+    const modeId = "kenburns" in value ? "kenburns" : "fitcenter";
 
-    var modes = [];
+    const modes = [];
     var i=0;
-    for (var k in croppingModes) {
-      var m = croppingModes[k];
-      var selected = k===modeId;
-      var first = i===0;
-      var last = (++i)===croppingModesKeys.length;
-      var lb = first ? "4px" : "0px";
-      var rb = last ? "4px" : "0px";
-      var style = {
+    for (let k in croppingModes) {
+      const m = croppingModes[k];
+      const selected = k===modeId;
+      const first = i===0;
+      const last = (++i)===croppingModesKeys.length;
+      const lb = first ? "4px" : "0px";
+      const rb = last ? "4px" : "0px";
+      const style = {
         borderRadius: lb+" "+rb+" "+rb+" "+lb
       };
-      var mode = <Button
+      const mode = <Button
         key={k}
         color={selected ? "#fff" : "#000"}
         bg={selected ? "#000" : "#aaa"}
@@ -134,9 +134,9 @@ var ImageCustomizer = React.createClass({
       modes.push(mode);
     }
 
-    var render = croppingModes[modeId].render;
+    const render = croppingModes[modeId].render;
 
-    var deleteIconStyle = {
+    const deleteIconStyle = {
       position: "absolute",
       top: "2px",
       right: "6px",
