@@ -1,7 +1,7 @@
 var Q = require("q");
 var _ = require("lodash");
 var path = require("path");
-var fs = require("./fs"); // FIXME use q-io
+var fs = require("./fs");
 
 function excludedFile (name) {
   return name[0] === ".";
@@ -35,4 +35,3 @@ function findAllFiles (fulldir, fileFilter, dir) {
 }
 
 module.exports = findAllFiles;
-

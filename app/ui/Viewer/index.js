@@ -1,56 +1,72 @@
-var React = require("react");
-var _ = require("lodash");
-var boundToStyle = require("../../core/boundToStyle");
-var GlslTransitions = require("glsl-transitions");
-var Radium = require('radium');
+import React from "react";
+import _ from "lodash";
+import boundToStyle from "../../core/boundToStyle";
+import GlslTransitions from "glsl-transitions";
+import DiaporamaElement from "../DiaporamaElement";
+import Icon from "../Icon";
 
-var DiaporamaElement = require("../DiaporamaElement");
-var Icon = require("../Icon");
+export default class Viewer extends React.Component {
 
-var Viewer = React.createClass({
-  mixins: [ Radium.StyleResolverMixin, Radium.BrowserStateMixin ],
+  constructor (props) {
+    super(props);
+    this.state = {
+      hover: false
+    };
+    this.hoverEnter = this.hoverEnter.bind(this);
+    this.hoverLeave = this.hoverLeave.bind(this);
+  }
 
-  render: function () {
-    var bound = this.props.bound;
-    var playing = this.props.playing;
+  hoverEnter () {
+    this.setState({
+      hover: true
+    });
+  }
 
-    var style = _.extend({
+  hoverLeave () {
+    this.setState({
+      hover: false
+    });
+  }
+
+  render () {
+    const {
+      bound,
+      playing
+    } = this.props;
+    const {
+      hover
+    } = this.state;
+
+    const style = _.extend({
       background: "#000",
       color: "#fff"
     }, boundToStyle(bound));
 
-    var h2Style = {
+    const h2Style = {
       zIndex: 3,
       position: "absolute",
       top: 0,
       left: 0
     };
 
-    var playPauseSize = 40;
-    var playPauseStyle = {
+    const playPauseSize = 40;
+    const playPauseStyle = {
       position: "absolute",
       left: ((bound.width-playPauseSize)/2)+"px",
       top: ((bound.height-playPauseSize)/2)+"px"
     };
 
-    var hoverOverlayStyles = {
+    const hoverOverlayStyle = {
       zIndex: 2,
-      opacity: 0,
+      opacity: hover ? 1 : 0,
+      transition: hover ? "opacity 0.5s" : "",
       background: "rgba(0,0,0,0.3)",
       textAlign: "center",
       position: "absolute",
       top: 0,
       left: 0,
       width: "100%",
-      height: "100%",
-      states: [
-        {
-          hover: {
-            opacity: 1,
-            transition: "opacity 0.5s"
-          }
-        }
-      ]
+      height: "100%"
     };
 
     return <div style={style}>
@@ -62,8 +78,9 @@ var Viewer = React.createClass({
         currentTime={this.props.time}
       />
       <div
-        {...this.getBrowserStateEvents()}
-        style={this.buildStyles(hoverOverlayStyles)}
+        onMouseEnter={this.hoverEnter}
+        onMouseLeave={this.hoverLeave}
+        style={hoverOverlayStyle}
       >
         <h2 style={h2Style}>Viewer</h2>
 
@@ -76,6 +93,4 @@ var Viewer = React.createClass({
     </div>;
   }
 
-});
-
-module.exports = Viewer;
+}

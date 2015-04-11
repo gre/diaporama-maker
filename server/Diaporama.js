@@ -6,12 +6,12 @@ var uglifyify = require("uglifyify");
 var archiver = require("archiver");
 //var imagemagick = require("imagemagick-native");
 
-var package = require("../package.json");
-var fs = require("./fs"); // FIXME use q-io
+var pack = require("../package.json");
+var fs = require("./fs");
 
 function getInitialJson () {
   return {
-    generator: { version: package.version, url: package.homepage },
+    generator: { version: pack.version, url: pack.homepage },
     timeline: []
   };
 }
@@ -70,8 +70,10 @@ var imagemagickFilters = {
 Diaporama.prototype = {
   zip: function (options) {
     options = _.extend({
-      quality: "original"
+      quality: "original",
+      zipIncludesWeb: "true"
     }, options);
+    options.zipIncludesWeb = options.zipIncludesWeb==="true";
     var root = this.dir;
     var diaporama = this.json;
     var images = _.compact(_.pluck(diaporama.timeline, "image"));
@@ -96,14 +98,16 @@ Diaporama.prototype = {
     var json = JSON.stringify(diaporama, null, 2);
     archive.append(json, { name: "diaporama.json" });
 
-    var js = browserify()
-      .transform({ global: true }, uglifyify)
-      .add(path.join(__dirname, "../bootstrap/index.js"))
-      .bundle();
-    archive.append(js, { name: "build.js" });
+    if (options.zipIncludesWeb) {
+      var js = browserify()
+        .transform({ global: true }, uglifyify)
+        .add(path.join(__dirname, "../bootstrap/index.js"))
+        .bundle();
+      archive.append(js, { name: "diaporama.bundle.js" });
 
-    var html = fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"));
-    archive.append(html, { name: "index.html" });
+      var html = fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"));
+      archive.append(html, { name: "index.html" });
+    }
 
     archive.finalize();
     return archive;

@@ -1,72 +1,92 @@
 var React = require("react");
 var _ = require("lodash");
-var Radium = require('radium');
 
-var Button = React.createClass({
-  mixins: [ Radium.StyleResolverMixin, Radium.BrowserStateMixin ],
+const defaultProps = {
+  color: "#000",
+  bg: "#fff",
+  fontSize: "1em"
+};
 
-  propTypes: {
-    onClick: React.PropTypes.func,
-    color: React.PropTypes.string,
-    bg: React.PropTypes.string,
-    colorHover: React.PropTypes.string,
-    bgHover: React.PropTypes.string,
-    fontSize: React.PropTypes.string
-  },
-  
-  onClick: function (e) {
+const propTypes = {
+  onClick: React.PropTypes.func,
+  color: React.PropTypes.string,
+  bg: React.PropTypes.string,
+  colorHover: React.PropTypes.string,
+  bgHover: React.PropTypes.string,
+  fontSize: React.PropTypes.string
+};
+
+export default class Button extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hover: false
+    };
+    this.onClick = this.onClick.bind(this);
+    this.hoverEnter = this.hoverEnter.bind(this);
+    this.hoverLeave = this.hoverLeave.bind(this);
+  }
+
+  hoverEnter () {
+    this.setState({
+      hover: true
+    });
+  }
+
+  hoverLeave () {
+    this.setState({
+      hover: false
+    });
+  }
+
+  onClick (e) {
     e.preventDefault();
     if (this.props.onClick) this.props.onClick(e);
-  },
+  }
 
-  render: function () {
-    var color = this.props.color || "#000";
-    var colorHover = this.props.colorHover || color;
-    var bg = this.props.bg || "#fff";
-    var bgHover = this.props.bgHover || bg;
+  render () {
+    const {
+      children,
+      color,
+      colorHover,
+      bg,
+      bgHover,
+      fontSize,
+      onClick,
+      href,
+      style,
+      target,
+      download
+    } = this.props;
+    const {
+      hover
+    } = this.state;
+
     var styles = _.extend({
       padding: '0.2em 0.8em',
       border: 0,
       borderRadius: 4,
       cursor: 'pointer',
-      fontSize: this.props.fontSize || "1em",
+      fontSize: fontSize,
       fontWeight: 700,
-      color: color,
-      background: bg,
-      textDecoration: "none",
-      states: [
-        {
-          hover: {
-            color: colorHover,
-            background: bgHover
-          }
-        }
-      ]
-    }, this.props.style);
+      color: colorHover && hover ? colorHover : color,
+      background: bgHover && hover ? bgHover : bg,
+      textDecoration: "none"
+    }, style);
 
-    var onClick = this.props.onClick ? this.onClick : undefined;
-    var href = this.props.href;
+    const params = {
+      target,
+      download,
+      href,
+      style: styles,
+      onClick: onClick ? this.onClick : undefined,
+      onMouseEnter: this.hoverEnter,
+      onMouseLeave: this.hoverLeave
+    };
 
-    var extra = {};
-    if (this.props.download)
-      extra.download = true;
-    if (this.props.target)
-      extra.target = this.props.target;
-
-    return (
-      <a
-        href={href}
-        onClick={onClick}
-        {...this.getBrowserStateEvents()}
-        style={this.buildStyles(styles)}
-        {...extra}
-      >
-        {this.props.children}
-      </a>
-    );
+    return <a {...params}>{children}</a>;
   }
-});
+}
 
-module.exports = Button;
-
-
+Button.propTypes = propTypes;
+Button.defaultProps = defaultProps;

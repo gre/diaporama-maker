@@ -22,22 +22,28 @@ var GenerateScreen = React.createClass({
 
   getInitialState: function () {
     return {
+      zipIncludesWeb: true,
       quality: "high"
     };
   },
 
   downloadZipLink: function () {
-    return Diaporama.downloadZipLink(this.state);
+    const { quality, zipIncludesWeb } = this.state;
+    return Diaporama.downloadZipLink({ quality, zipIncludesWeb });
   },
 
-  onQualityChange: function (q) {
-    this.setState({
-      quality: q
-    });
+  onZipIncludesWebChange: function (e) {
+    const zipIncludesWeb = e.target.checked;
+    this.setState({ zipIncludesWeb });
+  },
+
+  onQualityChange: function (quality) {
+    this.setState({ quality });
   },
 
   render: function () {
-    var url = this.downloadZipLink();
+    var jsonUrl = Diaporama.downloadJsonLink();
+    var zipUrl = this.downloadZipLink();
     var options = {
       low: "Low",
       medium: "Medium",
@@ -50,7 +56,17 @@ var GenerateScreen = React.createClass({
     };
 
     return <div>
-      <h2>Export to ZIP</h2>
+      <h3>diaporama.json</h3>
+      <div style={formStyle}>
+        <p>
+          <Button download href={jsonUrl} color="#fff" bg="#000" bgHover="#f90">
+            <Icon name="download" />
+            &nbsp;
+            Download
+          </Button>
+        </p>
+      </div>
+      <h3>ZIP Export</h3>
       <div style={formStyle}>
         <p>
           <label>
@@ -59,7 +75,13 @@ var GenerateScreen = React.createClass({
           </label>
         </p>
         <p>
-          <Button download href={url} color="#fff" bg="#000" bgHover="#f90">
+          <label>
+            <input type="checkbox" checked={this.state.zipIncludesWeb} onChange={this.onZipIncludesWebChange} />&nbsp;
+            includes web slideshow (<code>index.html</code> and <code>diaporama.bundle.js</code>)
+          </label>
+        </p>
+        <p>
+          <Button download href={zipUrl} color="#fff" bg="#000" bgHover="#f90">
             <Icon name="download" />
             &nbsp;
             Download

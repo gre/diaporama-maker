@@ -8,17 +8,12 @@ var BezierEditor = require("bezier-easing-editor");
 var UniformsEditor = require("glsl-uniforms-editor");
 var Icon = require("../Icon");
 
-function printEasing (easing) {
-  return "BezierEasing("+easing.map(function (value) { return Math.round(value * 100) / 100; })+")";
-}
-
 var TransitionCustomizer = React.createClass({
 
   propTypes: {
     value: React.PropTypes.object,
     onChange: React.PropTypes.func,
     width: React.PropTypes.number,
-    maxBezierEditorSize: React.PropTypes.number,
     images: React.PropTypes.arrayOf(React.PropTypes.string),
     animated: React.PropTypes.bool
   },
@@ -26,7 +21,6 @@ var TransitionCustomizer = React.createClass({
   getDefaultProps: function () {
     return {
       width: 300,
-      maxBezierEditorSize: 200,
       animated: true
     };
   },
@@ -53,21 +47,22 @@ var TransitionCustomizer = React.createClass({
   },
 
   render: function () {
-    var value = this.props.value;
+    const {
+      value,
+      width,
+      onRemove,
+      images,
+      animated
+    } = this.props;
+
     var transition = transitions.byName(value.name);
-    var width = this.props.width;
-    var w = width / 2;
-    var h = Math.round(w * 0.6);
-    var bezierEditorSize = Math.min(this.props.maxBezierEditorSize, w);
-    var paddingW = (w-bezierEditorSize) / 2;
+    var interPadding = 10;
+    var w1 = Math.floor(width * 0.6);
+    var w2 = width - w1;
+    var h = Math.min(200, w2);
+    var paddingW = (w2 - h) / 2;
 
     var uniforms = _.extend({}, transition.uniforms, value.uniforms);
-
-    var previewStyle = {
-      fontFamily: "monospace",
-      textAlign: "center",
-      margin: "4px"
-    };
 
     var deleteIconStyle = {
       position: "absolute",
@@ -78,54 +73,50 @@ var TransitionCustomizer = React.createClass({
 
 
     return <div>
+      {onRemove ?
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
-      <div style={previewStyle}>
-        {(value.name || "fade")+" "+(value.duration/1000)+"s "+(value.easing && printEasing(value.easing) || "linear")}
-      </div>
-      <div style={{ display: "inline-block" }}>
-        <TransitionPicker
-          value={transition}
-          onChange={this.onTransitionChange}
-          width={w}
-          height={h}
-          overlayBounds={[ 0, 0, width, Math.max(h, width*0.6) ]}
-          transitionUniforms={uniforms}
-          transitionDuration={value.duration}
-          transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
-          images={this.props.images}
-          animated={this.props.animated}
-        />
-      </div>
-      <div style={{ display: "inline-block" }}>
-        <BezierEditor
-          value={value.easing}
-          onChange={this.onEasingChange}
-          width={w}
-          height={h}
-          handleRadius={10}
-          padding={[4, paddingW, 20, paddingW]}
-        />
-      </div>
+      : undefined}
+
       <DurationInput
         value={value.duration}
         onChange={this.onDurationChange}
         width={width}
         title="Transition Duration:"
       />
+      <div style={{ display: "inline-block", marginRight: interPadding+"px" }}>
+        <TransitionPicker
+          value={transition}
+          onChange={this.onTransitionChange}
+          width={w1-interPadding}
+          height={h}
+          overlayBounds={[ 0, 0, width, Math.max(h, width*0.6) ]}
+          transitionUniforms={uniforms}
+          transitionDuration={value.duration}
+          transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
+          images={images}
+          animated={animated}
+        />
+      </div>
+      <div style={{ display: "inline-block" }}>
+        <BezierEditor
+          value={value.easing}
+          onChange={this.onEasingChange}
+          width={w2-10}
+          height={h}
+          handleRadius={10}
+          padding={[10, paddingW, 20, interPadding+10]}
+        />
+      </div>
 
       {!_.keys(transition.types).length ? undefined :
-      <div style={{ position: "relative" }}>
-        <strong style={{ position: "absolute", left: "0px", top: "10px" }}>Uniforms:</strong>
-        <div style={{ marginLeft: (w)+"px" }}>
-          <UniformsEditor
-            values={uniforms}
-            types={transition.types}
-            onChange={this.onUniformsChange}
-          />
-        </div>
-      </div>
+      <UniformsEditor
+        style={{ margin: "0 auto" }}
+        values={uniforms}
+        types={transition.types}
+        onChange={this.onUniformsChange}
+      />
       }
     </div>;
   }

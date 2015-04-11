@@ -12,29 +12,49 @@ var ImageCustomizer = require("../ImageCustomizer");
 var GenerateScreen = require("../GenerateScreen");
 var ErrorScreen = require("../ErrorScreen");
 var AboutScreen = require("../AboutScreen");
+import Config from "../Config";
 
 var panels = {
 
   about: {
-    standalone: false,
+    accessible: () => true,
     icon: "info-circle",
+    iconStyle: { position: "absolute", bottom: 5 },
     title: "About",
-    render: function () {
+    render () {
       return <AboutScreen onDone={this.props.onNav.bind(null, "library")} />;
     }
   },
 
   error: {
-    standalone: false,
+    accessible: () => false,
     icon: "bug",
     title: "Error",
-    render: function () {
+    render () {
       return <ErrorScreen error={this.props.error} />;
     }
   },
 
+  config: {
+    accessible: () => true,
+    icon: "cogs",
+    title: "Configuration",
+    render (innerWidth, innerHeight) {
+      const {
+        diaporama,
+        alterDiaporama
+      } = this.props;
+      return <Config
+        width={innerWidth}
+        height={innerHeight}
+        diaporama={diaporama}
+        alterDiaporama={alterDiaporama}
+      />;
+    }
+  },
+
   library: {
-    standalone: true,
+    accessible: () => true,
     icon: "folder-open",
     title: "Library",
     render: function (innerWidth, innerHeight) {
@@ -49,7 +69,7 @@ var panels = {
   },
 
   generate: {
-    standalone: true,
+    accessible: () => true,
     icon: "download",
     title: "Save / Generate",
     render: function (innerWidth, innerHeight) {
@@ -63,9 +83,13 @@ var panels = {
   },
 
   editImage: {
+    accessible(props) {
+      const { selectedItemPointer } = props;
+      return selectedItemPointer && !selectedItemPointer.transition;
+    },
     icon: "picture-o",
     title: "Edit Image",
-    render: function (innerWidth) {
+    render (innerWidth) {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
@@ -80,9 +104,13 @@ var panels = {
   },
 
   editTransition: {
+    accessible(props) {
+      const { selectedItemPointer } = props;
+      return selectedItemPointer && selectedItemPointer.transition;
+    },
     icon: "magic",
     title: "Edit Transition",
-    render: function (innerWidth) {
+    render (innerWidth) {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
@@ -119,9 +147,13 @@ var MainPanel = React.createClass({
     }
   },
 
-  render: function () {
-    var bound = this.props.bound;
-    var mode = this.props.panel;
+  render () {
+    const props = this.props;
+    const {
+      bound,
+      mode,
+      onNav
+    } = props;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
@@ -146,13 +178,16 @@ var MainPanel = React.createClass({
 
     var navs = _.map(panels, function (panel, panelMode) {
       var selected = panelMode === mode;
-      var onClick = panel.standalone ? this.props.onNav.bind(null, panelMode) : undefined;
+      var onClick = panel.accessible(props) ? onNav.bind(null, panelMode) : undefined;
       if (!selected && !onClick) return undefined;
+      const iconStyle = panel.iconStyle || {};
       return <Icon
+        style={iconStyle}
         title={panel.title}
         key={panelMode}
         name={panel.icon}
         color={selected ? "#000" : "#999"}
+        colorHover={selected ? "#000" : "#f90"}
         onClick={onClick}
       />;
     }, this);
@@ -171,4 +206,3 @@ var MainPanel = React.createClass({
 });
 
 module.exports = MainPanel;
-

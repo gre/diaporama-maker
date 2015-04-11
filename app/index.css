@@ -19,6 +19,13 @@ h2 {
   font-size: 1.4em;
   font-weight: 400;
 }
+h3 {
+  font-weight: normal;
+  color: #999;
+  border-bottom: 1px solid #ccc;
+  padding: 0;
+  margin: 0;
+}
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

@@ -1,13 +1,12 @@
-
 var _ = require("lodash");
-var Q = require("q");
 var Qajax = require("qajax");
 var transitions = require("../transitions");
 var url = require("url");
 
 var toProjectUrl = require("../../core/toProjectUrl");
 // var network = require("../../core/network");
-var genTimelineElementDefault = require("../../../common/genTimelineElementDefault");
+var genTimelineElementDefault = require("./genTimelineElementDefault");
+var genTimelineTransitionDefault = require("./genTimelineTransitionDefault");
 
 // var recorderClient = require("diaporama-recorder/client")(network);
 
@@ -133,6 +132,10 @@ Diaporama.downloadZipLink = function (options) {
     query: options,
     pathname: "/diaporama/generate/zip"
   });
+};
+
+Diaporama.downloadJsonLink = function () {
+  return "/diaporama.json";
 };
 
 Diaporama.bootstrap = function (options) {
@@ -348,6 +351,18 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
   return null;
 };
 
+Diaporama.getDefaultElement = function (diaporama, defs) {
+  return genTimelineElementDefault(defs||{},
+    diaporama.maker &&
+    diaporama.maker.defaultElement);
+};
+Diaporama.getDefaultTransition = function (diaporama, defs) {
+  return genTimelineTransitionDefault(defs||{},
+    diaporama.maker &&
+    diaporama.maker.defaultElement &&
+    diaporama.maker.defaultElement.transitionNext);
+};
+
 // Alterations
 
 function roundDuration (d) {
@@ -409,6 +424,13 @@ var actions = {
     return clone;
   },
 
+  setDefaultElement: function (diaporama, defs) {
+    var clone = _.cloneDeep(diaporama);
+    if (!clone.maker) clone.maker = {};
+    clone.maker.defaultElement = defs;
+    return clone;
+  },
+
   setItem: function (diaporama, itemPointer, value) {
     var clone = _.cloneDeep(diaporama);
     var id = itemPointer.id;
@@ -430,10 +452,10 @@ var actions = {
   },
 
   bootstrapTransition: function (diaporama, id) {
-                                                  // vvv  TODO not supported diaporama.maker.defaultTransition  vvv
-    return actions.setItem(diaporama, { id: id, transition: true }, diaporama.maker && diaporama.maker.defaultTransition || {
-      duration: 1000
-    });
+    return actions.setItem(
+      diaporama,
+      { id: id, transition: true },
+      Diaporama.getDefaultTransition(diaporama));
   },
 
   bootstrapImage: function (diaporama, src, place) {
@@ -442,10 +464,9 @@ var actions = {
 
   bootstrapImages: function (diaporama, srcs, place) {
     var clone = _.cloneDeep(diaporama);
-    // vvv  TODO not supported diaporama.maker.defaultImage  vvv
     var tnames = [];
     var objs = srcs.map(function (src) {
-      var obj = genTimelineElementDefault(src);
+      var obj = Diaporama.getDefaultElement(diaporama, { image: src });
       var tname = obj.transitionNext && obj.transitionNext.name;
       if (tname && !_.contains(tnames, tname)) {
         tnames.push(tname);

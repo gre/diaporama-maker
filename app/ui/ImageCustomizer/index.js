@@ -25,11 +25,11 @@ var croppingModes = {
     render: function () {
       var value = this.props.value;
       var width = this.props.width;
-      var image = value.image && toProjectUrl(value.image) || images.fromImage.src;
+      var image = value.image && toProjectUrl(value.image) || images.fromImage;
       var interPadding = 10;
       var w1 = Math.floor(width * 0.6);
       var w2 = width - w1;
-      var h = Math.min(300, w2);
+      var h = Math.min(240, w2);
       var paddingW = (w2 - h) / 2;
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
@@ -102,8 +102,11 @@ var ImageCustomizer = React.createClass({
   },
 
   render: function () {
-    var value = this.props.value;
-    var width = this.props.width;
+    const {
+      value,
+      width,
+      onRemove
+    } = this.props;
     var modeId = "kenburns" in value ? "kenburns" : "fitcenter";
 
     var modes = [];
@@ -141,9 +144,11 @@ var ImageCustomizer = React.createClass({
     };
 
     return <div>
+      {onRemove ?
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
+      : undefined}
       <DurationInput
         title="Image Duration:"
         value={value.duration}
