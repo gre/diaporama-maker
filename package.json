@@ -18,7 +18,22 @@
   "bin": {
     "diaporama": "./cmd.js"
   },
-  "scripts": {},
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "ignore": ".*.json"
+        }
+      ]
+    ]
+  },
+  "scripts": {
+    "dev": "watchify app/index.js -o builds/app.bundle.js",
+    "build": "npm run build-app && npm run build-bootstrap",
+    "build-app": "browserify app/index.js | derequire | uglifyjs -c -m > builds/app.bundle.js",
+    "build-bootstrap": "browserify bootstrap/index.js | derequire | uglifyjs -c -m > builds/diaporama.bundle.js"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:gre/diaporama-maker.git"
@@ -35,11 +50,9 @@
   ],
   "dependencies": {
     "archiver": "^0.14.3",
-    "babelify": "^6.0.1",
     "bezier-easing": "^0.4.4",
     "bezier-easing-editor": "^0.4.0",
     "body-parser": "^1.10.2",
-    "browserify": "^9.0.7",
     "combokeys": "^2.3.0",
     "css-cursor": "^1.0.0",
     "diaporama": "^1.1.17",
@@ -67,8 +80,13 @@
     "rect-crop": "0.0.0",
     "rect-mix": "0.0.0",
     "serve-static": "^1.8.1",
-    "uglifyify": "^3.0.1",
-    "vendor-prefix": "^0.1.0",
+    "vendor-prefix": "^0.1.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.0.2",
+    "browserify": "^9.0.8",
+    "derequire": "^2.0.0",
+    "uglify-js": "^2.4.19",
     "watchify": "^3.1.0"
   }
 }

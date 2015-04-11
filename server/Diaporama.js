@@ -1,8 +1,6 @@
 var path = require("path");
 var _ = require("lodash");
 var Q = require("q");
-var browserify = require("browserify");
-var uglifyify = require("uglifyify");
 var archiver = require("archiver");
 var imagemagick = require("imagemagick-native");
 
@@ -97,12 +95,8 @@ Diaporama.prototype = {
     archive.append(json, { name: "diaporama.json" });
 
     if (options.zipIncludesWeb) {
-      var js = browserify()
-        .transform({ global: true }, uglifyify)
-        .add(path.join(__dirname, "../bootstrap/index.js"))
-        .bundle();
+      var js = fs.createReadStream(path.join(__dirname, '../builds/diaporama.bundle.js'));
       archive.append(js, { name: "diaporama.bundle.js" });
-
       var html = fs.createReadStream(path.join(__dirname, "../bootstrap/index.html"));
       archive.append(html, { name: "index.html" });
     }

@@ -1,5 +1,3 @@
-var watchify = require('watchify');
-var browserify = require('browserify');
 var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
@@ -8,19 +6,7 @@ var Q = require('q');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Thumbnail = require("./Thumbnail");
-
-// var isProd = process.env.NODE_ENV === "production";
-
-var b = browserify(watchify.args);
-b.transform(require("babelify").configure({
-  ignore: /.*.json/
-}));
-b.add(path.join(__dirname, '../app/index.js'));
-var w = watchify(b);
-w.on('update', function () {
-  console.log("Bundle.");
-  w.bundle();
-});
+var fs = require("./fs");
 
 module.exports = function server (diaporama, port) {
   var app = express();
@@ -34,7 +20,8 @@ module.exports = function server (diaporama, port) {
   app.use(bodyParser.json());
 
   app.get('/index.js', function (req, res) {
-    w.bundle().pipe(res.type("js"));
+    fs.createReadStream(path.join(__dirname, '../builds/app.bundle.js'))
+      .pipe(res.type("js"));
   });
 
   app.get('/listfiles', function (req, res) {
