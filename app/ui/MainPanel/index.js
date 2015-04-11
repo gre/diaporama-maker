@@ -17,8 +17,9 @@ import Config from "../Config";
 var panels = {
 
   about: {
-    accessible: () => false,
+    accessible: () => true,
     icon: "info-circle",
+    iconStyle: { position: "absolute", bottom: 5 },
     title: "About",
     render () {
       return <AboutScreen onDone={this.props.onNav.bind(null, "library")} />;
@@ -179,7 +180,9 @@ var MainPanel = React.createClass({
       var selected = panelMode === mode;
       var onClick = panel.accessible(props) ? onNav.bind(null, panelMode) : undefined;
       if (!selected && !onClick) return undefined;
+      const iconStyle = panel.iconStyle || {};
       return <Icon
+        style={iconStyle}
         title={panel.title}
         key={panelMode}
         name={panel.icon}

@@ -31,20 +31,14 @@ export default class Config extends React.Component {
       width
     } = this.props;
     const defaults = Diaporama.getDefaultElement(diaporama);
-    const h3Style = {
-      color: "#999",
-      borderTop: "1px solid #ccc",
-      fontWeight: "normal",
-      marginBottom: "0"
-    };
     return <div>
-      <h3 style={h3Style}>Default Element</h3>
+      <h3>Default Element</h3>
       <ImageCustomizer
         value={defaults}
         onChange={this.onImageChange}
         width={width}
       />
-      <h3 style={h3Style}>Default Transition</h3>
+      <h3>Default Transition</h3>
       <TransitionCustomizer
         value={defaults.transitionNext}
         onChange={this.onTransitionChange}

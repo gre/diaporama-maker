@@ -134,6 +134,10 @@ Diaporama.downloadZipLink = function (options) {
   });
 };
 
+Diaporama.downloadJsonLink = function () {
+  return "/diaporama.json";
+};
+
 Diaporama.bootstrap = function (options) {
   return Qajax({
     method: "POST",
