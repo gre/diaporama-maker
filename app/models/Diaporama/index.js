@@ -351,17 +351,35 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
   return null;
 };
 
+function pathGet (obj, path) {
+  var p = path.split(".");
+  for (var i=0; obj && i<p.length; ++i)
+    obj = obj[p[i]];
+  return obj;
+}
+function pathSet (obj, val, path) {
+  var p = path.split(".");
+  var i;
+  for (i=0; i<p.length-1; ++i) {
+    if (!obj.hasOwnProperty(p[i])) {
+      obj = obj[p[i]] = {};
+    }
+    obj = obj[p[i]];
+  }
+  obj[p[i]] = val;
+}
+
 Diaporama.getDefaultElement = function (diaporama, defs) {
   return genTimelineElementDefault(defs||{},
-    diaporama.maker &&
-    diaporama.maker.defaultElement);
+    pathGet(diaporama, "generator.maker.defaultElement"));
 };
 Diaporama.getDefaultTransition = function (diaporama, defs) {
   return genTimelineTransitionDefault(defs||{},
-    diaporama.maker &&
-    diaporama.maker.defaultElement &&
-    diaporama.maker.defaultElement.transitionNext);
+    pathGet(diaporama, "generator.maker.defaultElement.transitionNext"));
 };
+function setDefaultElement (diaporama, value) {
+  pathSet(diaporama, value, "generator.maker.defaultElement");
+}
 
 // Alterations
 
@@ -426,8 +444,8 @@ var actions = {
 
   setDefaultElement: function (diaporama, defs) {
     var clone = _.cloneDeep(diaporama);
-    if (!clone.maker) clone.maker = {};
-    clone.maker.defaultElement = defs;
+    setDefaultElement(clone, defs);
+    console.log(clone);
     return clone;
   },
 
