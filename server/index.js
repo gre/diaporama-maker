@@ -7,17 +7,28 @@ var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Thumbnail = require("./Thumbnail");
 var fs = require("./fs");
+var portscanner = require('portscanner');
 
-module.exports = function server (diaporama, port) {
-  var app = express();
+var app = express();
+var http = require('http').Server(app);
+// var io = require('socket.io')(http);
 
-  var http = require('http').Server(app);
-  // var io = require('socket.io')(http);
+app.use(bodyParser.json());
 
-  // TODO: different ports when used
-  if (!port) port = 9325;
+var defer = Q.defer();
 
-  app.use(bodyParser.json());
+portscanner.findAPortNotInUse(9325, 9350, '127.0.0.1', function(err, port) {
+  if (err) defer.reject(err);
+  else {
+    http.listen(port, function () {
+      var url = "http://localhost:"+port;
+      console.log("Listening on "+url);
+      defer.resolve(url);
+    });
+  }
+});
+
+module.exports = function server (diaporama) {
 
   app.get('/index.js', function (req, res) {
     fs.createReadStream(path.join(__dirname, '../builds/app.bundle.js'))
@@ -70,16 +81,6 @@ module.exports = function server (diaporama, port) {
   Thumbnail(app, "preview", diaporama.dir);
 
   app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
-
-  var defer = Q.defer();
-  http.listen(port, function (err) {
-    if (err) defer.reject(err);
-    else {
-      var url = "http://localhost:"+port;
-      console.log("Listening on "+url);
-      defer.resolve(url);
-    }
-  });
 
   return defer.promise;
 };
