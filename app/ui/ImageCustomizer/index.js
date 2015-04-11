@@ -29,7 +29,7 @@ var croppingModes = {
       var interPadding = 10;
       var w1 = Math.floor(width * 0.6);
       var w2 = width - w1;
-      var h = Math.min(300, w2);
+      var h = Math.min(240, w2);
       var paddingW = (w2 - h) / 2;
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
