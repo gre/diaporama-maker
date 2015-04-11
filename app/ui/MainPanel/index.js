@@ -147,7 +147,7 @@ var MainPanel = React.createClass({
     }
   },
 
-  render: function () {
+  render () {
     const props = this.props;
     const {
       bound,
@@ -187,6 +187,7 @@ var MainPanel = React.createClass({
         key={panelMode}
         name={panel.icon}
         color={selected ? "#000" : "#999"}
+        colorHover={selected ? "#000" : "#f90"}
         onClick={onClick}
       />;
     }, this);
