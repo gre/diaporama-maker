@@ -53,12 +53,19 @@ var TransitionCustomizer = React.createClass({
   },
 
   render: function () {
-    var value = this.props.value;
+    const {
+      value,
+      width,
+      maxBezierEditorSize,
+      onRemove,
+      images,
+      animated
+    } = this.props;
+
     var transition = transitions.byName(value.name);
-    var width = this.props.width;
     var w = width / 2;
     var h = Math.round(w * 0.6);
-    var bezierEditorSize = Math.min(this.props.maxBezierEditorSize, w);
+    var bezierEditorSize = Math.min(maxBezierEditorSize, w);
     var paddingW = (w-bezierEditorSize) / 2;
 
     var uniforms = _.extend({}, transition.uniforms, value.uniforms);
@@ -78,7 +85,7 @@ var TransitionCustomizer = React.createClass({
 
 
     return <div>
-      {this.props.onRemove ?
+      {onRemove ?
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
@@ -96,8 +103,8 @@ var TransitionCustomizer = React.createClass({
           transitionUniforms={uniforms}
           transitionDuration={value.duration}
           transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
-          images={this.props.images}
-          animated={this.props.animated}
+          images={images}
+          animated={animated}
         />
       </div>
       <div style={{ display: "inline-block" }}>

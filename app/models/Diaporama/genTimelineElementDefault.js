@@ -1,13 +1,17 @@
 var _ = require("lodash");
+import genTimelineTransitionDefault from "./genTimelineTransitionDefault";
 
-module.exports = function (image, template) {
+module.exports = function (defs, template) {
   return _.extend(
     {
-      duration: 4000,
-      transitionNext: {
-        duration: 1000
-      }
+      duration: 4000
     },
     template ? _.cloneDeep(template) : {},
-    { image: image });
+    {
+      transitionNext: genTimelineTransitionDefault(
+        {},
+        template && template.transitionNext
+      )
+    },
+    defs);
 };

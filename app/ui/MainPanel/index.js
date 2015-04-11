@@ -12,29 +12,48 @@ var ImageCustomizer = require("../ImageCustomizer");
 var GenerateScreen = require("../GenerateScreen");
 var ErrorScreen = require("../ErrorScreen");
 var AboutScreen = require("../AboutScreen");
+import Config from "../Config";
 
 var panels = {
 
   about: {
-    accessible: function(){ return false; },
+    accessible: () => false,
     icon: "info-circle",
     title: "About",
-    render: function () {
+    render () {
       return <AboutScreen onDone={this.props.onNav.bind(null, "library")} />;
     }
   },
 
   error: {
-    accessible: function(){ return false; },
+    accessible: () => false,
     icon: "bug",
     title: "Error",
-    render: function () {
+    render () {
       return <ErrorScreen error={this.props.error} />;
     }
   },
 
+  config: {
+    accessible: () => true,
+    icon: "cogs",
+    title: "Configuration",
+    render (innerWidth, innerHeight) {
+      const {
+        diaporama,
+        alterDiaporama
+      } = this.props;
+      return <Config
+        width={innerWidth}
+        height={innerHeight}
+        diaporama={diaporama}
+        alterDiaporama={alterDiaporama}
+      />;
+    }
+  },
+
   library: {
-    accessible: function(){ return true; },
+    accessible: () => true,
     icon: "folder-open",
     title: "Library",
     render: function (innerWidth, innerHeight) {
@@ -49,7 +68,7 @@ var panels = {
   },
 
   generate: {
-    accessible: function(){ return true; },
+    accessible: () => true,
     icon: "download",
     title: "Save / Generate",
     render: function (innerWidth, innerHeight) {
@@ -63,13 +82,13 @@ var panels = {
   },
 
   editImage: {
-    accessible: function(props){
+    accessible(props) {
       const { selectedItemPointer } = props;
       return selectedItemPointer && !selectedItemPointer.transition;
     },
     icon: "picture-o",
     title: "Edit Image",
-    render: function (innerWidth) {
+    render (innerWidth) {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
@@ -84,13 +103,13 @@ var panels = {
   },
 
   editTransition: {
-    accessible: function(props){
+    accessible(props) {
       const { selectedItemPointer } = props;
       return selectedItemPointer && selectedItemPointer.transition;
     },
     icon: "magic",
     title: "Edit Transition",
-    render: function (innerWidth) {
+    render (innerWidth) {
       var id = this.props.selectedItemPointer.id;
       var diaporama = this.props.diaporama;
       var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);

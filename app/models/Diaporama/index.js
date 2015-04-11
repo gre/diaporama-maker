@@ -347,6 +347,18 @@ Diaporama.lookupBetweenImagePlace = function (diaporama, time) {
   return null;
 };
 
+Diaporama.getDefaultElement = function (diaporama, defs) {
+  return genTimelineElementDefault(defs||{},
+    diaporama.maker &&
+    diaporama.maker.defaultElement);
+};
+Diaporama.getDefaultTransition = function (diaporama, defs) {
+  return genTimelineTransitionDefault(defs||{},
+    diaporama.maker &&
+    diaporama.maker.defaultElement &&
+    diaporama.maker.defaultElement.transitionNext);
+};
+
 // Alterations
 
 function roundDuration (d) {
@@ -408,6 +420,13 @@ var actions = {
     return clone;
   },
 
+  setDefaultElement: function (diaporama, defs) {
+    var clone = _.cloneDeep(diaporama);
+    if (!clone.maker) clone.maker = {};
+    clone.maker.defaultElement = defs;
+    return clone;
+  },
+
   setItem: function (diaporama, itemPointer, value) {
     var clone = _.cloneDeep(diaporama);
     var id = itemPointer.id;
@@ -432,7 +451,7 @@ var actions = {
     return actions.setItem(
       diaporama,
       { id: id, transition: true },
-      genTimelineTransitionDefault({}, diaporama.maker && diaporama.maker.defaultTransition));
+      Diaporama.getDefaultTransition(diaporama));
   },
 
   bootstrapImage: function (diaporama, src, place) {
@@ -443,7 +462,7 @@ var actions = {
     var clone = _.cloneDeep(diaporama);
     var tnames = [];
     var objs = srcs.map(function (src) {
-      var obj = genTimelineElementDefault(src, diaporama.maker && diaporama.maker.defaultImage);
+      var obj = Diaporama.getDefaultElement(diaporama, { image: src });
       var tname = obj.transitionNext && obj.transitionNext.name;
       if (tname && !_.contains(tnames, tname)) {
         tnames.push(tname);
