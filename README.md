@@ -5,26 +5,24 @@ An editor to make image slideshows performed with [`diaporama`](http://github.co
 Installation
 ------------
 
-```
-npm install -g diaporama-maker
-```
-
 ### Native application (Windows, MacOS, Linux)
 
 **Coming Soon**
 
-Requirements
------------
 
-- `imagemagick` installed on your computer. You can check that `convert` command is working.
-- A Web Browser with WebGL support.
+### From the commandline
 
-Running
--------
+```
+# Requirement: imagemagick
+npm install -g diaporama-maker
+```
+
+Then you can run:
 
 ```
 diaporama directory_with_images
 ```
+
 
 Create your own Timeline
 ========================
