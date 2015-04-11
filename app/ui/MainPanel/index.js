@@ -1,18 +1,19 @@
-var React = require("react");
-var _ = require("lodash");
-var DragDropMixin = require('react-dnd').DragDropMixin;
-var DragItems = require("../../constants").DragItems;
-var Diaporama = require("../../models/Diaporama");
-var boundToStyle = require("../../core/boundToStyle");
-var toProjectUrl = require("../../core/toProjectUrl");
-var Library = require("../Library");
-var Icon = require("../Icon");
-var TransitionCustomizer = require("../TransitionCustomizer");
-var ImageCustomizer = require("../ImageCustomizer");
-var GenerateScreen = require("../GenerateScreen");
-var ErrorScreen = require("../ErrorScreen");
-var AboutScreen = require("../AboutScreen");
+import React from "react";
+import _ from "lodash";
+import {DragDropMixin} from 'react-dnd';
+import {DragItems} from "../../constants";
+import Diaporama from "../../models/Diaporama";
+import boundToStyle from "../../core/boundToStyle";
+import toProjectUrl from "../../core/toProjectUrl";
+import Library from "../Library";
+import Icon from "../Icon";
+import TransitionCustomizer from "../TransitionCustomizer";
+import ImageCustomizer from "../ImageCustomizer";
+import GenerateScreen from "../GenerateScreen";
+import ErrorScreen from "../ErrorScreen";
+import AboutScreen from "../AboutScreen";
 import Config from "../Config";
+import TimelineElementInfo from "../TimelineElementInfo";
 
 var panels = {
 
@@ -94,12 +95,15 @@ var panels = {
       var diaporama = this.props.diaporama;
       var element = Diaporama.timelineForId(diaporama, id);
       if (!element) return <div>Slide Removed.</div>;
-      return <ImageCustomizer
-        value={element}
-        onChange={this.props.alterSelection.bind(null, "setItem")}
-        width={innerWidth}
-        onRemove={this.props.alterSelection.bind(null, "removeItem")}
-      />;
+      return <div>
+        <TimelineElementInfo value={element} />
+        <ImageCustomizer
+          value={element}
+          onChange={this.props.alterSelection.bind(null, "setItem")}
+          width={innerWidth}
+          onRemove={this.props.alterSelection.bind(null, "removeItem")}
+        />
+      </div>;
     }
   },
 

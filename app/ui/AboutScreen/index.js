@@ -7,7 +7,7 @@ var AboutScreen = React.createClass({
   render: function () {
     return <div>
       <h2>Welcome to Diaporama Maker Beta ({packageJson.version})</h2>
-      <p>
+      <p style={{ margin: "1em 0" }}>
         <a target="_blank" href={packageJson.bugs.url}>We <Icon name="heart" /> to hear your feedbacks</a>.
         &nbsp;
         <a target="_blank" href={packageJson.homepage}>Source Code</a> is under {packageJson.license}.

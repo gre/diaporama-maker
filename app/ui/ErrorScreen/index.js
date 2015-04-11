@@ -28,14 +28,13 @@ var ErrorScreen = React.createClass({
       <h2>
         <Icon name="meh-o" />&nbsp;Oops
       </h2>
-      <h3>{msg}</h3>
-
+      <strong><code>{msg}</code></strong>
       <p>
         <a style={linkStyle} href="">
           <Icon name="refresh" />&nbsp;Reload
         </a>
       </p>
-  
+
       <p>
         <a target="_blank" style={linkStyle} href={reportBugUrl}>
           <Icon name="heart" /> Report this Bug

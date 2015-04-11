@@ -8,6 +8,9 @@ body {
   user-select: none;
   overflow: hidden;
 }
+p {
+  margin: 0.4em 0;
+}
 h1 {
   padding: 2px 5px;
   margin: 0;
