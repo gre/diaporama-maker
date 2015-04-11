@@ -78,9 +78,11 @@ var TransitionCustomizer = React.createClass({
 
 
     return <div>
+      {this.props.onRemove ?
       <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
         Remove&nbsp;<Icon name="remove"/>
       </a>
+      : undefined}
       <div style={previewStyle}>
         {(value.name || "fade")+" "+(value.duration/1000)+"s "+(value.easing && printEasing(value.easing) || "linear")}
       </div>

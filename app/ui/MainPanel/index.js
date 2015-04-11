@@ -16,7 +16,7 @@ var AboutScreen = require("../AboutScreen");
 var panels = {
 
   about: {
-    standalone: false,
+    accessible: function(){ return false; },
     icon: "info-circle",
     title: "About",
     render: function () {
@@ -25,7 +25,7 @@ var panels = {
   },
 
   error: {
-    standalone: false,
+    accessible: function(){ return false; },
     icon: "bug",
     title: "Error",
     render: function () {
@@ -34,7 +34,7 @@ var panels = {
   },
 
   library: {
-    standalone: true,
+    accessible: function(){ return true; },
     icon: "folder-open",
     title: "Library",
     render: function (innerWidth, innerHeight) {
@@ -49,7 +49,7 @@ var panels = {
   },
 
   generate: {
-    standalone: true,
+    accessible: function(){ return true; },
     icon: "download",
     title: "Save / Generate",
     render: function (innerWidth, innerHeight) {
@@ -63,6 +63,10 @@ var panels = {
   },
 
   editImage: {
+    accessible: function(props){
+      const { selectedItemPointer } = props;
+      return selectedItemPointer && !selectedItemPointer.transition;
+    },
     icon: "picture-o",
     title: "Edit Image",
     render: function (innerWidth) {
@@ -80,6 +84,10 @@ var panels = {
   },
 
   editTransition: {
+    accessible: function(props){
+      const { selectedItemPointer } = props;
+      return selectedItemPointer && selectedItemPointer.transition;
+    },
     icon: "magic",
     title: "Edit Transition",
     render: function (innerWidth) {
@@ -120,8 +128,12 @@ var MainPanel = React.createClass({
   },
 
   render: function () {
-    var bound = this.props.bound;
-    var mode = this.props.panel;
+    const props = this.props;
+    const {
+      bound,
+      mode,
+      onNav
+    } = props;
 
     var navWidth = 40;
     var innerWidth = bound.width - navWidth;
@@ -146,7 +158,7 @@ var MainPanel = React.createClass({
 
     var navs = _.map(panels, function (panel, panelMode) {
       var selected = panelMode === mode;
-      var onClick = panel.standalone ? this.props.onNav.bind(null, panelMode) : undefined;
+      var onClick = panel.accessible(props) ? onNav.bind(null, panelMode) : undefined;
       if (!selected && !onClick) return undefined;
       return <Icon
         title={panel.title}
@@ -171,4 +183,3 @@ var MainPanel = React.createClass({
 });
 
 module.exports = MainPanel;
-

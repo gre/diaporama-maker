@@ -1,13 +1,12 @@
-
 var _ = require("lodash");
-var Q = require("q");
 var Qajax = require("qajax");
 var transitions = require("../transitions");
 var url = require("url");
 
 var toProjectUrl = require("../../core/toProjectUrl");
 // var network = require("../../core/network");
-var genTimelineElementDefault = require("../../../common/genTimelineElementDefault");
+var genTimelineElementDefault = require("./genTimelineElementDefault");
+var genTimelineTransitionDefault = require("./genTimelineTransitionDefault");
 
 // var recorderClient = require("diaporama-recorder/client")(network);
 
@@ -430,10 +429,10 @@ var actions = {
   },
 
   bootstrapTransition: function (diaporama, id) {
-                                                  // vvv  TODO not supported diaporama.maker.defaultTransition  vvv
-    return actions.setItem(diaporama, { id: id, transition: true }, diaporama.maker && diaporama.maker.defaultTransition || {
-      duration: 1000
-    });
+    return actions.setItem(
+      diaporama,
+      { id: id, transition: true },
+      genTimelineTransitionDefault({}, diaporama.maker && diaporama.maker.defaultTransition));
   },
 
   bootstrapImage: function (diaporama, src, place) {
@@ -442,10 +441,9 @@ var actions = {
 
   bootstrapImages: function (diaporama, srcs, place) {
     var clone = _.cloneDeep(diaporama);
-    // vvv  TODO not supported diaporama.maker.defaultImage  vvv
     var tnames = [];
     var objs = srcs.map(function (src) {
-      var obj = genTimelineElementDefault(src);
+      var obj = genTimelineElementDefault(src, diaporama.maker && diaporama.maker.defaultImage);
       var tname = obj.transitionNext && obj.transitionNext.name;
       if (tname && !_.contains(tnames, tname)) {
         tnames.push(tname);

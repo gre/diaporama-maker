@@ -169,7 +169,7 @@ var App = React.createClass({
 
       <MainPanel
         bound={mainPanelBound}
-        panel={panel}
+        mode={panel}
         error={this.state.error}
         selectedItemPointer={selectedItemPointer}
         diaporama={diaporama}
@@ -433,17 +433,12 @@ var App = React.createClass({
   },
 
   onTimelineHover: function (time) {
-    if (!this.state.playing && this.state.time !== time) {
-      this.setState({
-        time: time
-      });
-    }
+    if (!this.state.playing && this.state.time !== time)
+      this.setState({ time });
   },
 
   onNav: function (panel) {
-    this.setState({
-      panel: panel
-    });
+    this.setState({ panel });
   },
 
   onPause: function () {
