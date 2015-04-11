@@ -445,7 +445,6 @@ var actions = {
   setDefaultElement: function (diaporama, defs) {
     var clone = _.cloneDeep(diaporama);
     setDefaultElement(clone, defs);
-    console.log(clone);
     return clone;
   },
 

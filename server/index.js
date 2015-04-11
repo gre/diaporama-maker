@@ -80,7 +80,7 @@ module.exports = function server (diaporama) {
 
   Thumbnail(app, "preview", diaporama.dir);
 
-  app.use(serverStatic(path.join(__dirname, '../app'), { 'index': ['index.html'] }));
+  app.use(serverStatic(path.join(__dirname, '../static'), { 'index': ['index.html'] }));
 
   return defer.promise;
 };
