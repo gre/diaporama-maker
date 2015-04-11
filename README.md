@@ -2,6 +2,11 @@ Diaporama Maker
 ===============
 An editor to make image slideshows performed with [`diaporama`](http://github.com/gre/diaporama) – including KenBurns effect and GLSL Transitions.
 
+Online version
+--------------
+
+**Coming Soon...**
+
 Installation
 ------------
 
