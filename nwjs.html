@@ -91,16 +91,18 @@
         })
         .done();
     }
+    
+    function openfolder (e) {
+      e.preventDefault();
+      ctrl.click();
+    }
 
     ctrl.addEventListener("change", function (e) {
       imagesfolder.removeEventListener("click", openfolder);
       onPickDir(this.value);
     });
 
-    imagesfolder.addEventListener("click", function openfolder (e) {
-      e.preventDefault();
-      ctrl.click();
-    });
+    imagesfolder.addEventListener("click", openfolder);
     </script>
   </body>
 </html>
