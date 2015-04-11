@@ -59,7 +59,7 @@ var TransitionCustomizer = React.createClass({
     var interPadding = 10;
     var w1 = Math.floor(width * 0.6);
     var w2 = width - w1;
-    var h = Math.min(240, w2);
+    var h = Math.min(200, w2);
     var paddingW = (w2 - h) / 2;
 
     var uniforms = _.extend({}, transition.uniforms, value.uniforms);
@@ -106,7 +106,7 @@ var TransitionCustomizer = React.createClass({
           width={w2-10}
           height={h}
           handleRadius={10}
-          padding={[4, paddingW, 20, paddingW]}
+          padding={[10, paddingW, 20, interPadding+10]}
         />
       </div>
 
