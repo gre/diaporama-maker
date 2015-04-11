@@ -1,6 +1,5 @@
 var watchify = require('watchify');
 var browserify = require('browserify');
-// var uglifyify = require("uglifyify");
 var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
@@ -12,6 +11,17 @@ var Thumbnail = require("./Thumbnail");
 
 // var isProd = process.env.NODE_ENV === "production";
 
+var b = browserify(watchify.args);
+b.transform(require("babelify").configure({
+  ignore: /.*.json/
+}));
+b.add(path.join(__dirname, '../app/index.js'));
+var w = watchify(b);
+w.on('update', function () {
+  console.log("Bundle.");
+  w.bundle();
+});
+
 module.exports = function server (diaporama, port) {
   var app = express();
 
@@ -20,23 +30,6 @@ module.exports = function server (diaporama, port) {
 
   // TODO: different ports when used
   if (!port) port = 9325;
-
-  var b = browserify(watchify.args);
-  /*
-  // FIXME is quite slow...
-  if (isProd) {
-    b.transform({ global: true }, uglifyify);
-  }
-  */
-  b.transform(require("babelify").configure({
-    ignore: /.*.json/
-  }));
-  b.add(path.join(__dirname, '../app/index.js'));
-  var w = watchify(b);
-  w.on('update', function () {
-    console.log("Bundle.");
-    w.bundle();
-  });
 
   app.use(bodyParser.json());
 

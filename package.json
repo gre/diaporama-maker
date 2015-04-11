@@ -4,6 +4,17 @@
   "description": "An editor to make image slideshows performed with diaporama – including KenBurns effect and GLSL Transitions.",
   "browser": "app/index.js",
   "main": "nwjs.html",
+  "window": {
+    "title": "Diaporama Maker",
+    "icon": "app/static/icon.png",
+    "toolbar": false,
+    "frame": true,
+    "width": 1024,
+    "height": 768,
+    "position": "center",
+    "min_width": 800,
+    "min_height": 600
+  },
   "bin": {
     "diaporama": "./cmd.js"
   },

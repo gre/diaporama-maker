@@ -1,8 +1,62 @@
 <html>
   <head>
-    <title></title>
+    <link rel="shortcut icon" type="image/png" href="./app/static/icon.png"/>
+    <link href='./app/static/fonts/Lato.css' rel='stylesheet' type='text/css'>
+    <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+      color: #333;
+      background: #eee;
+      font-family: Lato;
+    }
+    h1 {
+
+    }
+    h2 {
+      font-weight: normal;
+    }
+    #wrapper {
+      font-size: 1.4em;
+      text-align: center;
+      padding: 10px;
+    }
+    .buttons {
+      padding: 1em;
+    }
+    .buttons a {
+      background: #000;
+      color: #fff;
+      font-size: 1.4em;
+      padding: 0.2em 0.8em;
+      border-radius: 0.1em;
+      text-decoration: none;
+    }
+    .buttons a:hover {
+      background: #f90;
+    }
+    #loading {
+      padding: 100px 0;
+    }
+    </style>
   </head>
   <body>
+    <div id="wrapper">
+      <section id="intro">
+        <h1>Diaporama Maker</h1>
+        <blockquote>
+          To start, please select a folder containing images to use for your slideshow.
+        </blockquote>
+        <div class="buttons">
+          <a id="imagesfolder" href="#">Open Images Folder</a>
+        </div>
+      </section>
+      <section id="loading" hidden>
+        <h1>Diaporama Maker</h1>
+        <h2>Loading...</h2>
+      </section>
+    </div>
+
     <input
       style="display:none"
       type="file"
@@ -11,21 +65,20 @@
     />
 
     <script>
+    var Q = require("q");
+    var _ = require("lodash");
+    var fs = require("./server/fs");
+    var Diaporama = require("./server/Diaporama");
+    var server = require("./server");
+
     function onPickDir (dir) {
-      console.log(dir);
-
-      var Q = require("q");
-      var _ = require("lodash");
-      var fs = require("./server/fs");
-      var Diaporama = require("./server/Diaporama");
-      var server = require("./server");
-
+      intro.setAttribute("hidden", "hidden");
+      loading.removeAttribute("hidden");
       function edit (diaporama) {
         return Q.fcall(server, diaporama).then(function (href) {
           window.location = href;
         });
       }
-
       fs.readdir(dir)
         .then(function (files) {
           if (!_.contains(files, Diaporama.jsonfile)) {
@@ -40,10 +93,14 @@
     }
 
     ctrl.addEventListener("change", function (e) {
+      imagesfolder.removeEventListener("click", openfolder);
       onPickDir(this.value);
     });
 
-    ctrl.click();
+    imagesfolder.addEventListener("click", function openfolder (e) {
+      e.preventDefault();
+      ctrl.click();
+    });
     </script>
   </body>
 </html>
