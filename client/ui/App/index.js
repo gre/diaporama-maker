@@ -176,6 +176,7 @@ var App = React.createClass({
         alterSelection={this.alterSelection}
         alterDiaporama={this.alterDiaporama}
         onNav={this.onNav}
+        time={time}
       />
 
       <Viewer

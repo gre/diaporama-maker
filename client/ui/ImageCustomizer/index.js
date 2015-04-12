@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import BezierEditor from "bezier-easing-editor";
+import BezierEasing from "bezier-easing";
 import images from "../../resource/images";
 import DurationInput from "../DurationInput";
 import Icon from "../Icon";
@@ -23,7 +24,8 @@ const croppingModes = {
     render () {
       const {
         value,
-        width
+        width,
+        progress
       } = this.props;
       const image = value.image && toProjectUrl(value.image) || images.fromImage;
       const interPadding = 10;
@@ -31,6 +33,7 @@ const croppingModes = {
       const w2 = width - w1;
       const h = Math.min(240, w2);
       const paddingW = (w2 - h) / 2;
+      const progressEasing = this.easing && this.easing(progress);
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
         <KenburnsEditor
@@ -40,6 +43,10 @@ const croppingModes = {
           height={h}
           image={image}
           background="#000"
+          progress={progressEasing}
+          fromColor={[255, 136, 82]}
+          toColor={[184, 245, 79]}
+          progressColor={[255, 205, 0]}
         />
         </div>
         <div key="r" style={{ display: "inline-block" }}>
@@ -50,6 +57,8 @@ const croppingModes = {
           height={h}
           handleRadius={10}
           padding={[10, paddingW, 20, interPadding+10]}
+          progress={progress}
+          progressColor="#fc0"
         />
         </div>
       </div>;
@@ -99,6 +108,27 @@ const ImageCustomizer = React.createClass({
   onRemove (e) {
     e.preventDefault();
     this.props.onRemove();
+  },
+
+  componentWillMount () {
+    this.genEasing(this.props);
+  },
+
+  genEasing (props) {
+    const oldValue = this.props.value.kenburns && this.props.value.kenburns.easing;
+    const value = props.value.kenburns && props.value.kenburns.easing;
+    if (value) {
+      if (!this.easing || !_.isEqual(value, oldValue)) {
+        this.easing = BezierEasing.apply(null, value);
+      }
+    }
+    else {
+      this.easing = null;
+    }
+  },
+
+  componentWillReceiveProps (props) {
+    this.genEasing(props);
   },
 
   render () {

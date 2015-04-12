@@ -26,8 +26,7 @@ var TransitionPicker = React.createClass({
     transitionDuration: React.PropTypes.number,
     transitionEasing: React.PropTypes.func,
     transitionUniforms: React.PropTypes.object,
-    images: React.PropTypes.arrayOf(React.PropTypes.string),
-    animated: React.PropTypes.bool
+    images: React.PropTypes.arrayOf(React.PropTypes.string)
   },
 
   getInitialState: function () {
@@ -71,7 +70,7 @@ var TransitionPicker = React.createClass({
     var vignette = <Vignette
       transitionDuration={safeDuration(this.props.transitionDuration)}
       transitionEasing={this.props.transitionEasing}
-      autostart={!!this.props.animated}
+      autostart={false}
       controlsMode="none"
       glsl={t.glsl}
       uniforms={this.props.transitionUniforms || t.uniforms}

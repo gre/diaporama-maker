@@ -15,6 +15,10 @@ import AboutScreen from "../AboutScreen";
 import Config from "../Config";
 import TimelineElementInfo from "../TimelineElementInfo";
 
+function step (a, b, x) {
+  return Math.max(0, Math.min((x-a) / (b-a), 1));
+}
+
 var panels = {
 
   about: {
@@ -91,17 +95,24 @@ var panels = {
     icon: "picture-o",
     title: "Edit Image",
     render (innerWidth) {
-      var id = this.props.selectedItemPointer.id;
-      var diaporama = this.props.diaporama;
-      var element = Diaporama.timelineForId(diaporama, id);
+      const {
+        selectedItemPointer,
+        diaporama,
+        alterSelection,
+        time
+      } = this.props;
+      const element = Diaporama.timelineForId(diaporama, selectedItemPointer.id);
+      const interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
+      const progress = step(interval.start, interval.end, time);
       if (!element) return <div>Slide Removed.</div>;
       return <div>
         <TimelineElementInfo value={element} />
         <ImageCustomizer
           value={element}
-          onChange={this.props.alterSelection.bind(null, "setItem")}
+          onChange={alterSelection.bind(null, "setItem")}
           width={innerWidth}
-          onRemove={this.props.alterSelection.bind(null, "removeItem")}
+          onRemove={alterSelection.bind(null, "removeItem")}
+          progress={progress}
         />
       </div>;
     }
@@ -115,17 +126,23 @@ var panels = {
     icon: "magic",
     title: "Edit Transition",
     render (innerWidth) {
-      var id = this.props.selectedItemPointer.id;
-      var diaporama = this.props.diaporama;
-      var transitionInfos = Diaporama.timelineTransitionForId(diaporama, id);
+      const {
+        selectedItemPointer,
+        diaporama,
+        time,
+        alterSelection
+      } = this.props;
+      const transitionInfos = Diaporama.timelineTransitionForId(diaporama, selectedItemPointer.id);
+      const interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
+      const progress = step(interval.start, interval.end, time);
       if (!transitionInfos || !transitionInfos.transitionNext) return <div>Transition Removed.</div>;
       return <TransitionCustomizer
         value={transitionInfos.transitionNext}
-        onChange={this.props.alterSelection.bind(null, "setItem")}
+        onChange={alterSelection.bind(null, "setItem")}
         width={innerWidth}
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
-        animated={false}
-        onRemove={this.props.alterSelection.bind(null, "removeItem")}
+        progress={progress}
+        onRemove={alterSelection.bind(null, "removeItem")}
       />;
     }
   }

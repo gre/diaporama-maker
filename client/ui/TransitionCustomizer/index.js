@@ -15,13 +15,13 @@ var TransitionCustomizer = React.createClass({
     onChange: React.PropTypes.func,
     width: React.PropTypes.number,
     images: React.PropTypes.arrayOf(React.PropTypes.string),
-    animated: React.PropTypes.bool
+    progress: React.PropTypes.number
   },
 
   getDefaultProps: function () {
     return {
       width: 300,
-      animated: true
+      progress: 0
     };
   },
 
@@ -52,7 +52,7 @@ var TransitionCustomizer = React.createClass({
       width,
       onRemove,
       images,
-      animated
+      progress
     } = this.props;
 
     var transition = transitions.byName(value.name);
@@ -96,7 +96,6 @@ var TransitionCustomizer = React.createClass({
           transitionDuration={value.duration}
           transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
           images={images}
-          animated={animated}
         />
       </div>
       <div style={{ display: "inline-block" }}>
@@ -107,6 +106,8 @@ var TransitionCustomizer = React.createClass({
           height={h}
           handleRadius={10}
           padding={[10, paddingW, 20, interPadding+10]}
+          progress={progress}
+          progressColor="#fc0"
         />
       </div>
 
