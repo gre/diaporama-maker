@@ -26,7 +26,8 @@ var TransitionPicker = React.createClass({
     transitionDuration: React.PropTypes.number,
     transitionEasing: React.PropTypes.func,
     transitionUniforms: React.PropTypes.object,
-    images: React.PropTypes.arrayOf(React.PropTypes.string)
+    images: React.PropTypes.arrayOf(React.PropTypes.string),
+    transitionCollection: React.PropTypes.array
   },
 
   getInitialState: function () {
@@ -54,7 +55,10 @@ var TransitionPicker = React.createClass({
   },
 
   render: function () {
-    var images = this.props.images;
+    const {
+      images,
+      transitionCollection
+    } = this.props;
     var opened = this.state.opened;
     var t = this.props.value;
     var vignetteWidth = this.props.width;
@@ -77,7 +81,7 @@ var TransitionPicker = React.createClass({
       images={images}
       width={vignetteWidth}
       height={vignetteHeight}>
-      <VignetteInnerInfos {...t} />
+      <VignetteInnerInfos transition={t} />
       <Icon
         name="pencil-square"
         size={vignetteButtonSize}
@@ -116,6 +120,7 @@ var TransitionPicker = React.createClass({
             height={bounds[3]}
             images={images}
             onTransitionSelected={this.onTransitionSelected}
+            transitionCollection={transitionCollection}
           />
         </div>;
     }

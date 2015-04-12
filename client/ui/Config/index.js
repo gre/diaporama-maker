@@ -3,6 +3,7 @@ import TransitionCustomizer from "../TransitionCustomizer";
 import ImageCustomizer from "../ImageCustomizer";
 import images from "../../resource/images";
 import Diaporama from "../../models/Diaporama";
+import Transitions from "../../models/transitions";
 
 export default class Config extends React.Component {
 
@@ -45,6 +46,7 @@ export default class Config extends React.Component {
         width={width}
         images={[ images.fromImage, images.toImage ]}
         animated={false}
+        transitionCollection={Transitions.collectionForDiaporama(diaporama)}
       />
     </div>;
   }

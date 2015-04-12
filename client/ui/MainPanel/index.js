@@ -3,6 +3,7 @@ import _ from "lodash";
 import {DragDropMixin} from 'react-dnd';
 import {DragItems} from "../../constants";
 import Diaporama from "../../models/Diaporama";
+import Transitions from "../../models/transitions";
 import boundToStyle from "../../core/boundToStyle";
 import toProjectUrl from "../../core/toProjectUrl";
 import Library from "../Library";
@@ -143,6 +144,7 @@ var panels = {
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
         progress={progress}
         onRemove={alterSelection.bind(null, "removeItem")}
+        transitionCollection={Transitions.collectionForDiaporama(diaporama)}
       />;
     }
   }

@@ -3,7 +3,7 @@ import _ from "lodash";
 import VignetteGrid from "glsl-transition-vignette-grid";
 import Vignette from "glsl-transition-vignette";
 import Icon from "../Icon";
-import transitions from "../../models/transitions";
+import Button from "../Button";
 import VignetteInnerInfos from "./VignetteInnerInfos";
 
 const vignetteWidthBase = 256;
@@ -17,13 +17,9 @@ function queryMatch (q, text) {
   q = q.toLowerCase();
   text = text.toLowerCase();
   return _.chain(q.split(" "))
-    .map(function (w) {
-      return w.trim();
-    })
+    .map(w => w.trim())
     .filter()
-    .every(function (w) {
-      return text.indexOf(w) !== -1;
-    })
+    .every(w => text.indexOf(w) !== -1)
     .value();
 }
 
@@ -62,7 +58,8 @@ const Transitions = React.createClass({
       onTransitionSelected,
       width,
       height,
-      images
+      images,
+      transitionCollection
     } = this.props;
     const {
       page,
@@ -76,7 +73,7 @@ const Transitions = React.createClass({
 
     const buttonSize = Math.floor(vignetteHeight / 2);
 
-    const collection = _.filter(transitions.collection, function (t) {
+    const collection = _.filter(transitionCollection, function (t) {
       return queryMatch(q, t.owner) || queryMatch(q, t.name);
     });
     const nbPages = Math.ceil(collection.length / perPage);
@@ -114,10 +111,10 @@ const Transitions = React.createClass({
       top: ((vignetteHeight-buttonSize)/2)+"px"
     };
 
-    const renderVignette = (props) => {
+    const renderVignette = (props, transition) => {
       const onClick = () => onTransitionSelected(props.name);
       return <Vignette {...props}>
-      <VignetteInnerInfos {...props} />
+        <VignetteInnerInfos transition={transition} />
         <div className="actions">
           <Icon
             name="check-square"

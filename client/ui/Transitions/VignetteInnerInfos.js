@@ -2,7 +2,7 @@ import React from "react";
 
 export default class VignetteInnerInfos extends React.Component {
   render () {
-    const props = this.props;
+    const transition = this.props.transition;
     const style = {
       position: "absolute",
       width: "100%",
@@ -35,15 +35,40 @@ export default class VignetteInnerInfos extends React.Component {
       overflow: "hidden",
       whiteSpace: "nowrap"
     };
+    const usedStyle = {
+      position: "absolute",
+      bottom: "3px",
+      right: "3px",
+      color: "#fc0",
+      zIndex: 3,
+      fontSize: "0.8em"
+    };
+    const divergedStyle = {
+      position: "absolute",
+      top: "3px",
+      right: "3px",
+      color: "#f00",
+      zIndex: 3,
+      fontSize: "0.8em",
+      textTransform: "uppercase",
+      fontFamily: "monospace"
+    };
     return <div style={style}>
       <a
         style={nameStyle}
-        href={props.id ? ("https://glsl.io/transition/"+props.id) : undefined}
-        target="_blank">{props.name}</a>
+        href={transition.id ? ("https://glsl.io/transition/"+transition.id) : undefined}
+        target="_blank">{transition.name}</a>
       <a
         style={authorStyle}
-        href={"https://glsl.io/user/"+props.owner}
-        target="_blank">by <em>{props.owner}</em></a>
+        href={"https://glsl.io/user/"+transition.owner}
+        target="_blank">by <em>{transition.owner}</em></a>
+      {transition.usedCount ?
+        <span style={usedStyle}>{transition.usedCount}×</span>
+        : undefined
+      }
+      {transition.diverged ?
+      <span style={divergedStyle}>diverged</span>
+      : undefined}
     </div>;
   }
 }
