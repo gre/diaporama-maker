@@ -2,11 +2,9 @@ import React from "react";
 import _ from "lodash";
 import BezierEditorAndPicker from "../BezierEditorAndPicker";
 import BezierEasing from "bezier-easing";
-import images from "../../resource/images";
 import DurationInput from "../DurationInput";
 import Icon from "../Icon";
 import Button from "../Button";
-import toProjectUrl from "../../core/toProjectUrl";
 import {KenburnsEditor} from "kenburns-editor";
 
 const croppingModes = {
@@ -27,7 +25,7 @@ const croppingModes = {
         width,
         progress
       } = this.props;
-      const image = value.image && toProjectUrl(value.image) || images.fromImage;
+      const image = value.image && DiaporamaMakerAPI.toProjectUrl(value.image) || DiaporamaMakerAPI.fromImage;
       const interPadding = 10;
       const w1 = Math.floor(width * 0.5);
       const w2 = width - w1;

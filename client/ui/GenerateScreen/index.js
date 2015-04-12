@@ -1,6 +1,5 @@
 var _ = require("lodash");
 var React = require("react");
-var Diaporama = require("../../models/Diaporama");
 var Icon = require("../Icon");
 var Button = require("../Button");
 
@@ -29,7 +28,7 @@ var GenerateScreen = React.createClass({
 
   downloadZipLink: function () {
     const { quality, zipIncludesWeb } = this.state;
-    return Diaporama.downloadZipLink({ quality, zipIncludesWeb });
+    return DiaporamaMakerAPI.diaporamaZipUrl({ quality, zipIncludesWeb });
   },
 
   onZipIncludesWebChange: function (e) {
@@ -42,7 +41,7 @@ var GenerateScreen = React.createClass({
   },
 
   render: function () {
-    var jsonUrl = Diaporama.downloadJsonLink();
+    var jsonUrl = DiaporamaMakerAPI.diaporamaJsonUrl();
     var zipUrl = this.downloadZipLink();
     var options = {
       low: "Low",

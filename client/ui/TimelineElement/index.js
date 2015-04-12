@@ -1,7 +1,6 @@
 var React = require("react");
 var _ = require("lodash");
 var translateStyle = require("../../core/translateStyle");
-var toProjectUrl = require("../../core/toProjectUrl");
 var Thumbnail = require("../Thumbnail");
 var DragItems = require("../../constants").DragItems;
 var DragDropMixin = require('react-dnd').DragDropMixin;
@@ -66,7 +65,7 @@ var TimelineElement = React.createClass({
       style={style}
       onClick={onClick}
       {...this.dragSourceFor(DragItems.SLIDE)}>
-      <Thumbnail image={toProjectUrl(item.image)} width={width} height={height} />
+      <Thumbnail image={DiaporamaMakerAPI.toProjectUrl(item.image)} width={width} height={height} />
     </div>;
   }
 });

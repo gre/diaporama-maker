@@ -4,7 +4,6 @@ var DragLayerMixin = require("react-dnd").DragLayerMixin;
 var DragItems = require("../../constants").DragItems;
 var LibraryImage = require("../LibraryImage");
 var translateStyle = require("../../core/translateStyle");
-var toProjectUrl = require("../../core/toProjectUrl");
 
 var DragLayer = React.createClass({
   mixins: [ DragLayerMixin ],
@@ -32,7 +31,7 @@ var DragLayer = React.createClass({
             style={style}
             width={200}
             height={160}
-            item={{ url: toProjectUrl(state.draggedItem.image), file: state.draggedItem.image }}
+            item={{ url: DiaporamaMakerAPI.toProjectUrl(state.draggedItem.image), file: state.draggedItem.image }}
             dragging={true}
           />;
 

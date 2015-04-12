@@ -1,5 +1,4 @@
 import React from "react";
-import toProjectUrl from "../../core/toProjectUrl";
 
 export default class TimelineElementInfo extends React.Component {
   constructor (props) {
@@ -13,7 +12,7 @@ export default class TimelineElementInfo extends React.Component {
       delete this.img.onload;
     }
     this.img = new window.Image();
-    this.img.src = toProjectUrl(src, true);
+    this.img.src = DiaporamaMakerAPI.toProjectUrl(src, true);
     this.img.onload = () => this.forceUpdate();
   }
   componentWillUpdate (props) {

@@ -3,15 +3,14 @@
  * display folders instead of flattened?
  */
 
-var React = require("react");
-var _ = require("lodash");
-var Qajax = require("qajax");
-var Combokeys = require("combokeys");
-var boundToStyle = require("../../core/boundToStyle");
-var isImage = require("../../../common/isImage");
-var toProjectUrl = require("../../core/toProjectUrl");
-var LibraryImage = require("../LibraryImage");
-var PromiseMixin = require("../../mixins/PromiseMixin");
+import React from "react";
+import _ from "lodash";
+import Combokeys from "combokeys";
+import {DragDropMixin, NativeDragItemTypes} from 'react-dnd';
+import boundToStyle from "../../core/boundToStyle";
+import LibraryImage from "../LibraryImage";
+import PromiseMixin from "../../mixins/PromiseMixin";
+import acceptedImageMimetypes from "../../../common/acceptedImageMimetypes.json";
 
 var thumbnailWidth = 120;
 var thumbnailHeight = 100;
@@ -28,26 +27,23 @@ function indexOfSelected (selected, item) {
   });
 }
 
-function filesToItems (files) {
-  return files.map(function (file) {
-    if (isImage(file))
-      return {
-        file: file,
-        url: toProjectUrl(file),
-        type: "image"
-      };
-    else
-      return {
-        file: file,
-        url: toProjectUrl(file),
-        type: ""
-      };
-  });
-}
-
 var Library = React.createClass({
 
-  mixins: [PromiseMixin],
+  mixins: [ PromiseMixin, DragDropMixin ],
+
+  statics: {
+    configureDragDrop(register) {
+      register(NativeDragItemTypes.FILE, {
+        dropTarget: {
+          acceptDrop(component, item) {
+            const files = item.files.filter(file => acceptedImageMimetypes.indexOf(file.type) !== -1);
+            DiaporamaMakerAPI.uploadFiles(files);
+          }
+        }
+      });
+    }
+  },
+
 
   getInitialState: function () {
     return {
@@ -182,13 +178,8 @@ var Library = React.createClass({
   },
 
   sync: function () {
-    Qajax({
-      method: "GET",
-      url: "/listfiles"
-    })
-    .then(Qajax.filterSuccess)
-    .then(Qajax.toJSON)
-    .then(filesToItems)
+    // FIXME abstract into a call to a prop
+    DiaporamaMakerAPI.listItems()
     .then(function (items) {
       return { items: items };
     })
@@ -295,6 +286,7 @@ var Library = React.createClass({
     }
 
     return <div
+      {...this.dropTargetFor(NativeDragItemTypes.FILE)}
       className="library"
       style={{ width: width+"px", height: height+"px" }}>
       <h2>Library</h2>

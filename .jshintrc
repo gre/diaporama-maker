@@ -1,7 +1,8 @@
 {
     "globals": {
       "window": true,
-      "document": true
+      "document": true,
+      "DiaporamaMakerAPI": true
     },
     "indent": 2,
     "node": true,

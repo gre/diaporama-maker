@@ -1,14 +1,8 @@
 var _ = require("lodash");
-var Qajax = require("qajax");
 var transitions = require("../transitions");
-var url = require("url");
 
-var toProjectUrl = require("../../core/toProjectUrl");
-// var network = require("../../core/network");
 var genTimelineElementDefault = require("./genTimelineElementDefault");
 var genTimelineTransitionDefault = require("./genTimelineTransitionDefault");
-
-// var recorderClient = require("diaporama-recorder/client")(network);
 
 var Diaporama = {};
 
@@ -113,68 +107,11 @@ function checkTransitionsAfterSlideChange (copy, prevItem, nextItem) {
     nextItem && nextItem.transitionNext);
 }
 
-// Diaporama network actions
-
-/*
-var formatsD = Q.defer();
-recorderClient.getFormats().subscribe(formatsD.resolve, formatsD.reject);
-Diaporama.getFormats = function () {
-  return formatsD.promise;
+Diaporama.fromBootstrap = function (json) {
+  return assignIds(inlineAllTransitions(json));
 };
-
-Diaporama.generateVideo = function (diaporama, options) {
-  recorderClient.generateVideo(Diaporama.localize(diaporama, true), options);
-};
-*/
-
-Diaporama.downloadZipLink = function (options) {
-  return url.format({
-    query: options,
-    pathname: "/diaporama/generate/zip"
-  });
-};
-
-Diaporama.downloadJsonLink = function () {
-  return "/diaporama.json";
-};
-
-Diaporama.bootstrap = function (options) {
-  return Qajax({
-    method: "POST",
-    url: "/diaporama/bootstrap",
-    data: options
-  })
-  .then(Qajax.filterSuccess)
-  .then(Qajax.toJSON)
-  .then(inlineAllTransitions)
-  .then(assignIds);
-};
-
-Diaporama.save = function (diaporama) {
-  // TODO: replace with using network
-  return Qajax({
-    method: "POST",
-    url: "/diaporama.json",
-    data: Diaporama.clean(diaporama)
-  })
-  .then(Qajax.filterSuccess)
-  .then(Qajax.toJSON);
-};
-
-Diaporama.fetch = function () {
-  return Qajax({
-    method: "GET",
-    url: "/diaporama.json"
-  })
-  .then(Qajax.filterStatus(200))
-  .then(Qajax.toJSON)
-  .then(assignIds)
-  .fail(function (maybeXhr) {
-    if (maybeXhr && maybeXhr.status === 204) {
-      return null; // recover No Content
-    }
-    throw maybeXhr;
-  });
+Diaporama.fromFetch = function (json) {
+  return assignIds(json);
 };
 
 // Diaporama General Transformation Pass
@@ -193,7 +130,7 @@ Diaporama.localize = function (diaporama, fullSize) {
   if (!diaporama) return null;
   var clone = _.cloneDeep(diaporama);
   clone.timeline.forEach(function (item) {
-    item.image = toProjectUrl(item.image, fullSize);
+    item.image = DiaporamaMakerAPI.toProjectUrl(item.image, fullSize);
   });
   return clone;
 };

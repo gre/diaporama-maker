@@ -1,14 +1,14 @@
-var React = require("react");
-var _ = require("lodash");
-var raf = require("raf");
-var Combokeys = require("combokeys");
-
-var PromiseMixin = require("../../mixins/PromiseMixin");
-var Diaporama = require("../../models/Diaporama");
-var MainPanel = require("../MainPanel");
-var Viewer = require("../Viewer");
-var Timeline = require("../Timeline");
-var DragLayer = require("../DragLayer");
+import React from "react";
+import _ from "lodash";
+import raf from "raf";
+import Combokeys from "combokeys";
+import PromiseMixin from "../../mixins/PromiseMixin";
+import Diaporama from "../../models/Diaporama";
+import MainPanel from "../MainPanel";
+import Viewer from "../Viewer";
+import Timeline from "../Timeline";
+import DragLayer from "../DragLayer";
+import checkAPI from "../../checkAPI";
 
 var INITIAL_PANEL = "about";
 var DEFAULT_PANEL = "library";
@@ -54,13 +54,17 @@ var App = React.createClass({
     };
   },
 
+  componentWillMount: function () {
+    checkAPI();
+  },
+
   componentDidMount: function () {
     this.historizeDebounced = _.debounce(this.historize, 300);
     window.onerror = this.onError;
     window.addEventListener("blur", this.onBlur);
     window.addEventListener("focus", this.onFocus);
     window.addEventListener("resize", this.onResize);
-    this.sync(Diaporama.fetch()).done();
+    this.sync(DiaporamaMakerAPI.fetchDiaporama()).done();
     this.startMainLoop();
     var ck = this.combokeys = new Combokeys(document);
 
@@ -257,11 +261,11 @@ var App = React.createClass({
     });
     // TODO debounce it a bit
     // TODO better feedback on failure cases ?
-    Diaporama.save(newDiaporama).done();
+    DiaporamaMakerAPI.saveDiaporama(newDiaporama).done();
   },
 
   bootstrap: function (options) {
-    this.sync(Diaporama.bootstrap(options))
+    this.sync(DiaporamaMakerAPI.bootstrapDiaporama(options))
       .then(this.saveDiaporama.bind(this));
   },
 

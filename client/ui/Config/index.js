@@ -1,7 +1,6 @@
 import React from "react";
 import TransitionCustomizer from "../TransitionCustomizer";
 import ImageCustomizer from "../ImageCustomizer";
-import images from "../../resource/images";
 import Diaporama from "../../models/Diaporama";
 import Transitions from "../../models/transitions";
 
@@ -44,7 +43,7 @@ export default class Config extends React.Component {
         value={defaults.transitionNext}
         onChange={this.onTransitionChange}
         width={width}
-        images={[ images.fromImage, images.toImage ]}
+        images={[ DiaporamaMakerAPI.fromImage, DiaporamaMakerAPI.toImage ]}
         animated={false}
         transitionCollection={Transitions.collectionForDiaporama(diaporama)}
       />

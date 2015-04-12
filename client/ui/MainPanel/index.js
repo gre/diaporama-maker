@@ -5,7 +5,6 @@ import {DragItems} from "../../constants";
 import Diaporama from "../../models/Diaporama";
 import Transitions from "../../models/transitions";
 import boundToStyle from "../../core/boundToStyle";
-import toProjectUrl from "../../core/toProjectUrl";
 import Library from "../Library";
 import Icon from "../Icon";
 import TransitionCustomizer from "../TransitionCustomizer";
@@ -64,12 +63,15 @@ var panels = {
     icon: "folder-open",
     title: "Library",
     render: function (innerWidth, innerHeight) {
-      var diaporama = this.props.diaporama;
+      const {
+        diaporama,
+        alterDiaporama
+      } = this.props;
       return <Library
         width={innerWidth}
         height={innerHeight}
         usedImages={_.pluck(diaporama.timeline, "image")}
-        alterDiaporama={this.props.alterDiaporama}
+        alterDiaporama={alterDiaporama}
       />;
     }
   },
@@ -141,7 +143,7 @@ var panels = {
         value={transitionInfos.transitionNext}
         onChange={alterSelection.bind(null, "setItem")}
         width={innerWidth}
-        images={[ transitionInfos.from.image, transitionInfos.to.image ].map(toProjectUrl)}
+        images={[ transitionInfos.from.image, transitionInfos.to.image ].map(DiaporamaMakerAPI.toProjectUrl)}
         progress={progress}
         onRemove={alterSelection.bind(null, "removeItem")}
         transitionCollection={Transitions.collectionForDiaporama(diaporama)}
