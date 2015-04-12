@@ -59,7 +59,7 @@ var TransitionCustomizer = React.createClass({
 
     var transition = transitions.byName(value.name);
     var interPadding = 10;
-    var w1 = Math.floor(width * 0.6);
+    var w1 = Math.floor(width * 0.5);
     var w2 = width - w1;
     var h = Math.min(200, w2);
 
