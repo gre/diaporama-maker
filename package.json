@@ -1,6 +1,6 @@
 {
   "name": "diaporama-maker",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "An editor to make image slideshows performed with diaporama – including KenBurns effect and GLSL Transitions.",
   "main": "nwjs.html",
   "window": {
