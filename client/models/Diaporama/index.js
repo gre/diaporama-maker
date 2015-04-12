@@ -362,7 +362,7 @@ function pathSet (obj, val, path) {
   var i;
   for (i=0; i<p.length-1; ++i) {
     if (!obj.hasOwnProperty(p[i])) {
-      obj = obj[p[i]] = {};
+      obj[p[i]] = {};
     }
     obj = obj[p[i]];
   }
