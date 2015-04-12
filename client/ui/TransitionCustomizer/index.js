@@ -4,7 +4,7 @@ var BezierEasing = require("bezier-easing");
 var DurationInput = require("../DurationInput");
 var transitions = require("../../models/transitions");
 var TransitionPicker = require("../TransitionPicker");
-var BezierEditor = require("bezier-easing-editor");
+var BezierEditorAndPicker = require("../BezierEditorAndPicker");
 var UniformsEditor = require("glsl-uniforms-editor");
 var Icon = require("../Icon");
 
@@ -60,7 +60,6 @@ var TransitionCustomizer = React.createClass({
     var w1 = Math.floor(width * 0.6);
     var w2 = width - w1;
     var h = Math.min(200, w2);
-    var paddingW = (w2 - h) / 2;
 
     var uniforms = _.extend({}, transition.uniforms, value.uniforms);
 
@@ -99,15 +98,12 @@ var TransitionCustomizer = React.createClass({
         />
       </div>
       <div style={{ display: "inline-block" }}>
-        <BezierEditor
+        <BezierEditorAndPicker
           value={value.easing}
           onChange={this.onEasingChange}
           width={w2-10}
           height={h}
-          handleRadius={10}
-          padding={[10, paddingW, 20, interPadding+10]}
           progress={progress}
-          progressColor="#fc0"
         />
       </div>
 

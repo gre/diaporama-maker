@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import BezierEditor from "bezier-easing-editor";
+import BezierEditorAndPicker from "../BezierEditorAndPicker";
 import BezierEasing from "bezier-easing";
 import images from "../../resource/images";
 import DurationInput from "../DurationInput";
@@ -32,7 +32,6 @@ const croppingModes = {
       const w1 = Math.floor(width * 0.6);
       const w2 = width - w1;
       const h = Math.min(240, w2);
-      const paddingW = (w2 - h) / 2;
       const progressEasing = this.easing && this.easing(progress);
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
@@ -50,15 +49,12 @@ const croppingModes = {
         />
         </div>
         <div key="r" style={{ display: "inline-block" }}>
-        <BezierEditor
+        <BezierEditorAndPicker
           value={value.kenburns.easing}
           onChange={this.onChangeKenburnsEasing}
           width={w2-10}
           height={h}
-          handleRadius={10}
-          padding={[10, paddingW, 20, interPadding+10]}
           progress={progress}
-          progressColor="#fc0"
         />
         </div>
       </div>;

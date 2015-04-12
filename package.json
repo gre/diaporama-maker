@@ -51,6 +51,7 @@
     "archiver": "^0.14.3",
     "bezier-easing": "^0.4.4",
     "bezier-easing-editor": "^0.4.0",
+    "bezier-easing-picker": "0.0.1",
     "body-parser": "^1.10.2",
     "combokeys": "^2.3.0",
     "css-cursor": "^1.0.0",
