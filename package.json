@@ -30,8 +30,8 @@
   "scripts": {
     "dev": "watchify client/index.js -o builds/app.bundle.js",
     "build": "npm run build-client && npm run build-bootstrap",
-    "build-client": "browserify client/index.js | derequire | uglifyjs -c -m > builds/app.bundle.js",
-    "build-bootstrap": "browserify bootstrap/index.js | derequire | uglifyjs -c -m > builds/diaporama.bundle.js"
+    "build-client": "browserify client/index.js | derequire | uglifyjs -c -m --screw-ie8 > builds/app.bundle.js",
+    "build-bootstrap": "browserify bootstrap/index.js | derequire | uglifyjs -c -m --screw-ie8 > builds/diaporama.bundle.js"
   },
   "repository": {
     "type": "git",
