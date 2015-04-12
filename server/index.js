@@ -3,32 +3,31 @@ var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var path = require('path');
 var Q = require('q');
+var Http = require('http');
 var findAllFiles = require("./findAllFiles");
 var isImage = require("../common/isImage");
 var Thumbnail = require("./Thumbnail");
 var fs = require("./fs");
 var portscanner = require('portscanner');
 
-var app = express();
-var http = require('http').Server(app);
-// var io = require('socket.io')(http);
-
-app.use(bodyParser.json());
-
-var defer = Q.defer();
-
-portscanner.findAPortNotInUse(9325, 9350, '127.0.0.1', function(err, port) {
-  if (err) defer.reject(err);
-  else {
-    http.listen(port, function () {
-      var url = "http://localhost:"+port;
-      console.log("Listening on "+url);
-      defer.resolve(url);
-    });
-  }
-});
-
 module.exports = function server (diaporama) {
+  var app = express();
+  var http = Http.Server(app);
+
+  app.use(bodyParser.json());
+
+  var defer = Q.defer();
+
+  portscanner.findAPortNotInUse(9325, 9350, '127.0.0.1', function(err, port) {
+    if (err) defer.reject(err);
+    else {
+      http.listen(port, function () {
+        var url = "http://localhost:"+port;
+        console.log("Listening on "+url);
+        defer.resolve(url);
+      });
+    }
+  });
 
   app.get('/index.js', function (req, res) {
     fs.createReadStream(path.join(__dirname, '../builds/app.bundle.js'))
