@@ -3,7 +3,6 @@ import _ from "lodash";
 import VignetteGrid from "glsl-transition-vignette-grid";
 import Vignette from "glsl-transition-vignette";
 import Icon from "../Icon";
-import Button from "../Button";
 import VignetteInnerInfos from "./VignetteInnerInfos";
 
 const vignetteWidthBase = 256;
@@ -115,14 +114,12 @@ const Transitions = React.createClass({
       const onClick = () => onTransitionSelected(props.name);
       return <Vignette {...props}>
         <VignetteInnerInfos transition={transition} />
-        <div className="actions">
-          <Icon
-            name="check-square"
-            color="#fff"
-            size={buttonSize}
-            onClick={onClick}
-            style={vignetteButtonStyle} />
-        </div>
+        <Icon
+          name="check-square"
+          color="#fff"
+          size={buttonSize}
+          onClick={onClick}
+          style={vignetteButtonStyle} />
       </Vignette>;
     };
 
@@ -135,7 +132,7 @@ const Transitions = React.createClass({
       renderVignette={renderVignette}
     />;
 
-    return <div className="transitions" style={{ width: width+"px", height: height+"px" }}>
+    return <div style={{ width: width+"px", height: height+"px" }}>
       <header style={headerStyle}>
         <h2>Transitions</h2>
         <input style={typeaheadStyle} type="search" placeholder="Search..." value={q} onChange={this.onTypeahead} />
