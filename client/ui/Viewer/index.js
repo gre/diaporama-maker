@@ -76,6 +76,7 @@ export default class Viewer extends React.Component {
         height={bound.height}
         data={this.props.diaporama}
         currentTime={this.props.time}
+        loop={true}
       />
       <div
         onMouseEnter={this.hoverEnter}
