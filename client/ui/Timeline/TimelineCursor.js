@@ -2,6 +2,12 @@ var React = require("react");
 
 var TimelineCursor = React.createClass({
 
+  getDefaultProps: function () {
+    return {
+      headerHeight: 26
+    };
+  },
+
   render: function () {
     var time = this.props.time;
     var timeScale = this.props.timeScale;
@@ -21,7 +27,7 @@ var TimelineCursor = React.createClass({
       left: 0,
       top: 0,
       width: "2px",
-      height: "20px",
+      height: this.props.headerHeight+"px",
       background: "#fc0"
     };
     return <div style={style}>

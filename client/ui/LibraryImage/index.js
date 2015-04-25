@@ -38,6 +38,24 @@ var LibraryImage = React.createClass({
     };
   },
 
+  getInitialState: function () {
+    return {
+      hover: false
+    };
+  },
+
+  onMouseEnter: function () {
+    this.setState({
+      hover: true
+    });
+  },
+
+  onMouseLeave: function () {
+    this.setState({
+      hover: false
+    });
+  },
+
   render: function () {
     var width = this.props.width;
     var height = this.props.height;
@@ -46,21 +64,22 @@ var LibraryImage = React.createClass({
     var dragging = this.props.dragging;
     var stack = this.props.stack;
     var selected = this.props.selected;
+    var hover = this.state.hover;
 
     var border = dragging ? 1 : 2;
     var titleH = 20;
-    var thumbH = height-2*border-titleH;
+    var thumbH = height-2*border;
 
     var style = _.extend({
       position: "relative",
       width: width+"px",
       height: height+"px"
     }, this.props.style||{});
-    
+
     var thumbnailStyle = {
       position: "relative",
       zIndex: 3,
-      opacity: selected ? 0.5 : (!used ? 1 : 0.5),
+      opacity: selected ? 0.6 : (!used ? 1 : 0.5),
       cursor: dragging ? cssCursor("grabbing") : cssCursor("grab")
     };
 
@@ -73,28 +92,31 @@ var LibraryImage = React.createClass({
 
     var countUsageStyle = {
       position: "absolute",
-      bottom: "22px",
+      top: "6px",
       right: "6px",
       color: "#fff",
-      zIndex: 3,
+      zIndex: 4,
       fontSize: "0.8em"
     };
 
     var titleStyle = {
-      position: "relative",
-      zIndex: 2,
-      display: "inline-block",
-      width: "100%",
+      position: "absolute",
+      left: "2%",
+      bottom: "2px",
+      zIndex: 3,
+      display: hover ? "inline-block" : "none",
+      width: "96%",
       height: titleH+"px",
       fontSize: "0.8em",
       fontWeight: 300,
-      color: !selected ? "#666" : "#d80",
+      color: !selected ? "#fff" : "#000",
+      opacity: 0.9,
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
       pointerEvents: "none"
     };
-    
+
     var maybeDragSource = dragging ? {} : this.dragSourceFor(DragItems.IMAGES);
 
     var stackElements = [];
@@ -132,7 +154,9 @@ var LibraryImage = React.createClass({
     return <div
       title={item.file}
       style={style}
-      onClick={this.props.onClick}>
+      onClick={this.props.onClick}
+      onMouseEnter={this.onMouseEnter}
+      onMouseLeave={this.onMouseLeave}>
       { !used ? undefined :
         <span style={countUsageStyle}>
           {used}

@@ -12,14 +12,14 @@ import LibraryImage from "../LibraryImage";
 import PromiseMixin from "../../mixins/PromiseMixin";
 import acceptedImageMimetypes from "../../../common/acceptedImageMimetypes.json";
 
-var thumbnailWidth = 120;
+var thumbnailWidth = 140;
 var thumbnailHeight = 100;
-var itemMarginW = 2;
+var itemMargin = 4;
 
 var GRID_LEFT = 7;
-var GRID_TOP = 31;
-var GRID_W = thumbnailWidth + 2 * itemMarginW;
-var GRID_H = thumbnailHeight;
+var GRID_TOP = 4;
+var GRID_W = thumbnailWidth + 2 * itemMargin;
+var GRID_H = thumbnailHeight + 2 * itemMargin;
 
 function indexOfSelected (selected, item) {
   return _.findIndex(selected, function (sel) {
@@ -249,9 +249,8 @@ var Library = React.createClass({
           var xi = (i % gridW);
           var yi = Math.floor(i / gridW);
           var itemStyle = {
-            margin: "0 "+itemMarginW+"px",
             position: "absolute",
-            top: (GRID_H * yi) + "px",
+            top: (GRID_TOP + GRID_H * yi) + "px",
             left: (GRID_W * xi) + "px"
           };
           return <LibraryImage
@@ -289,7 +288,6 @@ var Library = React.createClass({
       {...this.dropTargetFor(NativeDragItemTypes.FILE)}
       className="library"
       style={{ width: width+"px", height: height+"px" }}>
-      <h2>Library</h2>
       <div ref="scrollcontainer" style={scrollContainerStyle}>
         {items}
       </div>

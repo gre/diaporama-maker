@@ -10,7 +10,7 @@ import Timeline from "../Timeline";
 import DragLayer from "../DragLayer";
 import checkAPI from "../../checkAPI";
 
-var INITIAL_PANEL = "about";
+var INITIAL_PANEL = "library";
 var DEFAULT_PANEL = "library";
 
 function getWidth () {

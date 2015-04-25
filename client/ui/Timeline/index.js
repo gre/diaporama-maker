@@ -233,19 +233,20 @@ var Timeline = React.createClass({
     var hoverPlace = this.state.hoverPlace;
     var timeScale = this.state.timeScale;
 
-    var headerHeight = 30;
-    var gridHeight = bound.height - headerHeight;
-    var gridTop = bound.height - gridHeight;
-    var lineTop = 20;
+    var gridTop = 4;
+    var gridHeight = bound.height - gridTop;
+    var lineTop = 18;
     var lineHeight = gridHeight - lineTop;
 
     var style = _.extend({
       background: "#fcfcfc"
     }, boundToStyle(bound));
 
-    var headerStyle = {
-      width: bound.width+"px",
-      height: headerHeight+"px"
+    var zoomControlsStyle = {
+      position: "absolute",
+      right: "4px",
+      top: "0px",
+      zIndex: 8
     };
 
     var lineStyle = {
@@ -396,16 +397,13 @@ var Timeline = React.createClass({
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>
-      <header style={headerStyle}>
-        <h2>Timeline</h2>
-        <div style={{ position: "absolute", right: "4px", top: "4px" }}>
-          <TimelineZoomControls value={timeScale} onChange={this.setTimeScale} />
-        </div>
-      </header>
+      <div style={zoomControlsStyle}>
+        <TimelineZoomControls value={timeScale} onChange={this.setTimeScale} />
+      </div>
       <div style={lineContainerStyle} ref="scrollcontainer">
         <div style={lineStyle}>{lineContent}</div>
         <TimelineGrid timeScale={timeScale} width={gridWidth} height={gridHeight} />
-        <TimelineCursor time={time} timeScale={timeScale} />
+        <TimelineCursor time={time} timeScale={timeScale} headerHeight={lineHeight} />
       </div>
     </div>;
   }
