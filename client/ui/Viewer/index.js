@@ -1,7 +1,6 @@
 import React from "react";
 import _ from "lodash";
 import boundToStyle from "../../core/boundToStyle";
-import GlslTransitions from "glsl-transitions";
 import DiaporamaElement from "../DiaporamaElement";
 import Icon from "../Icon";
 
@@ -56,6 +55,12 @@ export default class Viewer extends React.Component {
       top: ((bound.height-playPauseSize)/2)+"px"
     };
 
+    const expandStyle = {
+      position: "absolute",
+      right: "5px",
+      top: "5px"
+    };
+
     const hoverOverlayStyle = {
       zIndex: 2,
       opacity: hover ? 1 : 0,
@@ -71,7 +76,6 @@ export default class Viewer extends React.Component {
 
     return <div style={style}>
       <DiaporamaElement
-        GlslTransitions={GlslTransitions} // TODO: inline the transitions
         width={bound.width}
         height={bound.height}
         data={this.props.diaporama}
@@ -85,10 +89,21 @@ export default class Viewer extends React.Component {
       >
         <h2 style={h2Style}>Viewer</h2>
 
+        <a href="/preview/" target="_blank">
+          <Icon
+            title="preview"
+            style={expandStyle}
+            size={32}
+            name="external-link"
+            colorHover="#fa0"
+            color="#fff" />
+        </a>
+
+
       { playing ?
-        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPause} name="pause" colorHover="#fc0" color="#fff" />
+        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPause} name="pause" colorHover="#fd3" color="#fa0" />
           :
-        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPlay} name="play" colorHover="#fc0" color="#fff" />
+        <Icon style={playPauseStyle} size={playPauseSize} onClick={this.props.onPlay} name="play" colorHover="#fd3" color="#fa0" />
       }
       </div>
     </div>;

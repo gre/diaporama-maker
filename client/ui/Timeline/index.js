@@ -403,7 +403,7 @@ var Timeline = React.createClass({
       <div style={lineContainerStyle} ref="scrollcontainer">
         <div style={lineStyle}>{lineContent}</div>
         <TimelineGrid timeScale={timeScale} width={gridWidth} height={gridHeight} />
-        <TimelineCursor time={time} timeScale={timeScale} headerHeight={lineHeight} />
+        <TimelineCursor time={time} timeScale={timeScale} headerHeight={lineTop} />
       </div>
     </div>;
   }

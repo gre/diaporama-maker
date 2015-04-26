@@ -77,6 +77,13 @@ module.exports = function server (diaporama) {
       .done();
   });
 
+
+  app.get('/preview/diaporama.bundle.js', function (req, res) {
+    fs.createReadStream(path.join(__dirname, '../builds/diaporama.bundle.js'))
+      .pipe(res.type("js"));
+  });
+  app.use("/preview", serverStatic(path.join(__dirname, '../bootstrap'), { 'index': ['index.html'] }));
+
   Thumbnail(app, "preview", diaporama.dir);
 
   app.use(serverStatic(path.join(__dirname, '../static'), { 'index': ['index.html'] }));
