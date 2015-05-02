@@ -8,6 +8,9 @@ export default class VignetteInnerInfos extends React.Component {
       width: "100%",
       height: "100%"
     };
+    const gradientSteps =
+      "rgba(0,0,0,0), rgba(0,0,0,0.8) 25%, rgba(0,0,0,0.8)";
+
     const nameStyle = {
       textDecoration: "none",
       color: "#fff",
@@ -15,11 +18,13 @@ export default class VignetteInnerInfos extends React.Component {
       fontWeight: 400,
       textShadow: "0px 0.5px 1px #000",
       position: "absolute",
-      top: "2px",
-      left: "6px",
+      top: 0,
+      left: 0,
       overflow: "hidden",
-      width: "99%",
+      width: "100%",
+      padding: "2px 6px 6px 6px",
       whiteSpace: "nowrap",
+      background: "linear-gradient(0deg, "+gradientSteps+")"
     };
     const authorStyle = {
       textDecoration: "none",
@@ -28,16 +33,18 @@ export default class VignetteInnerInfos extends React.Component {
       color: "#fff",
       textShadow: "0px 0px 1px #000",
       position: "absolute",
-      bottom: "2px",
-      left: "0px",
+      bottom: 0,
+      left: 0,
+      padding: "6px 6px 2px 6px",
       textAlign: "center",
       width: "100%",
       overflow: "hidden",
-      whiteSpace: "nowrap"
+      whiteSpace: "nowrap",
+      background: "linear-gradient(180deg, "+gradientSteps+")"
     };
     const usedStyle = {
       position: "absolute",
-      bottom: "3px",
+      top: "1px",
       right: "3px",
       color: "#fc0",
       zIndex: 3,
@@ -45,7 +52,7 @@ export default class VignetteInnerInfos extends React.Component {
     };
     const divergedStyle = {
       position: "absolute",
-      top: "3px",
+      top: "1px",
       right: "3px",
       color: "#f00",
       zIndex: 3,
