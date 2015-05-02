@@ -4,6 +4,7 @@ import VignetteGrid from "glsl-transition-vignette-grid";
 import Vignette from "glsl-transition-vignette";
 import Icon from "../Icon";
 import VignetteInnerInfos from "./VignetteInnerInfos";
+import {SCROLL_BAR_W} from "../../constants";
 
 const vignetteWidthBase = 256;
 const vignetteHeightBase = 200;
@@ -67,7 +68,7 @@ const Transitions = React.createClass({
 
     const contentHeight = height - 30;
 
-    const vignetteWidth = Math.min(Math.floor((width-2) / cols - 14), vignetteWidthBase);
+    const vignetteWidth = Math.min(Math.floor((width-2-SCROLL_BAR_W) / cols - 14), vignetteWidthBase);
     const vignetteHeight = Math.floor(vignetteHeightBase * vignetteWidth/vignetteWidthBase);
 
     const buttonSize = Math.floor(vignetteHeight / 2);
@@ -90,7 +91,6 @@ const Transitions = React.createClass({
       position: "absolute",
       left: "180px",
       top: "4px",
-      fontSize: "1.2em",
       padding: "2px"
     };
 
