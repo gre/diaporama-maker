@@ -13,7 +13,7 @@ var AboutScreen = React.createClass({
         <a target="_blank" href={packageJson.homepage}>Source Code</a> is under {packageJson.license}.
       </p>
       <p>
-        <Button color="#000" colorHover="#f90" target="_blank" href={"https://github.com/gre/diaporama-maker/wiki/Getting-Started"}>Getting Started</Button>
+        <Button color="#000" colorHover="#f90" target="_blank" href={"http://gre.gitbooks.io/diaporama-maker/content/index.html"}>Getting Started</Button>
         <Button bg="#000" color="#fff" bgHover="#f90" onClick={this.props.onDone}>
           <Icon name="folder-open" />&nbsp;Open Library
         </Button>
