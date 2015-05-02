@@ -1,7 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import {DragDropMixin} from 'react-dnd';
-import {DragItems} from "../../constants";
+import {DragItems, SCROLL_BAR_W} from "../../constants";
 import Diaporama from "../../models/Diaporama";
 import Transitions from "../../models/transitions";
 import boundToStyle from "../../core/boundToStyle";
@@ -62,6 +62,7 @@ var panels = {
     accessible: () => true,
     icon: "folder-open",
     title: "Library",
+    internalScroll: true,
     render: function (innerWidth, innerHeight) {
       const {
         diaporama,
@@ -179,29 +180,32 @@ var MainPanel = React.createClass({
       mode,
       onNav
     } = props;
+    const navWidth = 40;
+    const innerWidth = bound.width - navWidth;
+    const innerHeight = bound.height;
 
-    var navWidth = 40;
-    var innerWidth = bound.width - navWidth;
-    var innerHeight = bound.height;
+    const panel = panels[mode];
+    const internalScroll = panel && panel.internalScroll;
+    const panelDom =
+      panel &&
+      panel.render &&
+      panel.render.call(this, innerWidth - (internalScroll ? 0 : SCROLL_BAR_W), innerHeight);
 
-    var panel = panels[mode];
-    var panelDom = panel && panel.render && panel.render.call(this, innerWidth, innerHeight);
-
-    var style = _.extend({
+    const style = _.extend({
       borderTop: "1px solid #ccc",
       borderBottom: "1px solid #eee"
     }, boundToStyle(bound));
 
-    var bodyStyle = _.extend({
-      overflow: "auto"
+    const bodyStyle = _.extend({
+      overflow: internalScroll ? "none" : "auto"
     }, boundToStyle({ x: navWidth, y: 0, width: innerWidth, height: innerHeight }));
 
-    var navStyle = _.extend({
+    const navStyle = _.extend({
       padding: "8px",
       fontSize: "24px"
     }, boundToStyle({ x: 0, y: 0, width: navWidth, height: bound.height }));
 
-    var navs = _.map(panels, function (panel, panelMode) {
+    const navs = _.map(panels, function (panel, panelMode) {
       var selected = panelMode === mode;
       var onClick = panel.accessible(props) ? onNav.bind(null, panelMode) : undefined;
       if (!selected && !onClick) return undefined;
@@ -215,7 +219,7 @@ var MainPanel = React.createClass({
         colorHover={selected ? "#000" : "#f90"}
         onClick={onClick}
       />;
-    }, this);
+    });
 
     return <div style={style}>
       <nav style={navStyle}>

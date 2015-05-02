@@ -28,7 +28,7 @@
     ]
   },
   "scripts": {
-    "dev": "watchify client/index.js -o builds/app.bundle.js",
+    "dev": "watchify client/index.js -d -o builds/app.bundle.js -v",
     "build": "export NODE_ENV=production; npm run build-client && npm run build-bootstrap",
     "build-client": "browserify client/index.js | derequire | uglifyjs -c -m --screw-ie8 > builds/app.bundle.js",
     "build-bootstrap": "browserify bootstrap/index.js | derequire | uglifyjs -c -m --screw-ie8 > builds/diaporama.bundle.js"

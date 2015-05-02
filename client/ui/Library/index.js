@@ -11,6 +11,7 @@ import boundToStyle from "../../core/boundToStyle";
 import LibraryImage from "../LibraryImage";
 import PromiseMixin from "../../mixins/PromiseMixin";
 import acceptedImageMimetypes from "../../../common/acceptedImageMimetypes.json";
+import {SCROLL_BAR_W} from "../../constants";
 
 var thumbnailWidth = 140;
 var thumbnailHeight = 100;
@@ -126,7 +127,7 @@ var Library = React.createClass({
   },
 
   getGridWidth: function () {
-    return Math.floor((this.props.width-GRID_LEFT)/GRID_W);
+    return Math.floor((this.props.width-GRID_LEFT-SCROLL_BAR_W)/GRID_W);
   },
 
   selectionMouseDown: function (e) {
@@ -198,8 +199,7 @@ var Library = React.createClass({
     var usedImages = this.props.usedImages;
     var scrollTop = this.scrollTop;
 
-    var headerHeight = 32;
-    var contentHeight = (height - headerHeight);
+    var contentHeight = height;
 
     var down = this.state.down;
     var move = this.state.move;
@@ -225,11 +225,11 @@ var Library = React.createClass({
 
     var scrollContainerStyle = {
       position: "relative",
-      overflow: "auto",
       padding: "1px 5px",
       height: contentHeight+"px",
       width: width+"px",
-      background: "#fff"
+      background: "#fff",
+      overflow: "auto"
     };
 
     var bgMouseEventsStyle = {

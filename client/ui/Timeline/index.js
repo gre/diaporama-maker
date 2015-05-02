@@ -1,17 +1,17 @@
-var React = require("react");
-var _ = require("lodash");
-var boundToStyle = require("../../core/boundToStyle");
-var PromiseMixin = require("../../mixins/PromiseMixin");
-var TimelineGrid = require("../TimelineGrid");
-var TimelineElement = require("../TimelineElement");
-var TimelineZoomControls = require("../TimelineZoomControls");
-var TimelineTransition = require("../TimelineTransition");
-var TimelineSelection = require("./TimelineSelection");
-var Diaporama = require("../../models/Diaporama");
-var Icon = require("../Icon");
-var TimelineCursor = require("./TimelineCursor");
-var DragItems = require("../../constants").DragItems;
-var DragDropMixin = require('react-dnd').DragDropMixin;
+import React from "react";
+import _ from "lodash";
+import boundToStyle from "../../core/boundToStyle";
+import PromiseMixin from "../../mixins/PromiseMixin";
+import TimelineGrid from "../TimelineGrid";
+import TimelineElement from "../TimelineElement";
+import TimelineZoomControls from "../TimelineZoomControls";
+import TimelineTransition from "../TimelineTransition";
+import TimelineSelection from "./TimelineSelection";
+import Diaporama from "../../models/Diaporama";
+import Icon from "../Icon";
+import TimelineCursor from "./TimelineCursor";
+import {DragItems, SCROLL_BAR_W} from "../../constants";
+import {DragDropMixin} from 'react-dnd';
 
 function scrollSpeed (x, xtarget, normDist, speed) {
   var dist = Math.abs(x - xtarget) / normDist;
@@ -234,7 +234,7 @@ var Timeline = React.createClass({
     var timeScale = this.state.timeScale;
 
     var gridTop = 4;
-    var gridHeight = bound.height - gridTop;
+    var gridHeight = bound.height - gridTop - SCROLL_BAR_W;
     var lineTop = 18;
     var lineHeight = gridHeight - lineTop;
 
@@ -263,7 +263,7 @@ var Timeline = React.createClass({
       top: gridTop+"px",
       left: "0px",
       width: bound.width+"px",
-      height: gridHeight+"px",
+      height: (bound.height-gridTop)+"px",
       overflow: "auto"
     };
 
