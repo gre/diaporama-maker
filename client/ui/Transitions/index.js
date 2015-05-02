@@ -97,7 +97,7 @@ const Transitions = React.createClass({
       padding: "0px",
       fontSize: "16px",
       lineHeight: "30px",
-      width: (width - 300) + "px",
+      width: Math.min(250, width - 300) + "px",
       height: "30px"
     };
 
