@@ -5,7 +5,7 @@ An editor to make image slideshows performed with [`diaporama`](http://github.co
 Online version
 --------------
 
-**Coming Soon...**
+[http://diaporama.glsl.io/](http://diaporama.glsl.io/): DEMO version (pre-defined images, everyone is editing the same diaporama)
 
 Installation
 ------------
