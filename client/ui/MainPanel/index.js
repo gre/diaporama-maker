@@ -110,8 +110,7 @@ var panels = {
       const interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
       const progress = step(interval.start, interval.end, time);
       if (!element) return <div>Slide Removed.</div>;
-      return <div>
-        <TimelineElementInfo value={element} />
+      return <div style={{ paddingTop: '5px' }}>
         <ImageCustomizer
           value={element}
           onChange={alterSelection.bind(null, "setItem")}
@@ -119,6 +118,7 @@ var panels = {
           onRemove={alterSelection.bind(null, "removeItem")}
           progress={progress}
         />
+        <TimelineElementInfo value={element} />
       </div>;
     }
   },
@@ -142,15 +142,17 @@ var panels = {
       const interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
       const progress = step(interval.start, interval.end, time);
       if (!transitionInfos || !transitionInfos.transitionNext) return <div>Transition Removed.</div>;
-      return <TransitionCustomizer
-        value={transitionInfos.transitionNext}
-        onChange={alterSelection.bind(null, "setItem")}
-        width={innerWidth}
-        images={[ transitionInfos.from.image, transitionInfos.to.image ].map(DiaporamaMakerAPI.toProjectUrl)}
-        progress={progress}
-        onRemove={alterSelection.bind(null, "removeItem")}
-        openTransitionPicker={openTransitionPicker}
-      />;
+      return <div style={{ paddingTop: '5px' }}>
+        <TransitionCustomizer
+          value={transitionInfos.transitionNext}
+          onChange={alterSelection.bind(null, "setItem")}
+          width={innerWidth}
+          images={[ transitionInfos.from.image, transitionInfos.to.image ].map(DiaporamaMakerAPI.toProjectUrl)}
+          progress={progress}
+          onRemove={alterSelection.bind(null, "removeItem")}
+          openTransitionPicker={openTransitionPicker}
+        />
+      </div>;
     }
   }
 

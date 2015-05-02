@@ -37,6 +37,7 @@ export default class Config extends React.Component {
         value={defaults}
         onChange={this.onImageChange}
         width={width}
+        displayDuration={true}
       />
       <h3>Default Transition</h3>
       <TransitionCustomizer
@@ -46,6 +47,7 @@ export default class Config extends React.Component {
         images={[ DiaporamaMakerAPI.fromImage, DiaporamaMakerAPI.toImage ]}
         animated={false}
         openTransitionPicker={openTransitionPicker}
+        displayDuration={true}
       />
     </div>;
   }

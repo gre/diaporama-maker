@@ -67,7 +67,8 @@ const ImageCustomizer = React.createClass({
   propTypes: {
     value: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func.isRequired,
-    width: React.PropTypes.number.isRequired
+    width: React.PropTypes.number.isRequired,
+    displayDuration: React.PropTypes.bool
   },
 
   onChangeKenburns (value) {
@@ -129,7 +130,7 @@ const ImageCustomizer = React.createClass({
     const {
       value,
       width,
-      onRemove
+      displayDuration
     } = this.props;
     const modeId = "kenburns" in value ? "kenburns" : "fitcenter";
 
@@ -147,9 +148,9 @@ const ImageCustomizer = React.createClass({
       };
       const mode = <Button
         key={k}
-        color={selected ? "#fff" : "#000"}
-        bg={selected ? "#000" : "#aaa"}
-        bgHover={selected ? "#000" : "#ddd"}
+        color={selected ? "#fc0" : "#000"}
+        bg={selected ? "#000" : "#fa0"}
+        bgHover={selected ? "#000" : "#fd3"}
         onClick={this.selectMode.bind(null, k)}
         style={style}
       >
@@ -160,24 +161,14 @@ const ImageCustomizer = React.createClass({
 
     const render = croppingModes[modeId].render;
 
-    const deleteIconStyle = {
-      position: "absolute",
-      top: "2px",
-      right: "6px",
-      color: "#F00"
-    };
-
     return <div>
-      {onRemove ?
-      <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
-        Remove&nbsp;<Icon name="remove"/>
-      </a>
-      : undefined}
+      {!displayDuration ? undefined :
       <DurationInput
         title="Image Duration:"
         value={value.duration}
         onChange={this.onChangeDuration}
         width={width} />
+      }
       <div>{modes}</div>
       {!render ? undefined : render.call(this)}
     </div>;

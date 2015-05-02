@@ -16,7 +16,8 @@ var TransitionCustomizer = React.createClass({
     width: React.PropTypes.number,
     images: React.PropTypes.arrayOf(React.PropTypes.string),
     progress: React.PropTypes.number,
-    openTransitionPicker: React.PropTypes.func
+    openTransitionPicker: React.PropTypes.func,
+    displayDuration: React.PropTypes.bool
   },
 
   getDefaultProps: function () {
@@ -42,19 +43,14 @@ var TransitionCustomizer = React.createClass({
     this.props.onChange(_.defaults({ uniforms: uniforms }, this.props.value));
   },
 
-  onRemove: function (e) {
-    e.preventDefault();
-    this.props.onRemove();
-  },
-
   render: function () {
     const {
       value,
       width,
-      onRemove,
       images,
       progress,
-      openTransitionPicker
+      openTransitionPicker,
+      displayDuration
     } = this.props;
 
     var transition = transitions.byName(value.name);
@@ -65,27 +61,15 @@ var TransitionCustomizer = React.createClass({
 
     var uniforms = _.extend({}, transition.uniforms, value.uniforms);
 
-    var deleteIconStyle = {
-      position: "absolute",
-      top: "2px",
-      right: "6px",
-      color: "#F00"
-    };
-
-
     return <div>
-      {onRemove ?
-      <a href="#" onClick={this.onRemove} style={deleteIconStyle}>
-        Remove&nbsp;<Icon name="remove"/>
-      </a>
-      : undefined}
-
+      {!displayDuration ? undefined :
       <DurationInput
         value={value.duration}
         onChange={this.onDurationChange}
         width={width}
         title="Transition Duration:"
       />
+      }
       <div style={{ display: "inline-block", marginRight: interPadding+"px" }}>
         <TransitionPicker
           value={transition}
@@ -112,7 +96,7 @@ var TransitionCustomizer = React.createClass({
 
       {!_.keys(transition.types).length ? undefined :
       <UniformsEditor
-        style={{ margin: "0 auto" }}
+        style={{ margin: "10px auto 0 auto" }}
         values={uniforms}
         types={transition.types}
         onChange={this.onUniformsChange}
