@@ -3,7 +3,6 @@ import _ from "lodash";
 import {DragDropMixin} from 'react-dnd';
 import {DragItems, SCROLL_BAR_W} from "../../constants";
 import Diaporama from "../../models/Diaporama";
-import Transitions from "../../models/transitions";
 import boundToStyle from "../../core/boundToStyle";
 import Library from "../Library";
 import Icon from "../Icon";
@@ -47,13 +46,15 @@ var panels = {
     render (innerWidth, innerHeight) {
       const {
         diaporama,
-        alterDiaporama
+        alterDiaporama,
+        openTransitionPicker
       } = this.props;
       return <Config
         width={innerWidth}
         height={innerHeight}
         diaporama={diaporama}
         alterDiaporama={alterDiaporama}
+        openTransitionPicker={openTransitionPicker}
       />;
     }
   },
@@ -134,7 +135,8 @@ var panels = {
         selectedItemPointer,
         diaporama,
         time,
-        alterSelection
+        alterSelection,
+        openTransitionPicker
       } = this.props;
       const transitionInfos = Diaporama.timelineTransitionForId(diaporama, selectedItemPointer.id);
       const interval = Diaporama.timelineTimeIntervalForItemPointer(diaporama, selectedItemPointer);
@@ -147,7 +149,7 @@ var panels = {
         images={[ transitionInfos.from.image, transitionInfos.to.image ].map(DiaporamaMakerAPI.toProjectUrl)}
         progress={progress}
         onRemove={alterSelection.bind(null, "removeItem")}
-        transitionCollection={Transitions.collectionForDiaporama(diaporama)}
+        openTransitionPicker={openTransitionPicker}
       />;
     }
   }

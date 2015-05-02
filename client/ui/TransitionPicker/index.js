@@ -1,5 +1,4 @@
 var React = require("react");
-var Transitions = require("../Transitions");
 var Vignette = require("glsl-transition-vignette");
 var Icon = require("../Icon");
 import VignetteInnerInfos from "../Transitions/VignetteInnerInfos";
@@ -21,40 +20,57 @@ var TransitionPicker = React.createClass({
       id: React.PropTypes.string
     }).isRequired,
     onChange: React.PropTypes.func.isRequired,
-    overlayBounds: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
-
     transitionDuration: React.PropTypes.number,
     transitionEasing: React.PropTypes.func,
     transitionUniforms: React.PropTypes.object,
     images: React.PropTypes.arrayOf(React.PropTypes.string),
-    transitionCollection: React.PropTypes.array
+    openTransitionPicker: React.PropTypes.func.isRequired
   },
 
-  getInitialState: function () {
-    return {
-      opened: false
-    };
-  },
-
-  onOverlayOutClick: function () {
-    this.setState({
-      opened: false
-    });
-  },
   onTransitionOpenPicker: function () {
-    this.setState({
-      opened: !this.state.opened
-    });
-  },
-
-  onTransitionSelected: function (tname) {
-    this.setState({
-      opened: false
-    });
-    this.props.onChange(tname);
+    const {
+      openTransitionPicker,
+      images,
+      onChange
+    } = this.props;
+    openTransitionPicker(images, onChange);
   },
 
   render: function () {
+    const {
+      images
+    } = this.props;
+    var t = this.props.value;
+    var vignetteWidth = this.props.width;
+    var vignetteHeight = this.props.height;
+    var vignetteButtonSize = vignetteHeight / 2;
+    var vignetteButtonStyle = {
+      position: "absolute",
+      left: ((vignetteWidth-vignetteButtonSize)/2)+"px",
+      top: ((vignetteHeight-vignetteButtonSize)/2)+"px",
+      textShadow: "0px 0.5px 1px #000"
+    };
+
+    return <Vignette
+      transitionDuration={safeDuration(this.props.transitionDuration)}
+      transitionEasing={this.props.transitionEasing}
+      autostart={false}
+      controlsMode="hover"
+      glsl={t.glsl}
+      uniforms={this.props.transitionUniforms || t.uniforms}
+      images={images}
+      width={vignetteWidth}
+      height={vignetteHeight}>
+      <VignetteInnerInfos transition={t} />
+      <Icon
+        name="pencil-square"
+        size={vignetteButtonSize}
+        color="#fff"
+        onClick={this.onTransitionOpenPicker}
+        style={vignetteButtonStyle} />
+    </Vignette>;
+
+    /*
     const {
       images,
       transitionCollection
@@ -130,6 +146,7 @@ var TransitionPicker = React.createClass({
       <div style={overlayStyle} onClick={this.onOverlayOutClick} />
       {overlayPopin}
     </div>;
+    */
   }
 });
 

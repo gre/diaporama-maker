@@ -2,7 +2,6 @@ import React from "react";
 import TransitionCustomizer from "../TransitionCustomizer";
 import ImageCustomizer from "../ImageCustomizer";
 import Diaporama from "../../models/Diaporama";
-import Transitions from "../../models/transitions";
 
 export default class Config extends React.Component {
 
@@ -28,7 +27,8 @@ export default class Config extends React.Component {
   render () {
     const {
       diaporama,
-      width
+      width,
+      openTransitionPicker
     } = this.props;
     const defaults = Diaporama.getDefaultElement(diaporama);
     return <div>
@@ -45,7 +45,7 @@ export default class Config extends React.Component {
         width={width}
         images={[ DiaporamaMakerAPI.fromImage, DiaporamaMakerAPI.toImage ]}
         animated={false}
-        transitionCollection={Transitions.collectionForDiaporama(diaporama)}
+        openTransitionPicker={openTransitionPicker}
       />
     </div>;
   }

@@ -4,10 +4,12 @@ import raf from "raf";
 import Combokeys from "combokeys";
 import PromiseMixin from "../../mixins/PromiseMixin";
 import Diaporama from "../../models/Diaporama";
+import Transitions from "../../models/transitions";
 import MainPanel from "../MainPanel";
 import Viewer from "../Viewer";
 import Timeline from "../Timeline";
 import DragLayer from "../DragLayer";
+import TransitionPickerOverlay from "../TransitionPickerOverlay";
 import checkAPI from "../../checkAPI";
 
 var INITIAL_PANEL = "library";
@@ -50,7 +52,8 @@ var App = React.createClass({
       selectedItemPointer: null,
       time: 0,
       playing: false,
-      error: null
+      error: null,
+      pickingTransition: null // here will hold the callback
     };
   },
 
@@ -124,32 +127,35 @@ var App = React.createClass({
   },
 
   render: function () {
-    var W = this.state.width;
-    var H = this.state.height;
-    var diaporama = this.state.diaporama;
-    var diaporamaLocalized = this.state.diaporamaLocalized;
-    var panel = this.state.panel;
-    var selectedItemPointer = this.state.selectedItemPointer;
-    var time = this.state.time;
-    var hoverTimeline = this.state.hoverTimeline;
+    const {
+      width,
+      height,
+      diaporama,
+      diaporamaLocalized,
+      panel,
+      selectedItemPointer,
+      time,
+      hoverTimeline,
+      pickingTransition
+    } = this.state;
 
     if (diaporama === undefined) return <div>Loading...</div>;
 
     // Bounds
     var viewerW, viewerH;
-    if (H * 2 / 3 < W / 2) {
-      viewerH = Math.round(H / 2);
+    if (height * 2 / 3 < width / 2) {
+      viewerH = Math.round(height / 2);
       viewerW = Math.round(viewerH * 4 / 3);
     }
     else {
-      viewerW = Math.round(W / 2);
+      viewerW = Math.round(width / 2);
       viewerH = Math.round(viewerW * 3 / 4);
     }
-    viewerW = Math.max(W - 820, Math.min(280, viewerW));
-    viewerH = Math.max(H - 300, viewerH);
+    viewerW = Math.max(width - 820, Math.min(280, viewerW));
+    viewerH = Math.max(height - 300, viewerH);
 
     var viewerBound = {
-      x: W-viewerW,
+      x: width-viewerW,
       y: 0,
       width: viewerW,
       height: viewerH
@@ -157,17 +163,32 @@ var App = React.createClass({
     var mainPanelBound = {
       x: 0,
       y: 0,
-      width: W-viewerW,
+      width: width-viewerW,
       height: viewerH
     };
     var timelineBound = {
       x: 0,
       y: viewerH,
-      width: W,
-      height: H-viewerH
+      width: width,
+      height: height-viewerH
     };
 
+    let maybeOverlay;
+
+    if (pickingTransition) {
+      const tpoW = 814;
+      const tpoH = 460;
+      maybeOverlay = <TransitionPickerOverlay
+        {...pickingTransition}
+        bounds={[Math.round((width-tpoW)/2), Math.round((height-tpoH)/2), tpoW, tpoH]}
+        transitionCollection={Transitions.collectionForDiaporama(diaporama)}
+        onClose={this.onTransitionPickerOverlayClose}
+      />;
+    }
+
     return <div>
+
+      {maybeOverlay}
 
       <DragLayer />
 
@@ -181,6 +202,7 @@ var App = React.createClass({
         alterDiaporama={this.alterDiaporama}
         onNav={this.onNav}
         time={time}
+        openTransitionPicker={this.openTransitionPicker}
       />
 
       <Viewer
@@ -455,6 +477,26 @@ var App = React.createClass({
   onPlay: function () {
     this.setState({
       playing: true
+    });
+  },
+
+  onTransitionPickerOverlayClose: function () {
+    this.setState({
+      pickingTransition: null
+    });
+  },
+
+  openTransitionPicker: function (images, cb) {
+    this.setState({
+      pickingTransition: {
+        onSelectTransition: tname => {
+          this.setState({
+            pickingTransition: null
+          });
+          cb(tname);
+        },
+        images: images
+      }
     });
   }
 

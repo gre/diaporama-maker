@@ -79,23 +79,34 @@ const Transitions = React.createClass({
     const nbPages = Math.ceil(collection.length / perPage);
     const pageCollection = collection.slice(page * perPage, (page+1) * perPage);
 
+    const headerStyle = {
+      position: "relative"
+    };
+
+    const h2Style = {
+      display: "inline-block"
+    };
+
     const navStyle = {
-      position: "absolute",
-      top: "0px",
-      right: "10px",
-      padding: "4px",
-      fontSize: "1.2em"
+      fontSize: "1.2em",
+      display: "inline-block"
     };
 
     const typeaheadStyle = {
-      position: "absolute",
-      left: "180px",
-      top: "4px",
-      padding: "2px"
+      margin: "0 8px",
+      padding: "0px",
+      fontSize: "16px",
+      lineHeight: "30px",
+      width: (width - 300) + "px",
+      height: "30px"
     };
 
-    const headerStyle = {
-      position: "relative"
+    const closeStyle = {
+      position: "absolute",
+      top: "4px",
+      right: "8px",
+      padding: "4px",
+      fontSize: "1.2em"
     };
 
     const bodyStyle = {
@@ -134,7 +145,7 @@ const Transitions = React.createClass({
 
     return <div style={{ width: width+"px", height: height+"px" }}>
       <header style={headerStyle}>
-        <h2>Transitions</h2>
+        <h2 style={h2Style}>Transitions</h2>
         <input style={typeaheadStyle} type="search" placeholder="Search..." value={q} onChange={this.onTypeahead} />
         <nav style={navStyle}>
           <Icon name="caret-square-o-left" onClick={this.prevPage.bind(this, nbPages)} />
@@ -143,6 +154,7 @@ const Transitions = React.createClass({
           &nbsp;
           <Icon name="caret-square-o-right" onClick={this.nextPage.bind(this, nbPages)} />
         </nav>
+        <Icon style={closeStyle} name="times-circle" onClick={this.props.onClose} />
       </header>
       <div style={bodyStyle}>
         {items}
