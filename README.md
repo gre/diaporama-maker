@@ -1,26 +1,17 @@
 Diaporama Maker
 ===============
-is an editor to make image slideshows performed with **[`diaporama`](http://github.com/gre/diaporama)** (the engine).
+**Diaporama Maker** is an slideshow editor for **[`diaporama`](http://github.com/gre/diaporama)**.
 
-Getting Started:
----------------
+**`diaporama`** is an image slideshow engine providing high quality animation effects including Kenburns effect and GLSL Transitions.
+You can learn more about **`diaporama`** key features on [http://gre.gitbooks.io/diaporama/content/](http://gre.gitbooks.io/diaporama/content/)
 
-[http://gre.gitbooks.io/diaporama-maker/content/index.html](http://gre.gitbooks.io/diaporama-maker/content/index.html)
+## How to use Diaporama Maker
 
-Online version
---------------
+[Open the **Diaporama Maker Documentation**](http://gre.gitbooks.io/diaporama-maker/content/)
 
-[http://diaporama.glsl.io/](http://diaporama.glsl.io/): DEMO version (pre-defined images, everyone is editing the same diaporama)
+## Install it on your computer
 
-Installation
-------------
-
-### Native application (Windows, MacOS, Linux)
-
-**Coming Soon...**
-
-
-### From the command line
+### Via the command line
 
 ```
 # Requirement: imagemagick
@@ -32,3 +23,13 @@ Then you can run:
 ```
 diaporama directory_with_images
 ```
+
+### Native application (Windows, MacOS, Linux)
+
+> Coming Soon...
+
+
+
+## Test the online DEMO version
+
+[http://diaporama.glsl.io/](http://diaporama.glsl.io/): DEMO version (pre-defined images, everyone is editing the same diaporama)
