@@ -15,17 +15,28 @@ Create your own Timeline
 
 ![](imgs/overview/1.jpg)
 
+See [Timeline Section][timeline.md] for more information.
+
 Add KenBurns effects
 ====================
 
 ![](imgs/overview/2.jpg)
+
+See [Image Panel][image.md] for more information.
+
 
 Customize Transitions
 =====================
 
 ![](imgs/overview/3.jpg)
 
+
+See [Transition Panel][transition.md] for more information.
+
 Download the Web Slideshow, ready to embed
 ==========================================
 
 ![](imgs/overview/4.jpg)
+
+
+See [Export Panel][export.md] for more information.
