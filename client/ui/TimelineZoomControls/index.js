@@ -1,9 +1,8 @@
-var React = require("react/addons");
-var PureRenderMixin = React.addons.PureRenderMixin;
-var Icon = require("../Icon");
+import React from "react/addons";
+import Icon from "../Icon";
 
 var TimelineZoomControls = React.createClass({
-  mixins: [ PureRenderMixin ],
+  mixins: [ React.addons.PureRenderMixin ],
 
   getDefaultProps: function () {
     return {
@@ -20,10 +19,12 @@ var TimelineZoomControls = React.createClass({
   },
 
   render: function () {
-    return <div className="zoom-control">
+    const {
+      style
+    } = this.props;
+    return <div style={style}>
       <Icon onClick={this.decrement} name="search-minus" />
-      &nbsp;
-      <Icon onClick={this.increment} name="search-plus" />
+      <Icon style={{marginLeft: "5px"}} onClick={this.increment} name="search-plus" />
     </div>;
   }
 });

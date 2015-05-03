@@ -14,34 +14,34 @@ import {DragItems, SCROLL_BAR_W} from "../../constants";
 import {DragDropMixin} from 'react-dnd';
 
 function scrollSpeed (x, xtarget, normDist, speed) {
-  var dist = Math.abs(x - xtarget) / normDist;
+  const dist = Math.abs(x - xtarget) / normDist;
   return speed * Math.exp(-(dist * dist));
 }
 
-var trackDragOverX = function (context) {
+const trackDragOverX = function (context) {
   return {
-    leave: function (component) {
+    leave (component) {
       component._dragOverX = null;
       component.setState({ hoverPlace: null });
     },
-    over: function (component) {
-      var initial = context.getInitialOffsetFromClient();
-      var delta = context.getCurrentOffsetDelta();
+    over (component) {
+      const initial = context.getInitialOffsetFromClient();
+      const delta = context.getCurrentOffsetDelta();
       component._dragOverX = initial.x + delta.x;
-      var time = component.timeForClientX(initial.x + delta.x);
-      var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+      const time = component.timeForClientX(initial.x + delta.x);
+      const place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
       if (!_.isEqual(component.state.place, place))
         component.setState({ hoverPlace: place });
     },
-    acceptDrop: function (component) {
+    acceptDrop (component) {
       component._dragOverX = null;
       component.setState({ hoverPlace: null });
-    },
+    }
   };
 };
 
 
-var Timeline = React.createClass({
+const Timeline = React.createClass({
 
   mixins: [ PromiseMixin, DragDropMixin ],
 
@@ -52,24 +52,24 @@ var Timeline = React.createClass({
   },
 
   statics: {
-    configureDragDrop: function (register, context) {
-      var track = trackDragOverX(context);
+    configureDragDrop (register, context) {
+      const track = trackDragOverX(context);
       register(DragItems.SLIDE, {
         dropTarget: {
           enter: track.enter,
           leave: track.leave,
           over: track.over,
 
-          getDropEffect: function () {
+          getDropEffect () {
             return "move";
           },
 
-          acceptDrop: function (component, item) {
+          acceptDrop (component, item) {
             track.acceptDrop(component);
-            var initial = context.getInitialOffsetFromClient();
-            var delta = context.getCurrentOffsetDelta();
-            var time = component.timeForClientX(initial.x + delta.x);
-            var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+            const initial = context.getInitialOffsetFromClient();
+            const delta = context.getCurrentOffsetDelta();
+            const time = component.timeForClientX(initial.x + delta.x);
+            const place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
             component.props.alterDiaporama("moveItem", item, place);
           }
         }
@@ -80,17 +80,17 @@ var Timeline = React.createClass({
           leave: track.leave,
           over: track.over,
 
-          getDropEffect: function () {
+          getDropEffect () {
             return "copy";
           },
 
-          acceptDrop: function (component, items) {
-            var all = items.all;
+          acceptDrop (component, items) {
+            const all = items.all;
             track.acceptDrop(component);
-            var initial = context.getInitialOffsetFromClient();
-            var delta = context.getCurrentOffsetDelta();
-            var time = component.timeForClientX(initial.x + delta.x);
-            var place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
+            const initial = context.getInitialOffsetFromClient();
+            const delta = context.getCurrentOffsetDelta();
+            const time = component.timeForClientX(initial.x + delta.x);
+            const place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
             component.props.alterDiaporama("bootstrapImages", _.pluck(all, "file"), place);
           }
         }
@@ -100,9 +100,9 @@ var Timeline = React.createClass({
 
   // Exposed Methods
 
-  collidesPosition: function (p) {
-    var node = this.getDOMNode();
-    var rect = node.getBoundingClientRect();
+  collidesPosition (p) {
+    const node = this.getDOMNode();
+    const rect = node.getBoundingClientRect();
     if (p[1] < rect.top || p[1] > rect.bottom) {
       return null;
     }
@@ -113,7 +113,7 @@ var Timeline = React.createClass({
 
   //////
 
-  getInitialState: function () {
+  getInitialState () {
     return {
       hoverPlace: null,
       mouseDown: null,
@@ -121,58 +121,57 @@ var Timeline = React.createClass({
     };
   },
 
-  setTimeScale: function (s) {
+  setTimeScale (s) {
     this.setState({
       timeScale: s
     });
   },
 
-  getEventPosition: function (e) {
-    var bounds = this.getDOMNode().getBoundingClientRect();
-    var node = this.refs.scrollcontainer.getDOMNode();
-    var x = e.clientX - bounds.left;
-    var y = e.clientY - bounds.top;
-    var scrollLeft = node.scrollLeft;
-    x += scrollLeft;
+  getEventPosition (e) {
+    const bounds = this.getDOMNode().getBoundingClientRect();
+    const node = this.refs.scrollcontainer.getDOMNode();
+    const scrollLeft = node.scrollLeft;
+    const x = e.clientX - bounds.left + scrollLeft;
+    const y = e.clientY - bounds.top;
     return [ x, y ];
   },
 
-  getEventStats: function (e) {
+  getEventStats (e) {
     return {
       at: this.getEventPosition(e),
       time: Date.now()
     };
   },
 
-  eventPositionToTime: function (p) {
+  eventPositionToTime (p) {
     return p[0] / this.state.timeScale;
   },
 
-  timeForClientX: function (x) {
-    var node = this.refs.scrollcontainer.getDOMNode();
-    var scrollLeft = node.scrollLeft;
+  timeForClientX (x) {
+    const node = this.refs.scrollcontainer.getDOMNode();
+    const scrollLeft = node.scrollLeft;
     return (x + scrollLeft) / this.state.timeScale;
   },
 
-  onMouseMove: function (e) {
-    var cb = this.props.onHoverMove;
+  onMouseMove (e) {
+    const cb = this.props.onHoverMove;
     if (!cb) return;
-    var mouseMove = this.getEventStats(e);
+    const mouseMove = this.getEventStats(e);
     cb(this.eventPositionToTime(mouseMove.at));
   },
 
-  onMouseEnter: function () {
+  onMouseEnter () {
     this.props.onHoverEnter();
   },
 
-  onMouseLeave: function () {
+  onMouseLeave () {
     this.props.onHoverLeave();
   },
 
-  onClick: function (e) {
+  onClick (e) {
     // TODO: the 'lookup' can be pass in instead of re-determined
-    var pos = this.getEventPosition(e);
-    var lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
+    const pos = this.getEventPosition(e);
+    const lookup = Diaporama.lookupSegment(this.props.diaporama, this.eventPositionToTime(pos));
     if (lookup) {
       if (_.isEqual(lookup, this.props.selectedItemPointer))
         this.props.onSelect(null);
@@ -181,23 +180,23 @@ var Timeline = React.createClass({
     }
   },
 
-  componentWillMount: function () {
+  componentWillMount () {
     this._dragOverX = null;
   },
 
-  componentWillReceiveProps: function (newProps) {
-    var props = this.props;
+  componentWillReceiveProps (newProps) {
+    const props = this.props;
     if (newProps.selectedItemPointer &&
         (!_.isEqual(props.selectedItemPointer, newProps.selectedItemPointer) ||
          this.props.diaporama !== newProps.diaporama)) {
-      var node = this.refs.scrollcontainer.getDOMNode();
-      var timeScale = this.state.timeScale;
-      var scrollLeft = node.scrollLeft;
-      var width = node.clientWidth;
-      var scrollDuration = width / timeScale;
-      var timeFrom = scrollLeft / timeScale;
-      var timeTo = timeFrom + scrollDuration;
-      var interval = Diaporama.timelineTimeIntervalForItemPointer(newProps.diaporama, newProps.selectedItemPointer);
+      const node = this.refs.scrollcontainer.getDOMNode();
+      const timeScale = this.state.timeScale;
+      const scrollLeft = node.scrollLeft;
+      const width = node.clientWidth;
+      const scrollDuration = width / timeScale;
+      const timeFrom = scrollLeft / timeScale;
+      const timeTo = timeFrom + scrollDuration;
+      const interval = Diaporama.timelineTimeIntervalForItemPointer(newProps.diaporama, newProps.selectedItemPointer);
       if (interval) {
         // Fix the scrolling by "window of width"
         if (interval.end < timeFrom) {
@@ -210,46 +209,50 @@ var Timeline = React.createClass({
     }
   },
 
-  update: function (t, dt) {
-    var x = this._dragOverX;
+  update (t, dt) {
+    const x = this._dragOverX;
     if (x !== null) {
       // TODO FIXME: this is only good for Library -> Timeline d&d, for slide d&d, use relative offset only
-      var node = this.refs.scrollcontainer.getDOMNode();
-      var w = node.clientWidth;
-      var border = 10;
-      var normDist = w / 4;
-      var speed = 2;
-      var dx = - scrollSpeed(x, border, normDist, speed) + scrollSpeed(x, w-border, normDist, speed);
+      const node = this.refs.scrollcontainer.getDOMNode();
+      const w = node.clientWidth;
+      const border = 10;
+      const normDist = w / 4;
+      const speed = 2;
+      const dx = - scrollSpeed(x, border, normDist, speed) + scrollSpeed(x, w-border, normDist, speed);
       node.scrollLeft += dx * dt;
     }
   },
 
-  render: function () {
-    var diaporama = this.props.diaporama;
-    var timeline = diaporama.timeline;
-    var bound = this.props.bound;
-    var time = this.props.time;
-    var selectedItemPointer = this.props.selectedItemPointer;
-    var hoverPlace = this.state.hoverPlace;
-    var timeScale = this.state.timeScale;
+  render () {
+    const diaporama = this.props.diaporama;
+    const timeline = diaporama.timeline;
+    const bound = this.props.bound;
+    const time = this.props.time;
+    const selectedItemPointer = this.props.selectedItemPointer;
+    const hoverPlace = this.state.hoverPlace;
+    const timeScale = this.state.timeScale;
 
-    var gridTop = 4;
-    var gridHeight = bound.height - gridTop - SCROLL_BAR_W;
-    var lineTop = 18;
-    var lineHeight = gridHeight - lineTop;
+    const gridTop = 4;
+    const gridHeight = bound.height - gridTop - SCROLL_BAR_W;
+    const lineTop = 18;
+    const lineHeight = gridHeight - lineTop;
 
-    var style = _.extend({
+    const style = _.extend({
       background: "#fcfcfc"
     }, boundToStyle(bound));
 
-    var zoomControlsStyle = {
+    const zoomStyle = {
+      background: style.background
+    };
+
+    const zoomControlsStyle = {
       position: "absolute",
       right: "4px",
       top: "0px",
       zIndex: 8
     };
 
-    var lineStyle = {
+    const lineStyle = {
       background: "#333",
       position: "relative",
       top: lineTop+"px",
@@ -257,7 +260,7 @@ var Timeline = React.createClass({
       zIndex: 2
     };
 
-    var lineContainerStyle = {
+    const lineContainerStyle = {
       position: "absolute",
       zIndex: 1,
       top: gridTop+"px",
@@ -267,29 +270,29 @@ var Timeline = React.createClass({
       overflow: "auto"
     };
 
-    var selectedOverlay;
+    let selectedOverlay;
 
-    var lineContent = [];
-    var x = 0;
-    var prevTransitionWidth = 0;
-    for (var i=0; i<timeline.length; ++i) {
-      var item = timeline[i];
-      var next = timeline[i+1];
-      var spaceAfter = hoverPlace && (
+    const lineContent = [];
+    let x = 0;
+    let prevTransitionWidth = 0;
+    for (let i=0; i<timeline.length; ++i) {
+      const item = timeline[i];
+      const next = timeline[i+1];
+      const spaceAfter = hoverPlace && (
         hoverPlace.after && item.id === hoverPlace.id ||
         hoverPlace.before && next && next.id === hoverPlace.id
       );
-      var transitionw = item.transitionNext && item.transitionNext.duration ? Math.round(timeScale * item.transitionNext.duration) : 0;
+      const transitionw = item.transitionNext && item.transitionNext.duration ? Math.round(timeScale * item.transitionNext.duration) : 0;
 
-      var onlyImageW = Math.round(timeScale * item.duration);
-      var thumbw = transitionw/2 + prevTransitionWidth/2 + onlyImageW;
+      const onlyImageW = Math.round(timeScale * item.duration);
+      const thumbw = transitionw/2 + prevTransitionWidth/2 + onlyImageW;
 
-      var currentSelected = selectedItemPointer && selectedItemPointer.id === item.id;
+      const currentSelected = selectedItemPointer && selectedItemPointer.id === item.id;
 
       if (currentSelected) {
-        var isTransition = selectedItemPointer.transition;
-        var sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
-        var sw = isTransition ? transitionw : onlyImageW;
+        const isTransition = selectedItemPointer.transition;
+        const sx = isTransition ? x + thumbw - transitionw / 2 : x + prevTransitionWidth/2;
+        const sw = isTransition ? transitionw : onlyImageW;
 
         selectedOverlay = <TimelineSelection
           key="tl-selection"
@@ -330,9 +333,9 @@ var Timeline = React.createClass({
         );
       }
       else {
-        var xcenter = x + thumbw;
-        var editSize = 50;
-        var editIconStyle = boundToStyle({
+        const xcenter = x + thumbw;
+        const editSize = 50;
+        const editIconStyle = boundToStyle({
           x: xcenter-editSize/2,
           y: (lineHeight-editSize)/2,
           width: editSize,
@@ -357,9 +360,9 @@ var Timeline = React.createClass({
       x += thumbw;
 
       if (spaceAfter) {
-        var pad = 2;
-        var top = 6;
-        var cursorStyle = {
+        const pad = 2;
+        const top = 6;
+        const cursorStyle = {
           background: "#fc0",
           position: "absolute",
           top: "-"+top+"px",
@@ -368,7 +371,7 @@ var Timeline = React.createClass({
           width: (2*pad)+"px",
           zIndex: 52
         };
-        var cursorIconStyle = {
+        const cursorIconStyle = {
           position: "absolute",
           top: "-14px",
           left: (-10+pad)+"px",
@@ -388,7 +391,7 @@ var Timeline = React.createClass({
       lineContent.push(selectedOverlay);
     }
 
-    var gridWidth = Math.max(x, bound.width);
+    const gridWidth = Math.max(x, bound.width);
 
     lineStyle.width = gridWidth+"px";
 
@@ -398,7 +401,10 @@ var Timeline = React.createClass({
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>
       <div style={zoomControlsStyle}>
-        <TimelineZoomControls value={timeScale} onChange={this.setTimeScale} />
+        <TimelineZoomControls
+          value={timeScale}
+          onChange={this.setTimeScale}
+          style={zoomStyle} />
       </div>
       <div style={lineContainerStyle} ref="scrollcontainer">
         <div style={lineStyle}>{lineContent}</div>
