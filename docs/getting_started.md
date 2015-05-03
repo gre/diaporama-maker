@@ -1,6 +1,6 @@
 # Getting Started
 
-*Diaporama Maker* have 3 sections: at the top-left stand the **Panels Section**, at the bottom the **Timeline Section**, on top-right the **Viewer Section** (overview of your work).
+*Diaporama Maker* have 3 sections: at the top-left stand the **Panels Section**, at the bottom the [**Timeline Section**](timeline.md), on top-right the [**Viewer Section**](viewer.md) (overview of your work).
 
 ![](imgs/sections.jpg)
 
@@ -15,14 +15,16 @@ Create your own Timeline
 
 ![](imgs/overview/1.jpg)
 
-See [Timeline Section][timeline.md] for more information.
+See [Timeline Section](timeline.md) for more information on the Timeline.
+
+See [Library Panel](library.md) for more information on the Library.
 
 Add KenBurns effects
 ====================
 
 ![](imgs/overview/2.jpg)
 
-See [Image Panel][image.md] for more information.
+See [Image Panel](image.md) for more information.
 
 
 Customize Transitions
@@ -31,7 +33,7 @@ Customize Transitions
 ![](imgs/overview/3.jpg)
 
 
-See [Transition Panel][transition.md] for more information.
+See [Transition Panel](transition.md) for more information.
 
 Download the Web Slideshow, ready to embed
 ==========================================
@@ -39,4 +41,4 @@ Download the Web Slideshow, ready to embed
 ![](imgs/overview/4.jpg)
 
 
-See [Export Panel][export.md] for more information.
+See [Export Panel](export.md) for more information.
