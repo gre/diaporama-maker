@@ -2,8 +2,6 @@ Diaporama Maker
 ===============
 is an editor to make image slideshows performed with **[`diaporama`](http://github.com/gre/diaporama)** (the engine).
 
-For `diaporama` usage documentation, checkout [http://gre.gitbooks.io/diaporama/content/index.html](http://gre.gitbooks.io/diaporama/content/index.html).
-
 Getting Started:
 ---------------
 
