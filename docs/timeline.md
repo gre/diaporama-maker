@@ -1,20 +1,23 @@
 
 # Timeline Section
 
-The **Timeline** displays your slideshow on a time axis.
+The **Timeline** visualizes your slideshow on a time axis.
 
 ![](imgs/timeline.jpg)
 
-You can see on top a **Time Scale** with ** Zoom Controls**, and then the **Slides** that can be separated by **Transitions**.
+On top stands the **Time Scale** with **Zoom Controls**,
+On bottom are shown the **Slides** and **Transitions**.
 
-A cursor is also displayed that shows the current Viewer time.
+A **cursor** is also displayed and shows the current [Viewer](viewer.md) time.
 
 ## Slides
 
-> For now, there is only one kind of slide you can define: the **Image** slide. In the future, there might also be the content slide (e.g; putting texts) and the video slide!
+> There is currently only one kind of slide: the **Image** slide.
+In the future, there will also be the content slide (draw texts and shapes)
+and maybe the video slide.
 
 ### Add new Image Slides
-To add new images, Drag and Drop them from the Library.
+To add new images to the timeline, simply Drag and Drop them from the [Library](library.md).
 
 ![](imgs/library_timeline_dnd.gif)
 
@@ -31,6 +34,8 @@ Selecting a slide will open the related slide Panel: for an image, the **Image P
 ### Remove a Slide
 
 To remove a slide, select it, then press **Delete** (or **Backspace**).
+
+Alternatively, you can Drag a Slide out of the Timeline.
 
 ### Re-order a Slide
 
