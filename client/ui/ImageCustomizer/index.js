@@ -30,7 +30,7 @@ const croppingModes = {
       const w1 = Math.floor(width * 0.5);
       const w2 = width - w1;
       const h = Math.min(240, w2);
-      const progressEasing = this.easing && this.easing(progress);
+      const progressEasing = this.easing && this.easing(progress) || progress;
       return <div>
         <div key="l" style={{ display: "inline-block", marginRight: interPadding+"px" }}>
         <KenburnsEditor
@@ -41,9 +41,13 @@ const croppingModes = {
           image={image}
           background="#000"
           progress={progressEasing}
-          fromColor={[255, 136, 82]}
-          toColor={[184, 245, 79]}
-          progressColor={[255, 205, 0]}
+          fromColor={[0, 170, 255]}
+          toColor={[255, 170, 0]}
+          progressColor={[0, 0, 0]}
+          overlayFill="rgba(0,0,0,0.5)"
+          centerTextStyle={{
+            textShadow: "0px 1px 0px #fff"
+          }}
         />
         </div>
         <div key="r" style={{ display: "inline-block" }}>
@@ -148,9 +152,9 @@ const ImageCustomizer = React.createClass({
       };
       const mode = <Button
         key={k}
-        color={selected ? "#fc0" : "#000"}
-        bg={selected ? "#000" : "#fa0"}
-        bgHover={selected ? "#000" : "#fd3"}
+        color={selected ? "#fff" : "#000"}
+        bg={selected ? "#000" : "#ccc"}
+        bgHover={selected ? "#000" : "#eee"}
         onClick={this.selectMode.bind(null, k)}
         style={style}
       >
