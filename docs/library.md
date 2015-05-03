@@ -2,6 +2,8 @@
 
 The library lists all items extracted from the working directory.
 
+![](imgs/library.jpg)
+
 There are only **Image** items supported in the current *Diaporama Maker* version.
 
 ## Library Item
