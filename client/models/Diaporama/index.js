@@ -311,7 +311,7 @@ function pathSet (obj, val, path) {
 Diaporama.getDefaultElement = function (diaporama, defs) {
   var el = genTimelineElementDefault(defs||{},
     pathGet(diaporama, "generator.maker.defaultElement"));
-  if (!el.image) delete el.kenburns;
+  if (el.slide2d) delete el.kenburns; // No support yet of kenburns
   return el;
 };
 Diaporama.getDefaultTransition = function (diaporama, defs) {
@@ -432,7 +432,6 @@ var actions = {
       obj.id = newId();
       return obj;
     });
-    console.log(objs);
     if (!place) {
       clone.timeline = clone.timeline.concat(objs);
     }
