@@ -1,12 +1,12 @@
-var React = require("react");
-var _ = require("lodash");
-var translateStyle = require("../../core/translateStyle");
-var Thumbnail = require("../Thumbnail");
-var DragItems = require("../../constants").DragItems;
-var DragDropMixin = require('react-dnd').DragDropMixin;
-var transparentGif = require("../../core/transparent.gif");
+import React from "react";
+import _ from "lodash";
+import translateStyle from "../../core/translateStyle";
+import ItemThumbnail from "../ItemThumbnail";
+import {DragItems} from "../../constants";
+import {DragDropMixin} from 'react-dnd';
+import transparentGif from "../../core/transparent.gif";
 
-var TimelineElement = React.createClass({
+const TimelineElement = React.createClass({
 
   mixins: [ DragDropMixin ],
   statics: {
@@ -25,6 +25,7 @@ var TimelineElement = React.createClass({
     }
   },
 
+  // FIXME: this should be moved to ImageThumbnail & Slide2d only
   shouldComponentUpdate (props) {
     const {
       x,
@@ -51,21 +52,24 @@ var TimelineElement = React.createClass({
       onClick
     } = this.props;
 
-    var dragState = this.getDragState(DragItems.SLIDE);
+    const dragState = this.getDragState(DragItems.SLIDE);
 
-    var style = _.extend({
+    const style = _.extend({
       position: "absolute",
       top: 0,
       left: 0,
       zIndex: 1,
       opacity: dragState.isDragging ? 0.5 : 1
     }, translateStyle(x, 0));
-
-    return <div className="timeline-element"
+    
+    return <div
       style={style}
       onClick={onClick}
       {...this.dragSourceFor(DragItems.SLIDE)}>
-      <Thumbnail image={DiaporamaMakerAPI.toProjectUrl(item.image)} width={width} height={height} />
+      <ItemThumbnail
+        item={item}
+        width={width}
+        height={height} />
     </div>;
   }
 });

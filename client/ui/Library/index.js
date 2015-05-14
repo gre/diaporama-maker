@@ -8,7 +8,7 @@ import _ from "lodash";
 import Combokeys from "combokeys";
 import {DragDropMixin, NativeDragItemTypes} from 'react-dnd';
 import boundToStyle from "../../core/boundToStyle";
-import LibraryImage from "../LibraryImage";
+import LibraryItemThumbnail from "../LibraryItemThumbnail";
 import PromiseMixin from "../../mixins/PromiseMixin";
 import acceptedImageMimetypes from "../../../common/acceptedImageMimetypes.json";
 import {SCROLL_BAR_W} from "../../constants";
@@ -24,7 +24,7 @@ var GRID_H = thumbnailHeight + 2 * itemMargin;
 
 function indexOfSelected (selected, item) {
   return _.findIndex(selected, function (sel) {
-    return sel.file === item.file;
+    return sel.id === item.id;
   });
 }
 
@@ -57,7 +57,7 @@ var Library = React.createClass({
 
   getDragItems: function (primaryItem) {
     var all = _.uniq((primaryItem ? [ primaryItem ] : []).concat(this.state.selected), function (i) {
-      return i.file;
+      return i.id;
     });
     return {
       primary: primaryItem,
@@ -182,7 +182,23 @@ var Library = React.createClass({
     // FIXME abstract into a call to a prop
     DiaporamaMakerAPI.listItems()
     .then(function (items) {
-      return { items: items };
+      return {
+        items: [
+          {
+            id: "_empty_slide",
+            slide2d: {
+              background: "#eee",
+              size: [800,600],
+              draws: [
+                { fillStyle: "#000", font: "bold 80px Arial", textAlign: "center" },
+                [ "fillText", "Big Text Title...", 400, 200 ],
+                { fillStyle: "#666", font: "italic 40px Arial", textAlign: "center" },
+                [ "fillText", "Sub Title...", 400, 300 ]
+              ]
+            }
+          }
+        ].concat(items)
+      };
     })
     .then(this.setStateQ)
     .fail(this.recoverUnmountedQ)
@@ -194,21 +210,24 @@ var Library = React.createClass({
   },
 
   render: function () {
-    var width = this.props.width;
-    var height = this.props.height;
-    var usedImages = this.props.usedImages;
-    var scrollTop = this.scrollTop;
+    const {
+      width,
+      height,
+      usedImages
+    } = this.props;
+    const {
+      down,
+      move
+    } = this.state;
+    const scrollTop = this.scrollTop;
+    const contentHeight = height;
 
-    var contentHeight = height;
-
-    var down = this.state.down;
-    var move = this.state.move;
-    var selectionStyle;
+    let selectionStyle;
     if (down && move) {
-      var x = Math.min(down[0],move[0]);
-      var y = Math.min(down[1],move[1]) - scrollTop;
-      var w = Math.abs(down[0]-move[0]);
-      var h = Math.abs(down[1]-move[1]);
+      const x = Math.min(down[0],move[0]);
+      const y = Math.min(down[1],move[1]) - scrollTop;
+      const w = Math.abs(down[0]-move[0]);
+      const h = Math.abs(down[1]-move[1]);
       selectionStyle = _.extend({
         zIndex: 100,
         pointerEvents: "none",
@@ -223,7 +242,7 @@ var Library = React.createClass({
       };
     }
 
-    var scrollContainerStyle = {
+    const scrollContainerStyle = {
       position: "relative",
       padding: "1px 5px",
       height: contentHeight+"px",
@@ -232,7 +251,7 @@ var Library = React.createClass({
       overflow: "auto"
     };
 
-    var bgMouseEventsStyle = {
+    const bgMouseEventsStyle = {
       zIndex: down ? 101 : 0,
       position: "absolute",
       left: 0,
@@ -241,36 +260,34 @@ var Library = React.createClass({
       height: height+"px"
     };
 
-    var gridW = this.getGridWidth();
+    const gridW = this.getGridWidth();
 
-    var items =
-      this.state.items.map(function (item, i) {
-        if (item.type === "image") {
-          var xi = (i % gridW);
-          var yi = Math.floor(i / gridW);
-          var itemStyle = {
-            position: "absolute",
-            top: (GRID_TOP + GRID_H * yi) + "px",
-            left: (GRID_W * xi) + "px"
-          };
-          return <LibraryImage
-            key={item.file}
-            width={thumbnailWidth}
-            height={thumbnailHeight}
-            style={itemStyle}
-            item={item}
-            used={_.filter(usedImages, function (f) { return f === item.file; }).length}
-            getDragItems={this.getDragItems}
-            onDropped={this.unselectAll}
-            onClick={this.tapItem.bind(null, item)}
-            selected={indexOfSelected(this.state.selected, item)!==-1}
-          />;
-        }
-        else
-          return <span style={{font: "8px normal monospace"}}>No Preview</span>; // TODO
+    const items =
+      this.state.items
+      .map(function (item, i) {
+        const xi = (i % gridW);
+        const yi = Math.floor(i / gridW);
+        const itemStyle = {
+          position: "absolute",
+          top: (GRID_TOP + GRID_H * yi) + "px",
+          left: (GRID_W * xi) + "px"
+        };
+        return <LibraryItemThumbnail
+          key={item.id}
+          width={thumbnailWidth}
+          height={thumbnailHeight}
+          style={itemStyle}
+          item={item}
+          used={_.filter(usedImages, function (f) { return f && item.image && f === item.image; }).length}
+          getDragItems={this.getDragItems}
+          onDropped={this.unselectAll}
+          onClick={this.tapItem.bind(null, item)}
+          selected={indexOfSelected(this.state.selected, item)!==-1}
+        />;
       }, this);
 
-    var mouseEvents;
+
+    let mouseEvents;
     if (down) {
       mouseEvents = {
         onMouseMove: this.selectionMouseMove,

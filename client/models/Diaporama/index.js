@@ -130,7 +130,9 @@ Diaporama.localize = function (diaporama, fullSize) {
   if (!diaporama) return null;
   var clone = _.cloneDeep(diaporama);
   clone.timeline.forEach(function (item) {
-    item.image = DiaporamaMakerAPI.toProjectUrl(item.image, fullSize);
+    if (item.image) {
+      item.image = DiaporamaMakerAPI.toProjectUrl(item.image, fullSize);
+    }
   });
   return clone;
 };
@@ -307,8 +309,10 @@ function pathSet (obj, val, path) {
 }
 
 Diaporama.getDefaultElement = function (diaporama, defs) {
-  return genTimelineElementDefault(defs||{},
+  var el = genTimelineElementDefault(defs||{},
     pathGet(diaporama, "generator.maker.defaultElement"));
+  if (!el.image) delete el.kenburns;
+  return el;
 };
 Diaporama.getDefaultTransition = function (diaporama, defs) {
   return genTimelineTransitionDefault(defs||{},
@@ -412,15 +416,15 @@ var actions = {
       Diaporama.getDefaultTransition(diaporama));
   },
 
-  bootstrapImage: function (diaporama, src, place) {
-    return actions.bootstrapImages(diaporama, [ src ], place);
+  bootstrapItem: function (diaporama, item, place) {
+    return actions.bootstrapImages(diaporama, [ item ], place);
   },
 
-  bootstrapImages: function (diaporama, srcs, place) {
+  bootstrapItems: function (diaporama, items, place) {
     var clone = _.cloneDeep(diaporama);
     var tnames = [];
-    var objs = srcs.map(function (src) {
-      var obj = Diaporama.getDefaultElement(diaporama, { image: src });
+    var objs = items.map(function (item) {
+      var obj = Diaporama.getDefaultElement(diaporama, item);
       var tname = obj.transitionNext && obj.transitionNext.name;
       if (tname && !_.contains(tnames, tname)) {
         tnames.push(tname);
@@ -428,6 +432,7 @@ var actions = {
       obj.id = newId();
       return obj;
     });
+    console.log(objs);
     if (!place) {
       clone.timeline = clone.timeline.concat(objs);
     }

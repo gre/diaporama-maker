@@ -8,6 +8,7 @@ import Library from "../Library";
 import Icon from "../Icon";
 import TransitionCustomizer from "../TransitionCustomizer";
 import ImageCustomizer from "../ImageCustomizer";
+import SlideCustomizer from "../SlideCustomizer";
 import GenerateScreen from "../GenerateScreen";
 import ErrorScreen from "../ErrorScreen";
 import AboutScreen from "../AboutScreen";
@@ -92,10 +93,43 @@ var panels = {
     }
   },
 
+  editSlide2d: {
+    accessible(props) {
+      const { selectedItemPointer, diaporama } = props;
+      if (!selectedItemPointer || selectedItemPointer.transition) return false;
+      const element = Diaporama.timelineForId(diaporama, selectedItemPointer.id);
+      return !!element.slide2d;
+    },
+    icon: "newspaper-o",
+    title: "Edit Slide",
+    render (innerWidth, innerHeight) {
+      const {
+        selectedItemPointer,
+        diaporama,
+        alterSelection
+      } = this.props;
+      const element = Diaporama.timelineForId(diaporama, selectedItemPointer.id);
+      if (!element) return <div>Slide Removed.</div>;
+      return (
+        <SlideCustomizer
+          value={element.slide2d}
+          key={selectedItemPointer.id}
+          onChange={function (obj) {
+            alterSelection("setItem", _.extend({}, element, { slide2d: obj }));
+          }}
+          width={innerWidth}
+          height={innerHeight}
+        />
+      );
+    }
+  },
+
   editImage: {
     accessible(props) {
-      const { selectedItemPointer } = props;
-      return selectedItemPointer && !selectedItemPointer.transition;
+      const { selectedItemPointer, diaporama } = props;
+      if (!selectedItemPointer || selectedItemPointer.transition) return false;
+      const element = Diaporama.timelineForId(diaporama, selectedItemPointer.id);
+      return !!element.image;
     },
     icon: "picture-o",
     title: "Edit Image",
@@ -147,7 +181,7 @@ var panels = {
           value={transitionInfos.transitionNext}
           onChange={alterSelection.bind(null, "setItem")}
           width={innerWidth}
-          images={[ transitionInfos.from.image, transitionInfos.to.image ].map(DiaporamaMakerAPI.toProjectUrl)}
+          images={[ DiaporamaMakerAPI.fromImage, DiaporamaMakerAPI.toImage ]}
           progress={progress}
           onRemove={alterSelection.bind(null, "removeItem")}
           openTransitionPicker={openTransitionPicker}

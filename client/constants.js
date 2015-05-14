@@ -23,8 +23,8 @@ function getScrollBarWidth () {
 module.exports = {
   MIN_DRAG_THRESHOLD: 10,
   DragItems: {
-    IMAGES: 'images',
-    SLIDE: 'slide'
+    LIBRARY_ITEMS: 'L',
+    SLIDE: 'S'
   },
   SCROLL_BAR_W: getScrollBarWidth()
 };

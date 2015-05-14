@@ -343,11 +343,20 @@ var App = React.createClass({
     });
   },
 
+  panelForPointer: function (pointer) {
+    const diaporama = this.state.diaporama;
+    if (pointer.transition) return "editTransition";
+    const element = Diaporama.timelineForId(diaporama, pointer.id);
+    if (element.image) return "editImage";
+    if (element.slide2d) return "editSlide2d";
+    return DEFAULT_PANEL;
+  },
+
   timelineSelect: function (selection, preservePanel) {
     this.setState({
       panel: selection ?
-        (preservePanel ? this.state.panel : (selection.transition ? "editTransition" : "editImage")) :
-        (this.state.panel === "editTransition" || this.state.panel === "editImage" ? DEFAULT_PANEL : this.state.panel),
+        (preservePanel ? this.state.panel : this.panelForPointer(selection)) :
+        (this.state.panel.indexOf("edit")===0 ? DEFAULT_PANEL : this.state.panel),
       selectedItemPointer: selection
     });
   },

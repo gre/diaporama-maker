@@ -74,7 +74,7 @@ const Timeline = React.createClass({
           }
         }
       });
-      register(DragItems.IMAGES, {
+      register(DragItems.LIBRARY_ITEMS, {
         dropTarget: {
           enter: track.enter,
           leave: track.leave,
@@ -91,7 +91,7 @@ const Timeline = React.createClass({
             const delta = context.getCurrentOffsetDelta();
             const time = component.timeForClientX(initial.x + delta.x);
             const place = Diaporama.lookupBetweenImagePlace(component.props.diaporama, time);
-            component.props.alterDiaporama("bootstrapImages", _.pluck(all, "file"), place);
+            component.props.alterDiaporama("bootstrapItems", all, place);
           }
         }
       });
@@ -396,7 +396,7 @@ const Timeline = React.createClass({
     lineStyle.width = gridWidth+"px";
 
     return <div style={style}
-      {...this.dropTargetFor(DragItems.IMAGES, DragItems.SLIDE)}
+      {...this.dropTargetFor(DragItems.LIBRARY_ITEMS, DragItems.SLIDE)}
       onMouseMove={this.onMouseMove}
       onMouseEnter={this.onMouseEnter}
       onMouseLeave={this.onMouseLeave}>

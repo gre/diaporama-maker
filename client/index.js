@@ -1,7 +1,6 @@
 var React = require("react/addons");
 window.React = React;
 window.Perf = React.addons.Perf;
-window.App = require("./ui/App");
 
 import Qajax from "qajax";
 var url = require("url");
@@ -74,15 +73,13 @@ const DiaporamaMakerAPI = {
     .then(Qajax.toJSON)
     .then(files => files.map(file =>
       isImage(file) ? {
-        file: file,
-        url: DiaporamaMakerAPI.toProjectUrl(file),
-        type: "image"
+        id: file,
+        image: file
       }
       :
       {
-        file: file,
-        url: DiaporamaMakerAPI.toProjectUrl(file),
-        type: ""
+        id: file,
+        file: file
       }
     ));
   },
@@ -92,4 +89,5 @@ const DiaporamaMakerAPI = {
   }
 };
 
+window.App = require("./ui/App");
 window.DiaporamaMakerAPI = DiaporamaMakerAPI;

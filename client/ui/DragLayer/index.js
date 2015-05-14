@@ -2,7 +2,7 @@ var React = require("react");
 var _ = require("lodash");
 var DragLayerMixin = require("react-dnd").DragLayerMixin;
 var DragItems = require("../../constants").DragItems;
-var LibraryImage = require("../LibraryImage");
+var LibraryItemThumbnail = require("../LibraryItemThumbnail");
 var translateStyle = require("../../core/translateStyle");
 
 var DragLayer = React.createClass({
@@ -26,20 +26,20 @@ var DragLayer = React.createClass({
             state.currentOffsetFromClient.x - 100,
             state.currentOffsetFromClient.y - 75
           ));
-          // Hack: for now use LibraryImage
-          return <LibraryImage
+          // Hack: for now use LibraryItemThumbnail
+          return <LibraryItemThumbnail
             style={style}
             width={200}
             height={160}
-            item={{ url: DiaporamaMakerAPI.toProjectUrl(state.draggedItem.image), file: state.draggedItem.image }}
+            item={state.draggedItem}
             dragging={true}
           />;
 
-        case DragItems.IMAGES:
+        case DragItems.LIBRARY_ITEMS:
           var primary = state.draggedItem.primary;
           var all = state.draggedItem.all;
           _.extend(style, translateStyle(state.currentOffset.x, state.currentOffset.y));
-          return <LibraryImage
+          return <LibraryItemThumbnail
             style={style}
             width={120}
             height={100}
