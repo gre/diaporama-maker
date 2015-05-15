@@ -1,6 +1,7 @@
 require('brace');
-var React = require('react');
-var AceEditor = require('../ReactAce');
+import React from 'react';
+import AceEditor from '../ReactAce';
+import beautify from "json-beautify";
 require('brace/mode/json');
 require('brace/theme/solarized_dark');
 
@@ -25,7 +26,7 @@ export default class SlideCustomizer extends React.Component {
       mode="json"
       theme="solarized_dark"
       onChange={this.onChange}
-      defaultValue={JSON.stringify(this.props.value, null, 2)}
+      defaultValue={beautify(this.props.value, null, 2, 80)}
       name="slide_customizer"
       width={this.props.width + "px"}
       height={this.props.height + "px"}
