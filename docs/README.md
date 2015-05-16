@@ -1,7 +1,7 @@
 # Summary
 
-* [Getting Started](getting_started/README.md)
-  * [Timeline Section](getting_started/timeline.md)
+* [Getting Started](/docs/getting_started/README.md)
+  * [Timeline Section](docs/getting_started/timeline.md)
   * [Viewer Section](getting_started/viewer.md)
   * [Library Panel](getting_started/library.md)
   * [Image Panel](getting_started/image.md)
