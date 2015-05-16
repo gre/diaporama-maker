@@ -42,12 +42,26 @@ See [Image Panel](image.md) for more information.
 
 ![](imgs/overview/2.jpg)
 
+Create Slide Content
+====================
+
+See [Slide Content Panel](slide.md) for more information.
+
+![](imgs/overview/5.jpg)
+
 Customize Transitions
 =====================
 
 See [Transition Panel](transition.md) for more information.
 
 ![](imgs/overview/3.jpg)
+
+Configure the defaults
+=====================
+
+See [Configuration Panel](config.md) for more information.
+
+![](imgs/config.jpg)
 
 Download the Web Slideshow, ready to embed
 ==========================================
