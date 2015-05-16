@@ -32,6 +32,10 @@ by controlling the center and the zoom of the **origin** and the **destination**
 Drag with the mouse to move and resize the rectangle.
 Click anywhere to alternate between the rectangles.
 
+> It is important to understand that you can only control the center and the zoom.
+But you can't configure the rectangle aspect ratio: only the final viewport
+will determine the rectangle aspect ratio based on the center and the zoom you have defined.
+
 ## Animation Easing
 
 On the right, the curve controls the easing you want (for instance you could make the effect accelerating and slowing down).
