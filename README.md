@@ -1,4 +1,4 @@
-Diaporama Maker
+![diaporama-icon](https://cloud.githubusercontent.com/assets/211411/7667397/339466ca-fc06-11e4-87e3-00b2c826de3a.png) Diaporama Maker
 ===============
 **Diaporama Maker** is an slideshow editor for **[`diaporama`](http://github.com/gre/diaporama)**.
 
