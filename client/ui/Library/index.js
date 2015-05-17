@@ -33,12 +33,16 @@ var Library = React.createClass({
   mixins: [ PromiseMixin, DragDropMixin ],
 
   statics: {
-    configureDragDrop(register) {
+    configureDragDrop (register) {
       register(NativeDragItemTypes.FILE, {
         dropTarget: {
-          acceptDrop(component, item) {
-            const files = item.files.filter(file => acceptedImageMimetypes.indexOf(file.type) !== -1);
-            DiaporamaMakerAPI.uploadFiles(files);
+          acceptDrop (component, item) {
+            const files = item.files.filter(
+              file => acceptedImageMimetypes.indexOf(file.type) !== -1);
+
+            DiaporamaMakerAPI.uploadFiles(files).then(
+              () => component.sync(),
+              (err) => swal("Oops...", err.message, "error"));
           }
         }
       });

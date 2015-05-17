@@ -1,0 +1,9 @@
+
+.sweet-alert button.confirm {
+  background: #000 !important;
+  color: #fff !important;
+}
+.sweet-alert button.confirm:hover {
+  background: #f90 !important;
+  color: #fff !important;
+}

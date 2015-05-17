@@ -2,6 +2,7 @@ var React = require("react/addons");
 window.React = React;
 window.Perf = React.addons.Perf;
 
+import Q from "q";
 import Qajax from "qajax";
 var url = require("url");
 import Diaporama from "./models/Diaporama";
@@ -86,6 +87,7 @@ const DiaporamaMakerAPI = {
 
   uploadFiles (files) {
     console.log("NOT IMPLEMENTED – uploadFiles", files);
+    return Q.reject(new Error("Files Upload not supported."));
   }
 };
 
