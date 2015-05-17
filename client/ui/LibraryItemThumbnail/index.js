@@ -8,7 +8,7 @@ import centeredRotate from "../../core/centeredRotate";
 import cssCursor from "css-cursor";
 
 // FIXME: LibraryImage should not anymore be used for DragLayer
-const ItemThumbnailThumbnail = React.createClass({
+const LibraryItemThumbnail = React.createClass({
 
   mixins: [ DragDropMixin ],
 
@@ -70,7 +70,7 @@ const ItemThumbnailThumbnail = React.createClass({
       hover
     } = this.state;
 
-    const file = item.image;
+    const title = item.title;
 
     const border = dragging ? 1 : 2;
     const titleH = 20;
@@ -157,7 +157,7 @@ const ItemThumbnailThumbnail = React.createClass({
     }
 
     return <div
-      title={file}
+      title={title}
       style={style}
       onClick={this.props.onClick}
       onMouseEnter={this.onMouseEnter}
@@ -175,12 +175,12 @@ const ItemThumbnailThumbnail = React.createClass({
           height={thumbH} />
       </div>
       {stackElements}
-      { dragging || !file ? undefined :
-      <span style={titleStyle}>{file}</span>
+      { dragging || !title ? undefined :
+      <span style={titleStyle}>{title}</span>
       }
     </div>;
   }
 
 });
 
-module.exports = ItemThumbnailThumbnail;
+module.exports = LibraryItemThumbnail;

@@ -28,6 +28,23 @@ function indexOfSelected (selected, item) {
   });
 }
 
+const staticSlides = [
+  {
+    id: "_empty_slide",
+    title: "Empty Slide",
+    slide2d: {
+      background: "#eee",
+      size: [800,600],
+      draws: [
+        { fillStyle: "#000", font: "bold 80px Arial", textAlign: "center" },
+        [ "fillText", "Big Text Title...", 400, 200 ],
+        { fillStyle: "#666", font: "italic 40px Arial", textAlign: "center" },
+        [ "fillText", "Sub Title...", 400, 300 ]
+      ]
+    }
+  }
+];
+
 var Library = React.createClass({
 
   mixins: [ PromiseMixin, DragDropMixin ],
@@ -40,39 +57,122 @@ var Library = React.createClass({
             const files = item.files.filter(
               file => acceptedImageMimetypes.indexOf(file.type) !== -1);
 
-            DiaporamaMakerAPI.uploadFiles(files).then(
-              () => component.sync(),
-              (err) => swal("Oops...", err.message, "error"));
+            let upItems = files.map(f => {
+              const item = {
+                id: "upload:"+f.name,
+                title: f.name,
+                upload: {
+                  dataURL: null,
+                  loaded: 0,
+                  total: 0
+                }
+              };
+
+              const reader = new window.FileReader();
+              reader.onload = function (event) {
+                if (!component.isMounted()) return;
+                const dataURL = event.target.result;
+                const uploading = _.map(component.state.uploading, function (u) {
+                  if (u.id === item.id) {
+                    const clone = _.cloneDeep(u);
+                    clone.upload.dataURL = dataURL;
+                    return clone;
+                  }
+                  else {
+                    return u;
+                  }
+                });
+                component.setState({ uploading });
+              };
+              reader.readAsDataURL(f);
+
+              return item;
+            });
+
+            component.setState({
+              uploading: component.state.uploading.concat(upItems)
+            });
+
+            DiaporamaMakerAPI.uploadFiles(files)
+            .progress(p => {
+              const uploading = _.map(component.state.uploading, function (u) {
+                if (_.any(upItems, i => i.id === u.id)) {
+                  const clone = _.cloneDeep(u);
+                  clone.upload.loaded = p.loaded;
+                  clone.upload.total = p.total;
+                  return clone;
+                }
+                else {
+                  return u;
+                }
+              });
+              component.setState({ uploading });
+            })
+            .then(
+              result => {
+                var notUploads = _.difference(upItems.map(i => i.title), result.files);
+                if (notUploads.length) {
+                  swal({
+                    title: "File Upload",
+                    text: "Some files failed to upload: <ul>"+
+                     notUploads.map(file => `<li>${file}</li>`).join('')+
+                    "</ul><p>Make sure the filename does not already exists and that they are not too big.</p>",
+                    type: "warning",
+                    html: true
+                  });
+                }
+                component.sync();
+              },
+              xhr => {
+                console.log(xhr);
+                swal({
+                  title: "File Upload Error",
+                  text: xhr.responseText,
+                  type: "error",
+                  html: true
+                });
+              })
+            .done(() => {
+              const uploading = _.filter(
+                component.state.uploading,
+                u => !_.any(upItems, i => i.id === u.id));
+              component.setState({ uploading });
+            });
           }
         }
       });
     }
   },
 
-
   getInitialState: function () {
     return {
-      items: [],
+      // slide2d items
+      slides: [],
+      // image items
+      images: [],
+      // uploading items
+      uploading: [],
+      // selected items
       selected: [],
       down: null,
       move: null
     };
   },
 
-  getDragItems: function (primaryItem) {
-    var all = _.uniq((primaryItem ? [ primaryItem ] : []).concat(this.state.selected), function (i) {
-      return i.id;
-    });
-    return {
-      primary: primaryItem,
-      all: all
-    };
+  getGridItems: function () {
+    const { slides, images, uploading } = this.state;
+    return slides.concat(uploading).concat(images);
+  },
+
+  getDragItems: function (primary) {
+    var all = _.uniq((primary ? [ primary ] : []).concat(this.state.selected), (i) => i.id);
+    return { primary, all };
   },
 
   selectAll: function () {
-    this.setState({
-      selected: _.clone(this.state.items)
-    });
+    const { slides, images } = this.state;
+    const selected = slides.concat(images);
+    this.setState({ selected });
   },
 
   unselectAll: function () {
@@ -142,7 +242,7 @@ var Library = React.createClass({
   },
 
   selectionMouseMove: function (e) {
-    var items = this.state.items;
+    var items = this.getGridItems();
     var down = this.state.down;
     var move = this.getEventPosition(e);
     var downGrid = this.positionToGrid(down);
@@ -186,23 +286,9 @@ var Library = React.createClass({
     // FIXME abstract into a call to a prop
     DiaporamaMakerAPI.listItems()
     .then(function (items) {
-      return {
-        items: [
-          {
-            id: "_empty_slide",
-            slide2d: {
-              background: "#eee",
-              size: [800,600],
-              draws: [
-                { fillStyle: "#000", font: "bold 80px Arial", textAlign: "center" },
-                [ "fillText", "Big Text Title...", 400, 200 ],
-                { fillStyle: "#666", font: "italic 40px Arial", textAlign: "center" },
-                [ "fillText", "Sub Title...", 400, 300 ]
-              ]
-            }
-          }
-        ].concat(items)
-      };
+      const images = items.filter(i => !!i.image);
+      const slides = staticSlides.concat(items.filter(i => !!i.slide2d));
+      return { images, slides };
     })
     .then(this.setStateQ)
     .fail(this.recoverUnmountedQ)
@@ -267,7 +353,7 @@ var Library = React.createClass({
     const gridW = this.getGridWidth();
 
     const items =
-      this.state.items
+      this.getGridItems()
       .map(function (item, i) {
         const xi = (i % gridW);
         const yi = Math.floor(i / gridW);

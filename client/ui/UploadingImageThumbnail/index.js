@@ -4,7 +4,7 @@ var rectCrop = require("rect-crop");
 var scaleTranslateStyle = require("../../core/scaleTranslateStyle");
 var ImageHolderMixin = require("../../mixins/ImageHolderMixin");
 
-var Thumbnail = React.createClass({
+var UploadingImageThumbnail = React.createClass({
 
   mixins: [ ImageHolderMixin ],
 
@@ -13,7 +13,8 @@ var Thumbnail = React.createClass({
     center: React.PropTypes.array,
     image: React.PropTypes.string,
     width: React.PropTypes.number,
-    height: React.PropTypes.number
+    height: React.PropTypes.number,
+    progress: React.PropTypes.number
   },
 
   getDefaultProps: function () {
@@ -24,29 +25,45 @@ var Thumbnail = React.createClass({
   },
 
   render: function () {
-    var props = this.props;
+    const {
+      zoom,
+      center,
+      width,
+      height,
+      image,
+      progress
+    } = this.props;
 
-    var style = _.extend({
+    const style = _.extend({
       position: "relative",
       overflow: "hidden",
       background: "#000",
-      width: props.width + "px",
-      height: props.height + "px"
+      width: width + "px",
+      height: height + "px"
     }, this.props.style||{});
+
+    const progressStyle = {
+      width: width+"px",
+      position: "absolute",
+      top: "2px",
+      left: 0,
+      zIndex: 4
+    };
 
     if (!this.img.width) {
       return <div style={style}></div>;
     }
 
-    var rect = rectCrop(props.zoom, props.center)(props, this.img);
+    var rect = rectCrop(zoom, center)({ width, height }, this.img);
     var imgStyle = scaleTranslateStyle(
-      props.width / rect[2],
+      width / rect[2],
       [ -rect[0], -rect[1] ]);
 
     return <div style={style}>
-      <img src={ props.image } style={imgStyle} />
+      <img src={image} style={imgStyle} />
+      <progress style={progressStyle} value={progress} />
     </div>;
   }
 });
 
-module.exports = Thumbnail;
+module.exports = UploadingImageThumbnail;

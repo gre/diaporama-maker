@@ -2,6 +2,7 @@ var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
 var path = require('path');
+var multer  = require('multer');
 var Q = require('q');
 var Http = require('http');
 var findAllFiles = require("./findAllFiles");
@@ -77,6 +78,40 @@ module.exports = function server (diaporama) {
       .done();
   });
 
+
+  app.use("/upload", multer({
+    dest: '.',
+    limits: {
+      fields: 100,
+      fieldNameSize: 100,
+      fieldSize: 1 * 1024 * 1024,
+      files: 100,
+      fileSize: 20 * 1024 * 1024
+    },
+    rename: function (fieldname, filename) {
+      return filename;
+    },
+    onFileUploadStart: function (file) {
+      if (fs.existsSync(path.join(".", file.originalname))) {
+        return false;
+      }
+    }
+  }));
+
+  app.post('/upload', function(req, res) {
+    var files = [];
+    if (req.files.file) {
+      files = Object.keys(req.files.file).map(function (key) {
+        return req.files.file[key].name;
+      });
+    }
+    else {
+      files = [];
+    }
+    res.send({
+      files: files
+    });
+  });
 
   app.get('/preview/diaporama.bundle.js', function (req, res) {
     fs.createReadStream(path.join(__dirname, '../builds/diaporama.bundle.js'))

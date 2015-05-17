@@ -1,6 +1,7 @@
 import React from "react";
 import ImageThumbnail from "../ImageThumbnail";
 import Slide2d from "../Slide2d";
+import UploadingImageThumbnail from "../UploadingImageThumbnail";
 
 export default class LibraryItem extends React.Component {
 
@@ -11,6 +12,20 @@ export default class LibraryItem extends React.Component {
       height,
       style
     } = this.props;
+
+    if (item.upload) {
+      const {
+        dataURL,
+        loaded,
+        total
+      } = item.upload;
+      return <UploadingImageThumbnail
+        image={dataURL}
+        progress={total > 0 ? loaded / total : undefined}
+        style={style}
+        width={width}
+        height={height} />;
+    }
 
     if (item.image) {
       return <ImageThumbnail

@@ -4,6 +4,7 @@ var ImageHolderMixin = {
 
   fetchImage: function (props) {
     var img = new window.Image();
+    this.img = img;
     if (!props.image) return;
     this.curImgSrc = img.src = props.image;
     var self = this;
@@ -12,7 +13,6 @@ var ImageHolderMixin = {
       if (self.isMounted())
         self.forceUpdate();
     };
-    this.img = img;
   },
 
   componentWillMount: function () {

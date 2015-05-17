@@ -75,19 +75,31 @@ const DiaporamaMakerAPI = {
     .then(files => files.map(file =>
       isImage(file) ? {
         id: file,
-        image: file
+        image: file,
+        title: file
       }
       :
       {
         id: file,
-        file: file
+        file: file,
+        title: file
       }
     ));
   },
 
   uploadFiles (files) {
-    console.log("NOT IMPLEMENTED – uploadFiles", files);
-    return Q.reject(new Error("Files Upload not supported."));
+    const form = new window.FormData();
+    files.forEach(f => {
+      form.append("file", f);
+    });
+
+    return Qajax({
+      method: "POST",
+      url: "/upload",
+      data: form
+    })
+    .then(Qajax.filterSuccess)
+    .then(Qajax.toJSON);
   }
 };
 

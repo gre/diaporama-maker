@@ -430,6 +430,7 @@ var actions = {
         tnames.push(tname);
       }
       obj.id = newId();
+      delete obj.title;
       return obj;
     });
     if (!place) {
