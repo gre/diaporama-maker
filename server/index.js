@@ -47,16 +47,13 @@ module.exports = function server (diaporama) {
   });
 
   app.get("/diaporama/generate/zip", function (req, res) {
-    var archive = diaporama.zip(req.query);
-    archive.on('error', function(err) {
+    diaporama.zip(req.query).then(function (archive) {
+      res.attachment('diaporama.zip');
+      archive.pipe(res);
+    }, function (err) {
       res.status(500).send({error: err.message});
-    });
-    res.on('close', function() {
-      console.log('zip %d bytes', archive.pointer());
-      return res.status(200).send('OK').end();
-    });
-    res.attachment('diaporama.zip');
-    archive.pipe(res);
+    })
+    .done();
   });
 
   app.get('/diaporama.json', function(req, res) {

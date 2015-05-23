@@ -14,7 +14,7 @@ You can learn more about **`diaporama`** key features on [http://gre.gitbooks.io
 ### Via the command line
 
 ```
-# Requirement: imagemagick
+# Requirement: graphicsmagick
 npm install -g diaporama-maker
 ```
 
@@ -33,5 +33,3 @@ diaporama directory_with_images
 ## Test the online DEMO version
 
 [http://diaporama.glsl.io/](http://diaporama.glsl.io/): DEMO version (pre-defined images, everyone is editing the same diaporama)
-
-

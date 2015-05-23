@@ -69,7 +69,7 @@
     "glsl-transition-vignette-grid": "0.4.1",
     "glsl-transitions": "2015.5.14",
     "glsl-uniforms-editor": "0.1.1",
-    "imagemagick-native": "git://github.com/mash/node-imagemagick-native.git#45d4e2e59c285e878bc5f3fffdb663333b250620",
+    "gm": "^1.18.1",
     "json-beautify": "1.0.1",
     "kenburns-editor": "0.1.1",
     "lodash": "3.8.0",

@@ -2,7 +2,7 @@ var path = require("path");
 var _ = require("lodash");
 var Q = require("q");
 var archiver = require("archiver");
-var imagemagick = require("imagemagick-native");
+var gm = require("gm");
 
 var pack = require("../package.json");
 var fs = require("./fs");
@@ -43,7 +43,7 @@ Diaporama.genEmpty = function (dir) {
   return Diaporama(dir, getInitialJson());
 };
 
-var imagemagickFilters = {
+var formats = {
   low: {
     max: 512,
     contentType: "image/jpeg",
@@ -76,19 +76,39 @@ Diaporama.prototype = {
     var diaporama = this.json;
     var images = _.compact(_.pluck(diaporama.timeline, "image"));
     var archive = archiver("zip");
-    _.forEach(images, function (image) {
+
+    var imagesConvertions = _.map(images, function (image) {
       var file = path.join(root, image);
-      var stream = fs.createReadStream(file);
-      var filter = imagemagickFilters[options.quality];
+      var fileStream = fs.createReadStream(file);
+      var filter = formats[options.quality];
+      var d = Q.defer();
       if (filter) {
-        stream = stream.pipe(imagemagick.streams.convert({
-          width: filter.max,
-          height: filter.max,
-          resizeStyle: "aspectfit",
-          quality: 100 * filter.quality
-        }));
+        gm(fileStream).size({bufferStream: true}, function (err, size) {
+          var w = size.width;
+          var h = size.height;
+          var ratio = w / h;
+          var m = filter.max;
+
+          if (ratio > 1) {
+            h = Math.round(m / ratio);
+            w = m;
+          }
+          else {
+            w = Math.round(m * ratio);
+            h = m;
+          }
+          var stream = this.resize(w, h)
+              .quality(100 * filter.quality)
+              .stream(filter.ext);
+          d.resolve(stream);
+        });
       }
-      archive.append(stream, { name: image });
+      else {
+        d.resolve(fileStream);
+      }
+      return d.promise.then(function (stream) {
+        archive.append(stream, { name: image });
+      });
     });
 
     var json = JSON.stringify(diaporama, null, 2);
@@ -101,8 +121,13 @@ Diaporama.prototype = {
       archive.append(html, { name: "index.html" });
     }
 
-    archive.finalize();
-    return archive;
+    var result = Q.defer();
+    archive.on('error', result.reject);
+    Q.all(imagesConvertions).then(function () {
+      archive.finalize();
+      result.resolve(archive);
+    });
+    return result.promise;
   },
   save: function () {
     return fs.writeFile(

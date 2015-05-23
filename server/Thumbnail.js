@@ -1,6 +1,6 @@
 var parseurl = require("parseurl");
 var querystring = require("querystring");
-var imagemagick = require("imagemagick-native");
+var gm = require("gm");
 var fs = require("fs");
 var path = require("path");
 var serverStatic = require('serve-static');
@@ -58,16 +58,33 @@ module.exports = function (app, slug, root) {
         return;
       }
 
-      fs.createReadStream(file)
-        .pipe(imagemagick.streams.convert({
-          width: format.max,
-          height: format.max,
-          resizeStyle: "aspectfit",
-          format: format.ext,
-          quality: 100 * format.quality
-        }))
-        .on("error", fallback)
-        .pipe(res);
+      gm(fs.createReadStream(file))
+      .size({bufferStream: true}, function (err, size) {
+        if (err) {
+          return fallback(err);
+        }
+        var w = size.width;
+        var h = size.height;
+        var ratio = w / h;
+        var m = format.max;
+        if (w <= m && h <= m) {
+          return fallback();
+        }
+        else {
+          if (ratio > 1) {
+            h = Math.round(m / ratio);
+            w = m;
+          }
+          else {
+            w = Math.round(m * ratio);
+            h = m;
+          }
+          this.resize(w, h)
+              .quality(100 *format.quality)
+              .stream(format.ext)
+              .pipe(res);
+        }
+      });
     });
   }
 
