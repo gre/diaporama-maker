@@ -11,6 +11,7 @@ import Timeline from "../Timeline";
 import DragLayer from "../DragLayer";
 import TransitionPickerOverlay from "../TransitionPickerOverlay";
 import checkAPI from "../../checkAPI";
+import versionInfoP from "../../versionInfo";
 
 var INITIAL_PANEL = "library";
 var DEFAULT_PANEL = "library";
@@ -53,12 +54,14 @@ var App = React.createClass({
       time: 0,
       playing: false,
       error: null,
-      pickingTransition: null // here will hold the callback
+      pickingTransition: null, // here will hold the callback
+      versionInfo: null
     };
   },
 
   componentWillMount: function () {
     checkAPI();
+    versionInfoP.then(versionInfo => this.setState({ versionInfo }));
   },
 
   componentDidMount: function () {
@@ -136,13 +139,14 @@ var App = React.createClass({
       selectedItemPointer,
       time,
       hoverTimeline,
-      pickingTransition
+      pickingTransition,
+      versionInfo
     } = this.state;
 
     if (diaporama === undefined) return <div>Loading...</div>;
 
     // Bounds
-    var viewerW, viewerH;
+    let viewerW, viewerH;
     if (height * 2 / 3 < width / 2) {
       viewerH = Math.round(height / 2);
       viewerW = Math.round(viewerH * 4 / 3);
@@ -154,27 +158,55 @@ var App = React.createClass({
     viewerH = Math.max(height - 300, viewerH);
     viewerW = Math.max(width - 820, Math.min(viewerH, viewerW));
 
-    var viewerBound = {
+    const viewerBound = {
       x: width-viewerW,
       y: 0,
       width: viewerW,
       height: viewerH
     };
-    var mainPanelBound = {
+    const mainPanelBound = {
       x: 0,
       y: 0,
       width: width-viewerW,
       height: viewerH
     };
-    var timelineBound = {
+    const timelineBound = {
       x: 0,
       y: viewerH,
       width: width,
       height: height-viewerH
     };
 
-    let maybeOverlay;
+    let versionNode;
+    if (versionInfo) {
+      const { outdated } = versionInfo;
+      const versionStyle = {
+        position: "fixed",
+        bottom: "-2px",
+        right: "-2px",
+        zIndex: 2,
+        padding: "2px 6px",
+        borderRadius: "2px",
+        font: "lighter 12px sans-serif",
+        opacity: 0.6,
+        textDecoration: "none",
+        background: outdated ? "#faa" : "#000",
+        color: outdated ? "#d00" : "#fff"
+      };
+      if (outdated) {
+        versionNode = <a style={versionStyle}
+          href="https://github.com/gre/diaporama-maker">
+          new version: {versionInfo.latestVersion}
+        </a>;
+      }
+      else {
+        versionNode = <span style={versionStyle}>
+          {versionInfo.currentVersion}
+        </span>;
+      }
+    }
 
+    let maybeOverlay;
     if (pickingTransition) {
       const tpoW = 814;
       const tpoH = 460;
@@ -187,6 +219,7 @@ var App = React.createClass({
     }
 
     return <div>
+      {versionNode}
 
       {maybeOverlay}
 

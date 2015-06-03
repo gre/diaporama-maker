@@ -1,6 +1,7 @@
 var express = require("express");
 var serverStatic = require('serve-static');
 var bodyParser = require('body-parser');
+var request = require("request");
 var path = require('path');
 var multer  = require('multer');
 var Q = require('q');
@@ -75,6 +76,9 @@ module.exports = function server (diaporama) {
       .done();
   });
 
+  app.get("/registry", function (req, res) {
+    request("http://registry.npmjs.org/diaporama-maker").pipe(res);
+  });
 
   app.use("/upload", multer({
     dest: '.',
