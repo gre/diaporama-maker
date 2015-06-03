@@ -2,9 +2,8 @@ var React = require("react/addons");
 window.React = React;
 window.Perf = React.addons.Perf;
 
-import Q from "q";
 import Qajax from "qajax";
-var url = require("url");
+import url from "url";
 import Diaporama from "./models/Diaporama";
 import isImage from "../common/isImage";
 
