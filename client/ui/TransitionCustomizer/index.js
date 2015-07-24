@@ -79,7 +79,7 @@ var TransitionCustomizer = React.createClass({
           overlayBounds={[ 0, 0, width, Math.max(h, width*0.6) ]}
           transitionUniforms={uniforms}
           transitionDuration={value.duration}
-          transitionEasing={value.easing ? BezierEasing.apply(null, value.easing) : BezierEasing.css.linear}
+          transitionEasing={value.easing ? BezierEasing(value.easing).get : BezierEasing.css.linear}
           images={images}
           openTransitionPicker={openTransitionPicker}
         />

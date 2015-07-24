@@ -118,7 +118,7 @@ const ImageCustomizer = React.createClass({
     const value = props.value.kenburns && props.value.kenburns.easing;
     if (value) {
       if (!this.easing || !_.isEqual(value, oldValue)) {
-        this.easing = BezierEasing.apply(null, value);
+        this.easing = BezierEasing(value).get;
       }
     }
     else {

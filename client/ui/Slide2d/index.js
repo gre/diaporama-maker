@@ -5,7 +5,8 @@ import _ from "lodash";
 export default class Slide2d extends React.Component {
   componentDidMount() {
     this.ctx = Slide2dRenderer(
-      React.findDOMNode(this).getContext("2d")
+      React.findDOMNode(this).getContext("2d"),
+      DiaporamaMakerAPI.toProjectUrl
     );
     this.ctx.render(this.props.value);
   }

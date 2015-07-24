@@ -49,7 +49,7 @@
   ],
   "dependencies": {
     "archiver": "0.14.4",
-    "bezier-easing": "0.4.5",
+    "bezier-easing": "^1.0.0",
     "bezier-easing-editor": "0.4.3",
     "bezier-easing-picker": "0.0.3",
     "body-parser": "1.12.4",
@@ -65,12 +65,12 @@
     "glsl-transition-validator": "0.4.0",
     "glsl-transition-vignette": "0.4.1",
     "glsl-transition-vignette-grid": "0.4.1",
-    "glsl-transitions": "2015.5.1",
+    "glsl-transitions": "2015.7.24",
     "glsl-uniforms-editor": "0.1.1",
     "gm": "1.18.1",
     "json-beautify": "1.0.1",
     "kenburns-editor": "0.1.1",
-    "lodash": "3.9.1",
+    "lodash": "3.10.0",
     "multer": "0.1.8",
     "open": "0.0.5",
     "parseurl": "1.3.0",
@@ -85,7 +85,7 @@
     "rect-mix": "0.0.0",
     "request": "2.55.0",
     "serve-static": "1.9.3",
-    "slide2d": "1.0.12",
+    "slide2d": "^1.1.0",
     "vendor-prefix": "0.1.0"
   },
   "devDependencies": {
