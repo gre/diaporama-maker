@@ -89,12 +89,12 @@
     "vendor-prefix": "0.1.0"
   },
   "devDependencies": {
-    "babelify": "6.1.1",
-    "browserify": "10.2.1",
+    "babelify": "6.1.3",
+    "browserify": "11.0.0",
     "derequire": "2.0.0",
     "eslint": "git://github.com/gre/eslint.git",
-    "eslint-plugin-react": "^3.0.0",
-    "uglify-js": "2.4.23",
-    "watchify": "3.2.1"
+    "eslint-plugin-react": "3.0.0",
+    "uglify-js": "2.4.24",
+    "watchify": "3.3.0"
   }
 }
