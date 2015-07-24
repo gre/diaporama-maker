@@ -126,12 +126,51 @@ Diaporama.clean = function (diaporama) {
   return copy;
 };
 
+function localizeObject (obj, fullSize) {
+  switch (typeof obj) {
+  case "string":
+    return DiaporamaMakerAPI.toProjectUrl(obj, fullSize);
+
+  case "object":
+    if (obj instanceof Array) {
+      return obj.map(item => localizeObject(item, fullSize));
+    }
+    let clone = {};
+    for (var k in obj) {
+      clone[k] = localizeObject(obj[k], fullSize);
+    }
+    return clone;
+
+  default:
+    return obj;
+  }
+}
+
+function localizeSlide2dDraws (draws, fullSize) {
+  draws.forEach(function (op) {
+    if (op instanceof Array) {
+      if (typeof op[0] === "object")
+        localizeSlide2dDraws(op, fullSize);
+      else if (op[0]==="drawImage") {
+        op[1] = DiaporamaMakerAPI.toProjectUrl(op[1], fullSize);
+      }
+    }
+  });
+}
+
 Diaporama.localize = function (diaporama, fullSize) {
   if (!diaporama) return null;
   var clone = _.cloneDeep(diaporama);
+  clone.resources = diaporama.resources ? localizeObject(diaporama.resources) : {};
   clone.timeline.forEach(function (item) {
     if (item.image) {
-      item.image = DiaporamaMakerAPI.toProjectUrl(item.image, fullSize);
+      item.image = localizeObject(item.image, fullSize);
+    }
+    if (item.video) {
+      item.video = clone.resources[item.video] || localizeObject(item.video, fullSize);
+    }
+    if (item.slide2d) {
+      localizeSlide2dDraws(item.slide2d.draws, fullSize);
     }
   });
   return clone;
@@ -142,9 +181,11 @@ Diaporama.localize = function (diaporama, fullSize) {
 
 Diaporama.timelineIndexOfId = function (diaporama, id) {
   var tl = diaporama.timeline;
-  for (var i=0; i < tl.length; ++i)
-    if (tl[i].id === id)
+  for (var i=0; i < tl.length; ++i) {
+    if (tl[i].id === id) {
       return i;
+    }
+  }
   return -1;
 };
 

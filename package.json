@@ -92,6 +92,8 @@
     "babelify": "6.1.1",
     "browserify": "10.2.1",
     "derequire": "2.0.0",
+    "eslint": "git://github.com/gre/eslint.git",
+    "eslint-plugin-react": "^3.0.0",
     "uglify-js": "2.4.23",
     "watchify": "3.2.1"
   }

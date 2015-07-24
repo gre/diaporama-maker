@@ -1,4 +1,4 @@
-var _ = require("lodash");
+import _ from "lodash";
 import genTimelineTransitionDefault from "./genTimelineTransitionDefault";
 
 module.exports = function (defs, template) {

@@ -15,9 +15,8 @@ function keepCustomUniforms (uniforms) {
 function filterWithoutCustomSampler2D (transitions, mapFilter) {
   return transitions.filter(function (t) {
     for (var k in t.uniforms)
-    if (typeof t.uniforms[k] === "string")
-    return false;
-  return true;
+      if (typeof t.uniforms[k] === "string") return false;
+    return true;
   }).map(mapFilter).filter(function (t) { return !!t; });
 }
 
@@ -33,7 +32,7 @@ var collection = filterWithoutCustomSampler2D(GlslTransitions.sort(function (a, 
     return _.extend({ types: keepCustomUniforms(uniformTypes) }, t);
   }
   else {
-     console.log("transition '"+ t.name +"' failed to compile.");
+    console.log("transition '"+ t.name +"' failed to compile."); // eslint-disable-line no-console
   }
 });
 collection.push(_.extend({ types: {} }, GlslTransitionFade));
