@@ -2,6 +2,8 @@
 ===============
 **Diaporama Maker** is an slideshow editor for **[`diaporama`](http://github.com/gre/diaporama)**.
 
+![](https://camo.githubusercontent.com/24978a582c5230b1f033a7565d8942053999535d/687474703a2f2f692e696d6775722e636f6d2f4f45594d526a782e6a7067)
+
 **`diaporama`** is an image slideshow engine providing high quality animation effects including Kenburns effect and GLSL Transitions.
 You can learn more about **`diaporama`** key features on [http://gre.gitbooks.io/diaporama/content/](http://gre.gitbooks.io/diaporama/content/)
 
